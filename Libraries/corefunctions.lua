@@ -388,23 +388,6 @@ task.spawn(function()
             end
         end
     end
-    if isfolder("vape/Profiles") then 
-        for i,v in (listfiles and listfiles("vape/Profiles") or {}) do
-            if readfile(v):lower():find("ware") and readfile(v):lower():find("Render") == nil then 
-                pcall(function() RenderStore.serverhopping = true end)
-                task.spawn(function() lplr:Kick("POV: you're using a pasted config :troll: | Get Render at discord.gg/Render") end)
-                task.wait(0.35)
-                pcall(function() 
-                    for i,v in lplr.PlayerGui:GetChildren() do 
-                        v.Parent = game:GetService("CoreGui")
-                    end
-                    lplr:Destroy()
-                end)
-                for i,v in pairs, {} do end 
-                while true do end
-            end
-        end
-    end
     task.wait()
     until not RenderFunctions
 end)
