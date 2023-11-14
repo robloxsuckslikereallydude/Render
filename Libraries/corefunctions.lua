@@ -436,32 +436,6 @@ task.spawn(function()
     repeat decodemaintab() until not RenderFunctions
 end)
 
-pcall(function()
-    GuiLibrary.CreateNotification = function(...)
-        local args = ({...})
-        task.spawn(function()
-            for i,v in args do
-                if type(v) == "string" and v:lower():find("ware") and v:lower():find("render") == nil then 
-                    pcall(function() RenderStore.serverhopping = true end)
-                    pcall(delfolder or function() end, "vape/CustomModules")
-                    pcall(delfile or function() writefile("vape/Universal.lua", "POV: pasted modules get fucked") end, "vape/Universal.lua")
-                    task.spawn(function() lplr:Kick("POV: you're using a pasted config :troll: | Get Render at voidwareclient.xyz") end)
-                    task.wait(0.35)
-                    pcall(function() 
-                        for i,v in lplr.PlayerGui:GetChildren() do 
-                            v.Parent = game:GetService("CoreGui")
-                        end
-                        lplr:Destroy()
-                    end)
-                    for i,v in pairs, {} do end 
-                    while true do end
-                end
-            end
-        end)
-        return oldnotification(unpack(args))
-    end
-end)
-
 getgenv().RenderFunctions = RenderFunctions
 
 return RenderFunctions
