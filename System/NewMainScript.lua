@@ -6,7 +6,7 @@ local writefile = writefile or function() return "" end
 local isfolder = isfolder or function() return false end
 
 local function getvapefile(file)
-	if not isfile("vape/"..v) then 
+	if not isfile("vape/"..file) then 
 		local custom = {"MainScript.lua", "Universal.lua", "GuiLibrary.lua"}
 		local success, script = pcall(function()
 			local url = (custom[file] and "SystemXVoid/Render/main/System/"..file or "7GrandDadPGN/VapeV4ForRoblox/main/"..file)
@@ -20,7 +20,7 @@ local function getvapefile(file)
 				writefile("vape/"..file, script)
 			end
 		else
-			task.spawn(error, "Vape - Failed to download\n vape/"..v..". | "..(script or "404: Not Found"))
+			task.spawn(error, "Vape - Failed to download\n vape/"..file..". | "..(script or "404: Not Found"))
 		end
 		return script
 	end
