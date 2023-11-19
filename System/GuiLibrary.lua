@@ -1,5 +1,10 @@
 if shared.VapeExecuted then
-	local VERSION = "4.10"..(shared.VapePrivate and " PRIVATE" or "").." "..readfile("vape/commithash.txt"):sub(1, 6)
+	local isfile = isfile or function(file)
+		return pcall(function() return readfile(file) end) and true or false
+	end
+	local writefile = writefile or function() end  
+	local readfile = readfile or function() return "" end
+	local VERSION = "4.10 "..(isfile("vape/commithash.txt") and readfile("vape/commithash.txt"):sub(1, 6) or "main")
 	local baseDirectory = (shared.VapePrivate and "vapeprivate/" or "vape/")
 	local vapeAssetTable = {
 		["vape/assets/AddItem.png"] = "rbxassetid://13350763121",
@@ -148,15 +153,26 @@ if shared.VapeExecuted then
 	GuiLibrary["MainGui"] = gui
 
 	local vapeCachedAssets = {}
-	local function vapeGithubRequest(scripturl)
-		if not isfile("vape/"..scripturl) then
-			local suc, res = pcall(function() return game:HttpGet("https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/"..readfile("vape/commithash.txt").."/"..scripturl, true) end)
-			assert(suc, res)
-			assert(res ~= "404: Not Found", res)
-			if scripturl:find(".lua") then res = "--This watermark is used to delete the file if its cached, remove it to make the file persist after commits.\n"..res end
-			writefile("vape/"..scripturl, res)
+	local function getvapefile(file)
+		if not isfile("vape/"..file) then 
+			local custom = {"MainScript.lua", "Universal.lua", "GuiLibrary.lua"}
+			local success, script = pcall(function()
+				local url = (custom[file] and "SystemXVoid/Render/main/System/"..file or "7GrandDadPGN/VapeV4ForRoblox/main/"..file)
+				return game:HttpGet("https://raw.githubusercontent.com/"..url)
+			end)
+			if success and script ~= "404: Not Found" then 
+				if isfolder("vape") then 
+					if file:sub(#file - 4, #file) == ".lua" and custom[file] then 
+						script = ("Render Custom Vape Signed File\n"..script)
+					end
+					writefile("vape/"..file, script)
+				end
+			else
+				task.spawn(error, "Vape - Failed to download\n vape/"..file..". | "..(script or "404: Not Found"))
+			end
+			return script
 		end
-		return readfile("vape/"..scripturl)
+		return readfile("vape/"..file)
 	end
 	
 	local function downloadVapeAsset(path)
@@ -176,7 +192,7 @@ if shared.VapeExecuted then
 					repeat task.wait() until isfile(path)
 					textlabel:Destroy()
 				end)
-				local suc, req = pcall(function() return vapeGithubRequest(path:gsub("vape/assets", "assets")) end)
+				local suc, req = pcall(function() return getvapefile(path:gsub("vape/assets", "assets")) end)
 				if suc and req then
 					writefile(path, req)
 				else
@@ -841,7 +857,7 @@ if shared.VapeExecuted then
 			shared.VapeSwitchServers = true
 			shared.VapeOpenGui = (clickgui.Visible)
 			shared.VapePrivate = vapeprivate
-			loadstring(vapeGithubRequest("NewMainScript.lua"))()
+			loadstring(getvapefile("NewMainScript.lua"))()
 		end
 	end
 
