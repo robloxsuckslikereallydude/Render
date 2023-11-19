@@ -1568,7 +1568,7 @@ runFunction(function()
 	})
 end)
 
-runFunction(function()--[[  ]]
+runFunction(function()
 	local cameraunlocker = {Enabled = false}
 	local camdistance = {Value = 0}
 	cameraunlocker = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
