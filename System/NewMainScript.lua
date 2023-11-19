@@ -1,52 +1,34 @@
-local errorPopupShown = false
-local setidentity = syn and syn.set_thread_identity or set_thread_identity or setidentity or setthreadidentity or function() end
-local getidentity = syn and syn.get_thread_identity or get_thread_identity or getidentity or getthreadidentity or function() return 8 end
 local isfile = isfile or function(file)
-	local suc, res = pcall(function() return readfile(file) end)
-	return suc and res ~= nil
-end
-local delfile = delfile or function(file) writefile(file, "") end
-
-local function displayErrorPopup(text, func)
-	local oldidentity = getidentity()
-	setidentity(8)
-	local ErrorPrompt = getrenv().require(game:GetService("CoreGui").RobloxGui.Modules.ErrorPrompt)
-	local prompt = ErrorPrompt.new("Default")
-	prompt._hideErrorCode = true
-	local gui = Instance.new("ScreenGui", game:GetService("CoreGui"))
-	prompt:setErrorTitle("Vape")
-	prompt:updateButtons({{
-		Text = "OK",
-		Callback = function() 
-			prompt:_close() 
-			if func then func() end
-		end,
-		Primary = true
-	}}, 'Default')
-	prompt:setParent(gui)
-	prompt:_open(text)
-	setidentity(oldidentity)
+	return pcall(function() return readfile(file) end) and true or false
 end
 
-local function vapeGithubRequest(scripturl)
-	if not isfile("vape/"..scripturl) then
-		local suc, res
-		task.delay(15, function()
-			if not res and not errorPopupShown then 
-				errorPopupShown = true
-				displayErrorPopup("The connection to github is taking a while, Please be patient.")
-			end
+local writefile = writefile or function() end
+local isfolder = isfolder or function() return false end
+
+local function getvapefile(file)
+	if not isfile("vape/"..v) then 
+		local custom = {"MainScript.lua", "Universal.lua"}
+		local success, script = pcall(function()
+			local url = (custom[file] and "SystemXVoid/Render/main/System/"..file or "7GrandDadPGN/VapeV4ForRoblox/main/"..file)
+			return game:HttpGet("https://raw.githubusercontent.com/"..url)
 		end)
-		suc, res = pcall(function() return game:HttpGet("https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/"..readfile("vape/commithash.txt").."/"..scripturl, true) end)
-		if not suc or res == "404: Not Found" then
-			displayErrorPopup("Failed to connect to github : vape/"..scripturl.." : "..res)
-			error(res)
+		if success and script ~= "404: Not Found" then 
+			if isfolder("vape") then 
+				if file:sub(#file - 4, #file) == ".lua" and custom[file] then 
+					script = ("Render Custom Vape Signed File\n"..script)
+				end
+				writefile("vape/"..file, script)
+			end
+		else
+			task.spawn(error, "Vape - Failed to download\n vape/"..v..". | "..(script or "404: Not Found"))
 		end
-		if scripturl:find(".lua") then res = "--This watermark is used to delete the file if its cached, remove it to make the file persist after commits.\n"..res end
-		writefile("vape/"..scripturl, res)
+		return script
 	end
-	return readfile("vape/"..scripturl)
+	return readfile("vape/"..v)
 end
 
-if not isfile("vape/commithash.txt") then writefile("vape/commithash.txt", "main") end
-return loadstring(vapeGithubRequest("MainScript.lua"))()
+if isfolder("vape") and isfile("vape/commithash.txt") then 
+	writefile("vape/commithash.txt")
+end
+
+loadstring(getvapefile("MainScript.lua"))()
