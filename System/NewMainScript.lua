@@ -1,4 +1,3 @@
--- Render Custom Vape Signed File 
 local isfile = isfile or function(file)
 	return pcall(function() return readfile(file) end) and true or false
 end
@@ -28,7 +27,7 @@ local function getvapefile(file)
 	return readfile("vape/"..v)
 end
 
-if isfolder("vape") and isfile("vape/commithash.txt") then 
+if isfolder("vape") and not isfile("vape/commithash.txt") then 
 	writefile("vape/commithash.txt")
 end
 
