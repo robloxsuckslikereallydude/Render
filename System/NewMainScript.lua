@@ -1,3 +1,4 @@
+-- Render Custom Vape Signed File 
 local isfile = isfile or function(file)
 	return pcall(function() return readfile(file) end) and true or false
 end
@@ -7,7 +8,7 @@ local isfolder = isfolder or function() return false end
 
 local function getvapefile(file)
 	if not isfile("vape/"..v) then 
-		local custom = {"MainScript.lua", "Universal.lua"}
+		local custom = {"MainScript.lua", "Universal.lua", "GuiLibrary.lua"}
 		local success, script = pcall(function()
 			local url = (custom[file] and "SystemXVoid/Render/main/System/"..file or "7GrandDadPGN/VapeV4ForRoblox/main/"..file)
 			return game:HttpGet("https://raw.githubusercontent.com/"..url)
