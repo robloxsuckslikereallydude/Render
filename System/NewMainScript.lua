@@ -3,7 +3,7 @@ local isfile = isfile or function(file)
 	return pcall(function() return readfile(file) end) and true or false
 end
 
-local writefile = writefile or function() end
+local writefile = writefile or function() return "" end
 local isfolder = isfolder or function() return false end
 
 local function getvapefile(file)
@@ -32,4 +32,5 @@ if isfolder("vape") and isfile("vape/commithash.txt") then
 	writefile("vape/commithash.txt")
 end
 
+print("loaded")
 loadstring(getvapefile("MainScript.lua"))()
