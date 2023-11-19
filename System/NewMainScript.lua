@@ -24,7 +24,7 @@ local function getvapefile(file)
 		end
 		return script
 	end
-	return readfile("vape/"..v)
+	return readfile("vape/"..file)
 end
 
 if isfolder("vape") and not isfile("vape/commithash.txt") then 
