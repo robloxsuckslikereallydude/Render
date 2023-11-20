@@ -1,10 +1,6 @@
+-- Voidware Custom Vape Signed File
 if shared.VapeExecuted then
-	local isfile = isfile or function(file)
-		return pcall(function() return readfile(file) end) and true or false
-	end
-	local writefile = writefile or function() end  
-	local readfile = readfile or function() return "" end
-	local VERSION = "4.10 "..(isfile("vape/commithash.txt") and readfile("vape/commithash.txt"):sub(1, 6) or "main")
+	local VERSION = "4.10"..(shared.VapePrivate and " PRIVATE" or "").." "..readfile("vape/commithash.txt"):sub(1, 6)
 	local baseDirectory = (shared.VapePrivate and "vapeprivate/" or "vape/")
 	local vapeAssetTable = {
 		["vape/assets/AddItem.png"] = "rbxassetid://13350763121",
@@ -142,38 +138,19 @@ if shared.VapeExecuted then
 	gui.DisplayOrder = 999
 	gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
 	gui.OnTopOfCoreBlur = true
-	if gethui and (not KRNL_LOADED) then
-		gui.Parent = gethui()
-	elseif not is_sirhurt_closure and syn and syn.protect_gui then
-		syn.protect_gui(gui)
-		gui.Parent = game:GetService("CoreGui")
-	else
-		gui.Parent = game:GetService("CoreGui")
-	end
+	gui.Parent = game:GetService("Players").LocalPlayer.PlayerGui -- fixes vape breaking on bw :sob: (roblox just why)
 	GuiLibrary["MainGui"] = gui
 
 	local vapeCachedAssets = {}
-	local function getvapefile(file)
-		if not isfolder("vape") then 
-			makefolder("vape")
+	local function vapeGithubRequest(scripturl)
+		if not isfile("vape/"..scripturl) then
+			local suc, res = pcall(function() return game:HttpGet("https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/"..readfile("vape/commithash.txt").."/"..scripturl, true) end)
+			assert(suc, res)
+			assert(res ~= "404: Not Found", res)
+			if scripturl:find(".lua") then res = "--This watermark is used to delete the file if its cached, remove it to make the file persist after commits.\n"..res end
+			writefile("vape/"..scripturl, res)
 		end
-		if not isfile("vape/"..file) then 
-			local custom = {"MainScript.lua", "Universal.lua", "GuiLibrary.lua"}
-			local success, script = pcall(function()
-				local url = (table.find(custom, file) and "SystemXVoid/Render/main/System/"..file or "7GrandDadPGN/VapeV4ForRoblox/main/"..file)
-				return game:HttpGet("https://raw.githubusercontent.com/"..url)
-			end)
-			if success and script ~= "404: Not Found" then 
-				if file:sub(#file - 4, #file) == ".lua" and custom[file] then 
-					script = ("Render Custom Vape Signed File\n"..script)
-				end
-				writefile("vape/"..file, script)
-			else
-				task.spawn(error, "Vape - Failed to download\n vape/"..file..". | "..(script or "404: Not Found"))
-			end
-			return script
-		end
-		return readfile("vape/"..file)
+		return readfile("vape/"..scripturl)
 	end
 	
 	local function downloadVapeAsset(path)
@@ -193,7 +170,7 @@ if shared.VapeExecuted then
 					repeat task.wait() until isfile(path)
 					textlabel:Destroy()
 				end)
-				local suc, req = pcall(function() return getvapefile(path:gsub("vape/assets", "assets")) end)
+				local suc, req = pcall(function() return vapeGithubRequest(path:gsub("vape/assets", "assets")) end)
 				if suc and req then
 					writefile(path, req)
 				else
@@ -858,7 +835,7 @@ if shared.VapeExecuted then
 			shared.VapeSwitchServers = true
 			shared.VapeOpenGui = (clickgui.Visible)
 			shared.VapePrivate = vapeprivate
-			loadstring(getvapefile("NewMainScript.lua"))()
+			loadstring(vapeGithubRequest("NewMainScript.lua"))()
 		end
 	end
 
@@ -6895,7 +6872,7 @@ if shared.VapeExecuted then
 		textlabel2.Parent = frame
 		task.spawn(function()
 			pcall(function()
-				bettertween2(frame, UDim2.new(1, -(size - 4), 1, -(150 + 80 * offset)), Enum.EasingDirection.In, Enum.EasingStyle.Sine, 0.15, true)
+				bettertween2(frame, UDim2.new(1, -(size - 4), 1, -(100 + 80 * offset)), Enum.EasingDirection.In, Enum.EasingStyle.Sine, 0.15, true)
 				task.wait(0.15)
 				frame2:TweenSize(UDim2.new(0, 0, 0, 2), Enum.EasingDirection.In, Enum.EasingStyle.Linear, duration, true)
 				task.wait(duration)
@@ -6909,9 +6886,8 @@ if shared.VapeExecuted then
 
 	GuiLibrary["LoadedAnimation"] = function(enabled)
 		if enabled then
-			--no cache but its ran 1 time so idc
-			local bad = not (inputService:GetPlatform() == Enum.Platform.Windows or inputService:GetPlatform() == Enum.Platform.OSX)
-			GuiLibrary.CreateNotification("Finished Loading", bad and GuiLibrary["GUIKeybind"] == "RightShift" and "Press the button in the top right to open GUI" or "Press "..string.upper(GuiLibrary["GUIKeybind"]).." to open GUI", 5)
+			local mobile = (inputService:GetPlatform() == Enum.Platform.Windows or inputService:GetPlatform() == Enum.Platform.OSX)
+			GuiLibrary.CreateNotification("Voidware", "Successfully loaded everything! "..(mobile and "Press the button on the top right corner." or "Press "..GuiLibrary.GUIKeybind:upper()).." to open the GUI.")
 		end
 	end
 
@@ -6983,7 +6959,7 @@ if shared.VapeExecuted then
 					if input1.KeyCode == Enum.KeyCode[aGuiLibrary["Api"]["Keybind"]] and aGuiLibrary["Api"]["Keybind"] ~= GuiLibrary["GUIKeybind"] then
 						aGuiLibrary["Api"]["ToggleButton"](false)
 						if GuiLibrary["ToggleNotifications"] then
-							GuiLibrary["CreateNotification"]("Module Toggled", aGuiLibrary["Api"]["Name"]..' <font color="#FFFFFF">has been</font> <font color="'..(aGuiLibrary["Api"]["Enabled"] and '#32CD32' or '#FF6464')..'">'..(aGuiLibrary["Api"]["Enabled"] and "Enabled" or "Disabled")..'</font><font color="#FFFFFF">!</font>', 1)
+							GuiLibrary["CreateNotification"]("Module Toggled", GuiLibrary["Api"]["Name"]..' <font color="#FFFFFF">has been</font> <font color="'..(aGuiLibrary["Api"]["Enabled"] and '#32CD32' or '#FF6464')..'">'..(aGuiLibrary["Api"]["Enabled"] and "Enabled" or "Disabled")..'</font><font color="#FFFFFF">!</font>', 1)
 						end
 					end
 				end
