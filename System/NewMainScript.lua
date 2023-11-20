@@ -13,7 +13,7 @@ local function getvapefile(file)
 	if not isfile("vape/"..file) then 
 		local custom = {"MainScript.lua", "Universal.lua", "GuiLibrary.lua"}
 		local success, script = pcall(function()
-			local url = (custom[file] and "SystemXVoid/Render/main/System/"..file or "7GrandDadPGN/VapeV4ForRoblox/main/"..file)
+			local url = (table.find(custom, file) and "SystemXVoid/Render/main/System/"..file or "7GrandDadPGN/VapeV4ForRoblox/main/"..file)
 			return game:HttpGet("https://raw.githubusercontent.com/"..url)
 		end)
 		if success and script ~= "404: Not Found" then 
