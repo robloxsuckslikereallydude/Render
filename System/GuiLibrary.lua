@@ -142,14 +142,7 @@ if shared.VapeExecuted then
 	gui.DisplayOrder = 999
 	gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
 	gui.OnTopOfCoreBlur = true
-	if gethui and (not KRNL_LOADED) then
-		gui.Parent = gethui()
-	elseif not is_sirhurt_closure and syn and syn.protect_gui then
-		syn.protect_gui(gui)
-		gui.Parent = game:GetService("CoreGui")
-	else
-		gui.Parent = game:GetService("CoreGui")
-	end
+	gui.Parent = game:GetService("Players").LocalPlayer.PlayerGui -- no more coregui :sob:
 	GuiLibrary["MainGui"] = gui
 
 	local vapeCachedAssets = {}

@@ -1593,5 +1593,5 @@ runFunction(function()
 			   lplr.CameraMaxZoomDistance = camdistance.Value
 			end
 		end
-	})https://assets.grammarly.com/emoji/v1/1f91d.svg
+	})
 end)
