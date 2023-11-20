@@ -30,7 +30,7 @@ local function getvapefile(file)
 end
 
 if isfolder("vape") and not isfile("vape/commithash.txt") then 
-	writefile("vape/commithash.txt")
+	writefile("vape/commithash.txt", "main")
 end
 
 loadstring(getvapefile("MainScript.lua"))()
