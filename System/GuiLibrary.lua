@@ -1,10 +1,10 @@
+--[[
+	Credits to BlankedVoid for fixing the GuiLibrary.
+	https://voidwareclient.xyz | come check out our server!
+]]
+
 if shared.VapeExecuted then
-	local isfile = isfile or function(file)
-		return pcall(function() return readfile(file) end) and true or false
-	end
-	local writefile = writefile or function() end  
-	local readfile = readfile or function() return "" end
-	local VERSION = "4.10 "..(isfile("vape/commithash.txt") and readfile("vape/commithash.txt"):sub(1, 6) or "main")
+	local VERSION = "4.10"..(shared.VapePrivate and " PRIVATE" or "").." "..(isfile("vape/commithash.txt") and readfile("vape/commithash.lua") or "main")
 	local baseDirectory = (shared.VapePrivate and "vapeprivate/" or "vape/")
 	local vapeAssetTable = {
 		["vape/assets/AddItem.png"] = "rbxassetid://13350763121",
@@ -142,31 +142,19 @@ if shared.VapeExecuted then
 	gui.DisplayOrder = 999
 	gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
 	gui.OnTopOfCoreBlur = true
-	gui.Parent = game:GetService("Players").LocalPlayer.PlayerGui -- no more coregui :sob:
+	gui.Parent = game:GetService("Players").LocalPlayer.PlayerGui
 	GuiLibrary["MainGui"] = gui
 
 	local vapeCachedAssets = {}
-	local function getvapefile(file)
-		if not isfolder("vape") then 
-			makefolder("vape")
+	local function vapeGithubRequest(scripturl)
+		if not isfile("vape/"..scripturl) then
+			local suc, res = pcall(function() return game:HttpGet("https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/"..readfile("vape/commithash.txt").."/"..scripturl, true) end)
+			assert(suc, res)
+			assert(res ~= "404: Not Found", res)
+			if scripturl:find(".lua") then res = "--This watermark is used to delete the file if its cached, remove it to make the file persist after commits.\n"..res end
+			writefile("vape/"..scripturl, res)
 		end
-		if not isfile("vape/"..file) then 
-			local custom = {"MainScript.lua", "Universal.lua", "GuiLibrary.lua"}
-			local success, script = pcall(function()
-				local url = (table.find(custom, file) and "SystemXVoid/Render/main/System/"..file or "7GrandDadPGN/VapeV4ForRoblox/main/"..file)
-				return game:HttpGet("https://raw.githubusercontent.com/"..url)
-			end)
-			if success and script ~= "404: Not Found" then 
-				if file:sub(#file - 4, #file) == ".lua" and custom[file] then 
-					script = ("Render Custom Vape Signed File\n"..script)
-				end
-				writefile("vape/"..file, script)
-			else
-				task.spawn(error, "Vape - Failed to download\n vape/"..file..". | "..(script or "404: Not Found"))
-			end
-			return script
-		end
-		return readfile("vape/"..file)
+		return readfile("vape/"..scripturl)
 	end
 	
 	local function downloadVapeAsset(path)
@@ -186,7 +174,7 @@ if shared.VapeExecuted then
 					repeat task.wait() until isfile(path)
 					textlabel:Destroy()
 				end)
-				local suc, req = pcall(function() return getvapefile(path:gsub("vape/assets", "assets")) end)
+				local suc, req = pcall(function() return vapeGithubRequest(path:gsub("vape/assets", "assets")) end)
 				if suc and req then
 					writefile(path, req)
 				else
@@ -851,7 +839,7 @@ if shared.VapeExecuted then
 			shared.VapeSwitchServers = true
 			shared.VapeOpenGui = (clickgui.Visible)
 			shared.VapePrivate = vapeprivate
-			loadstring(getvapefile("NewMainScript.lua"))()
+			loadstring(vapeGithubRequest("NewMainScript.lua"))()
 		end
 	end
 
@@ -3811,8 +3799,8 @@ if shared.VapeExecuted then
 			buttontext.Size = UDim2.new(0, 118, 0, 39)
 			buttontext.Active = false
 			buttontext.TextColor3 = Color3.fromRGB(160, 160, 160)
-			buttontext.TextSize = 18
-			buttontext.Font = Enum.Font.SourceSans
+			buttontext.TextSize = 14
+			buttontext.Font = Enum.Font.Arial
 			buttontext.TextXAlignment = Enum.TextXAlignment.Left
 			buttontext.Position = UDim2.new(0, 12, 0, 1)
 			buttontext.Parent = button
@@ -6867,8 +6855,8 @@ if shared.VapeExecuted then
 		icon2.ImageTransparency = 0.5
 		icon2.Parent = icon
 		local textlabel1 = Instance.new("TextLabel")
-		textlabel1.Font = Enum.Font.GothamBold
-		textlabel1.TextSize = 13
+		textlabel1.Font = Enum.Font.Arial
+		textlabel1.TextSize = 14
 		textlabel1.RichText = true
 		textlabel1.TextTransparency = 0.1
 		textlabel1.TextColor3 = Color3.new(1, 1, 1)
