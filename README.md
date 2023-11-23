@@ -1,2 +1,2 @@
 # Render Vape
-A Roblox vape configuration config I've maintained since 2022-2023. This configuration is now on life support as the Roblox exploiting community is on its last legs.
+This was a vape configuration I mainly made for Roblox Bedwars. This configuration has stopped working since 10/17/23 and is discontinued. Thank you to all who supported this project over the months, it's been fun.
