@@ -1,1 +1,1 @@
-{"AnnouncementText":"Voidware is currently on life support due to Synapse and Scriptware working with Roblox and no REAl exploits works atm.","Announcement":true,"Disabled":false,"AnnouncementDuration":10}
+{"AnnouncementText":"","Announcement":false,"Disabled":false,"AnnouncementDuration":10}
