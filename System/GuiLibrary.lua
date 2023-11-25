@@ -1,10 +1,5 @@
---[[
-	Credits to BlankedVoid for fixing the GuiLibrary.
-	https://voidwareclient.xyz | come check out our server!
-]]
-
 if shared.VapeExecuted then
-	local VERSION = "4.10"..(shared.VapePrivate and " PRIVATE" or "").." "..(isfile("vape/commithash.txt") and readfile("vape/commithash.lua") or "main")
+	local VERSION = "4.10"..(shared.VapePrivate and " PRIVATE" or "").." "..readfile("vape/commithash.txt"):sub(1, 6)
 	local baseDirectory = (shared.VapePrivate and "vapeprivate/" or "vape/")
 	local vapeAssetTable = {
 		["vape/assets/AddItem.png"] = "rbxassetid://13350763121",
@@ -142,6 +137,7 @@ if shared.VapeExecuted then
 	gui.DisplayOrder = 999
 	gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
 	gui.OnTopOfCoreBlur = true
+	gui.ResetOnSpawn = false
 	gui.Parent = game:GetService("Players").LocalPlayer.PlayerGui
 	GuiLibrary["MainGui"] = gui
 
@@ -6890,9 +6886,12 @@ if shared.VapeExecuted then
 
 	GuiLibrary["LoadedAnimation"] = function(enabled)
 		if enabled then
-			--no cache but its ran 1 time so idc
-			local bad = not (inputService:GetPlatform() == Enum.Platform.Windows or inputService:GetPlatform() == Enum.Platform.OSX)
-			GuiLibrary.CreateNotification("Finished Loading", bad and GuiLibrary["GUIKeybind"] == "RightShift" and "Press the button in the top right to open GUI" or "Press "..string.upper(GuiLibrary["GUIKeybind"]).." to open GUI", 5)
+			touch = inputService.TouchEnabled
+		    GuiLibrary.CreateNotification(
+				"Loaded",
+				(touch or GuiLibrary.GUIKeybind == "RightShift") and "Press the button on the top right to open the Interface." or "Press "..GuiLibrary.GUIKeybind.." to open the Interface.",
+				7
+			)
 		end
 	end
 
