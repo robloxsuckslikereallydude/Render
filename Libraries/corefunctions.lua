@@ -38,20 +38,19 @@ function RenderFunctions:CreateLocalDirectory(directory)
     return directory
 end
 
-function RenderFunctions:GithubHash(repo, custom)
-    repo = repo or "Render"
-    custom = custom or "SystemXVoid"
-    local success, response = pcall(function() return game:HttpGet("https://github.com/"..custom.."/"..repo, true) end)
-    if success then 
-        for i,v in response:split("\n") do 
-            if v:find("commit") and v:find("fragment") then 
-	            local commitgotten, commit = pcall(function() return v:split("/")[5]:sub(0, v:split("/")[5]:find('"') - 1) end)
-                return commitgotten and commit or "main"
-            end
-        end
-    end
-    return "main"
+function RenderFunctions:GithubHash(repo, owner)
+	owner = (owner or "SystemXVoid")
+	repo = (repo or "Render")
+	local success, response = pcall(function()
+		return httpService:JSONDecode(game:HttpGet("https://api.github.com/repos/"..owner.."/"..repo.."/commits"))
+	end)
+	if success and response.documentation_url == nil and response[1].commit then 
+		local slash = response[1].commit.url:split("/")
+		return slash[#slash]
+	end
+	return "main"
 end
+
 
 local cachederrors = {}
 function RenderFunctions:GetFile(file, onlineonly, custompath, customrepo)
