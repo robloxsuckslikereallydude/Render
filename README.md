@@ -1,2 +1,2 @@
 # Render Vape
-soon :tm:
+This should be released before Christmas. 
