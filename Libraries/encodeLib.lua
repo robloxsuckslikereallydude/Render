@@ -7,7 +7,7 @@ local lower = {
     e = '(',
     f = ')',
     g = '-',
-    h = '_',
+    h = '>',
     i = '/',
     j = '+',
     k = '{',
@@ -44,11 +44,16 @@ encodeLib.decode = function(text)
     text = tostring(text)
     for i = 1, #text do
         local char = text:sub(i, i)
+        local encrypted
         for i2, v in next, lower do 
             if v == char then 
                 newtext = (newtext..(i2))
+                encrypted = true
             end
         end 
+        if not encrypted then 
+            newtext = (newtext..(char)) 
+        end
     end
     return newtext
 end
