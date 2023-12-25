@@ -1,4 +1,3 @@
--- Render Custom Vape Signed File
 local encodeLib = {}
 local lower = {
     a = '$',
