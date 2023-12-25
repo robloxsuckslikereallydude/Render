@@ -40,18 +40,6 @@ encodeLib.encode = function(text)
     return text
 end
 
-local function replacechar(str, char, pos)
-    local newtext = str
-    for i = 1, #str do 
-        if i == pos then 
-            local text = str:sub(i - 1, i - 1)
-            local otherchars = str:sub(i, #str)
-            newtext = ((text)..char..(otherchars))
-        end
-    end
-    return newtext
-end
-
 encodeLib.decode = function(text)
     local newtext = ''
     text = tostring(text)
