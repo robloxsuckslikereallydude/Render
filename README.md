@@ -1,3 +1,2 @@
 # Render Vape
-
-Should release sometime this week
+This release of this mod is unknown, I promise it's soon though.
