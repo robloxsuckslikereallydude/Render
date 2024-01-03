@@ -6612,50 +6612,6 @@ runFunction(function()
 	end)
 end)
 
-	local oldtabs = {}
-	local oldtabs2 = {}
-	local oldtabs3 = {}
-	if replicatedStorageService:FindFirstChild("DefaultChatSystemChatEvents") and textChatService.ChatVersion ~= Enum.ChatVersion.TextChatService then 
-			for i,v in next, getconnections(replicatedStorageService.DefaultChatSystemChatEvents.OnNewMessage.OnClientEvent) do
-				if v.Function and #debug.getupvalues(v.Function) > 0 and type(debug.getupvalues(v.Function)[1]) == "table" and getmetatable(debug.getupvalues(v.Function)[1]) and getmetatable(debug.getupvalues(v.Function)[1]).GetChannel then
-					oldtabs.oldchanneltab = getmetatable(debug.getupvalues(v.Function)[1])
-					oldtabs.oldchannelfunc = getmetatable(debug.getupvalues(v.Function)[1]).GetChannel
-					getmetatable(debug.getupvalues(v.Function)[1]).GetChannel = function(Self, Name)
-						local tab = oldtabs.oldchannelfunc(Self, Name)
-						if tab and tab.AddMessageToChannel then
-							local addmessage = tab.AddMessageToChannel
-							if oldtabs.oldchanneltabs[tab] == nil then
-								oldtabs.oldchanneltabs[tab] = tab.AddMessageToChannel
-							end
-							tab.AddMessageToChannel = function(Self2, MessageData)
-								if MessageData.FromSpeaker and playersService[MessageData.FromSpeaker] and vapeInjected then
-									local plr = playersService[MessageData.FromSpeaker]
-									local tagdata = RenderFunctions.playerTags[plr]
-									if tagdata then
-										local tagcolor = RenderFunctions:RunFromLibrary("Hex2Color3", "GetColor3", tagdata.Color)
-										local tagcolorpack = table.pack(RenderFunctions:RunFromLibrary("Hex2Color3", "UnpackColor3", tagdata.Color))
-										MessageData.ExtraData = {
-											NameColor = playersService[MessageData.FromSpeaker].Team == nil and Color3.fromRGB(tagcolorpack[1] + 45, tagcolorpack[2] + 45, tagcolorpack[3] - 10) or playersService[MessageData.FromSpeaker].TeamColor.Color,
-											Tags = {
-												table.unpack(MessageData.ExtraData.Tags),
-												{
-													TagColor = tagcolor,
-													TagText = tagdata.Text,
-												},
-											},
-										}
-									end
-								end
-								return addmessage(Self2, MessageData)
-							end
-						end
-						return tab
-					end
-				end
-		    end
-	    end  
-	end)
-
 runFunction(function()
 	local targetui = Instance.new('Frame') 
 	local targetactive = false
