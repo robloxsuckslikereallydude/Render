@@ -6494,7 +6494,7 @@ task.spawn(function()
 				notified = (tick() + 300)
 			end
 			hash = newcommit
-			local success = pcall(function() RenderFunctions:RefreshLocalEnv() end)
+			local success = pcall(function() return RenderDeveloper == nil and RenderFunctions:RefreshLocalEnv() end)
 			if success and isfolder('vape/Render') then 
 				writefile('vape/Render/commit.ren', newcommit) 
 			end
