@@ -27,7 +27,7 @@ end
 
 function RenderFunctions:CreateLocalDirectory(directory)
     local splits = tostring(directory:gsub('vape/Render/', '')):split('/')
-    local last = ''
+    local last = ''-
     for i,v in next, splits do 
         if not isfolder('vape/Render') then 
             makefolder('vape/Render') 
@@ -297,7 +297,7 @@ end
 function RenderFunctions:DebugPrint(...)
     local message = '' 
     for i,v in next, ({...}) do 
-        message = (message == '' and tostring(v) or message.." "..tostring(v)) 
+        message = (message == '' and tostring(v) or message..' '..tostring(v)) 
     end 
     message = ('[Render Debug] '..message)
     if getgenv().RenderDebug then 
@@ -308,7 +308,7 @@ end
 function RenderFunctions:DebugWarning(...)
     local message = '' 
     for i,v in next, ({...}) do 
-        message = (message == '' and tostring(v) or message.." "..tostring(v)) 
+        message = (message == '' and tostring(v) or message..' '..tostring(v)) 
     end 
     message = ('[Render Debug] '..message)
     if getgenv().RenderDebug then
@@ -319,7 +319,7 @@ end
 function RenderFunctions:DebugError(...)
     local message = '' 
     for i,v in next, ({...}) do 
-        message = (message == '' and tostring(v) or message.." "..tostring(v)) 
+        message = (message == '' and tostring(v) or message..' '..tostring(v)) 
     end 
     message = ('[Render Debug] '..message)
     if getgenv().RenderDebug then
