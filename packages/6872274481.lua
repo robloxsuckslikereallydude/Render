@@ -3573,7 +3573,7 @@ runFunction(function()
 									if killauranovape.Enabled and bedwarsStore.whitelist.clientUsers[plr.Player.Name] then
 										continue
 									end
-									if killauranorender.Enabled and table.find(RenderStore.ConfigUsers, plr.Player) then
+									if killauranorender.Enabled and table.find(RenderFunctions.configUsers, plr.Player) then
 									   continue
 									end
 									if killaurasortmethod.Value == 'Switch' or not firstPlayerNear then 
