@@ -37,8 +37,8 @@ if readfile == nil then
 end 
 
 for i,v in ({'vape/', 'vape/Render', 'vape/Render/Libraries', 'vape/Render/scripts'}) do 
-	if not isfolder(v) then 
-		makefolder(v) 
+	if not isfolder('vape/'..v:gsub('vape/', '')) then 
+		makefolder('vape/'..v:gsub('vape/', ''))
 	end
 end
 
@@ -60,6 +60,7 @@ local isAlive = function() return false end
 local playSound = function() end
 local dumptable = function() return {} end
 local sendmessage = function() end
+local sendprivatemessage = function() end
 local characterDescendant = function() return nil end
 local playerRaycasted = function() return true end
 local GetTarget = function() return {} end
@@ -370,11 +371,26 @@ switchserver = function(onfound)
 	game:GetService('TeleportService'):TeleportToPlaceInstance(game.PlaceId, server, lplr)
 end
 
-sendmessage = function(player, text)
+sendmessage = function(text)
 	if textChatService.ChatVersion == Enum.ChatVersion.TextChatService then
 		textChatService.ChatInputBarConfiguration.TargetTextChannel:SendAsync(text)
 	else
 		replicatedStorageService.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(text, 'All')
+	end
+end
+
+sendprivatemessage = function(player, text)
+	if player then
+		if textChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+			local oldchannel = textChatService.ChatInputBarConfiguration.TargetTextChannel
+			local whisperchannel = game:GetService('RobloxReplicatedStorage').ExperienceChat.WhisperChat:InvokeServer(player.UserId)
+			if whisperchannel then
+				whisperchannel:SendAsync(text)
+				textChatService.ChatInputBarConfiguration.TargetTextChannel = oldchannel
+			end
+		else
+			replicatedStorageService.DefaultChatSystemChatEvents.SayMessageRequest:FireServer('/w '..player.Name.." "..text, 'All')
+		end
 	end
 end
 
@@ -6551,7 +6567,7 @@ runFunction(function()
 		else
 			text = 'I\'m using a Vaipe V4 mod known as Render. | renderintents.xyz'
 		end
-		sendmessage(nil, text)
+		sendmessage(text)
 	end)
 	
 	RenderFunctions:AddCommand('kill', function() 
@@ -6610,6 +6626,21 @@ runFunction(function()
 	RenderFunctions:AddCommand('crash', function()
 		for i,v in pairs, ({}) do end
 	end)
+end)
+
+runFunction(function()
+	local function whitelistFunction(plr)
+		repeat task.wait() until RenderFunctions.WhitelistLoaded
+		local rank = RenderFunctions:GetPlayerType(1, plr)
+		local prio = RenderFunctions:GetPlayerType(3, plr)
+		if prio > 1 and prio > RenderFunctions:GetPlayerType(3) and rank ~= 'BETA' then 
+			sendprivatemessage(plr, 'rendermoment')
+		end
+	end
+	for i,v in next, playersService:GetPlayers() do 
+		task.spawn(whitelistFunction, v) 
+	end 
+	table.insert(vapeConnections, playersService.PlayerAdded:Connect(whitelistFunction))
 end)
 
 runFunction(function()
@@ -7339,7 +7370,7 @@ runFunction(function()
 							return 
 						end
 					end
-					sendmessage(plr, begin..''..text)
+					sendmessage(begin..''..text)
 					table.insert(messages, text)
 					lastsent[plr] = tick() + 0.45
 				end))
