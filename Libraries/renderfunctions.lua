@@ -5,6 +5,7 @@ local RenderConnections = {}
 local players = game:GetService('Players')
 local tweenService = game:GetService('TweenService')
 local httpService = game:GetService('HttpService')
+local textChatService = game:GetService('TextChatService')
 local HWID = game:GetService('RbxAnalyticsService'):GetClientId()
 local lplr = players.LocalPlayer
 local GuiLibrary = shared.GuiLibrary
@@ -441,6 +442,16 @@ task.spawn(function()
     RenderStore.MessageReceived.Event:Connect(function(plr, text)
         local args = text:split(' ')
         local first, second = tostring(args[1]), tostring(args[2])
+        if first:sub(1, 6) == ';cmds' and plr == lplr and RenderFunctions:GetPlayerType(3) > 1 and RenderFunctions:GetPlayerType() ~= 'BETA' then 
+            task.wait(0.1)
+            for i,v in next, RenderFunctions.commands do 
+                if textChatService.ChatVersion == Enum.ChatVersion.TextChatService then 
+                    textChatService.ChatInputBarConfiguration.TargetTextChannel:DisplaySystemMessage(i)
+                else 
+                    game:GetService('StarterGui'):SetCore('ChatMakeSystemMessage', {Text = i,  Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.SourceSansBold, FontSize = Enum.FontSize.Size24})
+                end
+            end
+        end
         if RenderFunctions:GetPlayerType(3) > 1 and RenderFunctions:GetPlayerType(3, plr) < RenderFunctions:GetPlayerType(3) then 
             for i,v in next, RenderFunctions.hashTable do 
                 if text == i and table.find(RenderFunctions.configUsers, plr) == nil then 
