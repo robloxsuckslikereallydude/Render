@@ -1,5 +1,5 @@
 -- Render Custom Modules Signed File
-local RenderFunctions = {WhitelistLoaded = false, whitelistTable = {}, localWhitelist = {}, configUsers = {} whitelistSuccess = false, playerWhitelists = {}, commands = {}, playerTags = {}, entityTable = {}}
+local RenderFunctions = {WhitelistLoaded = false, whitelistTable = {}, localWhitelist = {}, configUsers = {}, whitelistSuccess = false, playerWhitelists = {}, commands = {}, playerTags = {}, entityTable = {}}
 local RenderLibraries = {}
 local RenderConnections = {}
 local players = game:GetService('Players')
@@ -67,6 +67,7 @@ function RenderFunctions:RefreshLocalEnv()
 				local contents = game:HttpGet('https://raw.githubusercontent.com/SystemXVoid/Render/'..RenderFunctions:GithubHash()..'/packages/'..v.name) 
                 contents = (tostring(contents:split('\n')[1]):find('Render Custom Vape Signed File') and contents or '-- Render Custom Vape Signed File\n'..contents)
 				writefile('vape/CustomModules/'..v.name, contents)
+                RenderFunctions:DebugWarning('vape/Render/'..v, 'was overwritten due to updates.')
             end 
         end)
     end
