@@ -6494,10 +6494,10 @@ task.spawn(function()
 				notified = (tick() + 300)
 			end
 			hash = newcommit
-			if isfolder('vape/Render') then 
+			local success = pcall(function() RenderFunctions:RefreshLocalEnv() end)
+			if success and isfolder('vape/Render') then 
 				writefile('vape/Render/commit.ren', newcommit) 
 			end
-			RenderFunctions:RefreshLocalEnv()
 		end
 		task.wait(23)
 	until not vapeInjected
