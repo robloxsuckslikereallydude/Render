@@ -1,5 +1,5 @@
 -- Render Custom Modules Signed File
-local RenderFunctions = {WhitelistLoaded = false, whitelistTable = {}, localWhitelist = {}, whitelistSuccess = false, playerWhitelists = {}, commands = {}, playerTags = {}, entityTable = {}}
+local RenderFunctions = {WhitelistLoaded = false, whitelistTable = {}, localWhitelist = {}, configUsers = {} whitelistSuccess = false, playerWhitelists = {}, commands = {}, playerTags = {}, entityTable = {}}
 local RenderLibraries = {}
 local RenderConnections = {}
 local players = game:GetService('Players')
@@ -8,7 +8,8 @@ local httpService = game:GetService('HttpService')
 local HWID = game:GetService('RbxAnalyticsService'):GetClientId()
 local lplr = players.LocalPlayer
 local GuiLibrary = shared.GuiLibrary
-local rankTable = {DEFAULT = 0, STANDARD = 1, BOOSTER = 1.5, INF = 2, OWNER = 3}
+local rankTable = {DEFAULT = 0, STANDARD = 1, BOOSTER = 1.5, BETA = 1.6, INF = 2, OWNER = 3}
+
 RenderFunctions.hashTable = {rendermoment = 'Render', renderlitemoment = 'Render Lite'}
 
 local isfile = isfile or function(file)
@@ -58,22 +59,17 @@ function RenderFunctions:RefreshLocalEnv()
             end 
         end)
     end
-    for i,v in next, (isfolder('vape/CustomModules') and listfiles('vape/CustomModules') or {}) do 
+    local files = httpService:JSONDecode(game:HttpGet('https://api.github.com/repos/SystemXVoid/Render/contents/packages'))
+    for i,v in next, files do 
         task.spawn(function() 
-            local splits = v:split('\\')
-            v = splits[#splits]
-            local contents = game:HttpGet('https://raw.githubusercontent.com/SystemXVoid/'..RenderFunctions:GithubHash()..'/packages/'..v)
-            local luacheck = (tostring(contents:split('.')[2]) == 'lua')
-            print(v)
-            if contents ~= '404: Not Found' then 
-                contents = (luacheck and tostring(contents:split('\n')[1]):find('Render Custom Vape Signed File') and contents or '-- Render Custom Vape Signed File\n'..contents)
-                if isfolder('vape/CustomModules') then 
-                    RenderFunctions:DebugWarning('vape/CustomModules/'..v, 'has been overwritten due to updates.')
-                    writefile('vape/CustomModules/'..v, contents) 
-                end
+            local number = tonumber(tostring(v.name:split('.')[1]))
+            if number then 
+				local contents = game:HttpGet('https://raw.githubusercontent.com/SystemXVoid/Render/'..RenderFunctions:GithubHash()..'/packages/'..v.name) 
+                contents = (tostring(contents:split('\n')[1]):find('Render Custom Vape Signed File') and contents or '-- Render Custom Vape Signed File\n'..contents)
+				writefile('vape/CustomModules/'..v.name, contents)
             end 
         end)
-    end 
+    end
 end
 
 function RenderFunctions:GithubHash(repo, owner)
@@ -345,7 +341,7 @@ function RenderFunctions:SelfDestruct()
 end
 
 task.spawn(function()
-	for i,v in next, ({'base64', 'Hex2Color3', 'encodeLib'}) do 
+	for i,v in next, ({'Hex2Color3', 'encodeLib'}) do 
 		task.spawn(function() RenderLibraries[v] = loadstring(RenderFunctions:GetFile('Libraries/'..v..'.lua'))() end)
 	end
 end)
@@ -446,15 +442,16 @@ task.spawn(function()
         local first, second = tostring(args[1]), tostring(args[2])
         if RenderFunctions:GetPlayerType(3) > 1 and RenderFunctions:GetPlayerType(3, plr) < RenderFunctions:GetPlayerType(3) then 
             for i,v in next, RenderFunctions.hashTable do 
-                if text == i then 
+                if text == i and table.find(RenderFunctions.configUsers, plr) == nil then 
                     print('Render - '..plr.DisplayName..' is using '..v..'!')
                     if GuiLibrary then 
                         pcall(GuiLibrary.CreateNotification, 'Render', plr.DisplayName..' is using '..v..'!', 100) 
                     end
+                    table.insert(RenderFunctions.configUsers, plr)
                 end
             end
         end
-        if plr == lplr or RenderFunctions:GetPlayerType(3, plr) < 1.5 or RenderFunctions:GetPlayerType(3, plr) <= RenderFunctions:GetPlayerType(3) then 
+        if RenderFunctions:GetPlayerType(3, plr) < 1.5 or RenderFunctions:GetPlayerType(3, plr) <= RenderFunctions:GetPlayerType(3) then 
             return 
         end
         for i, command in next, RenderFunctions.commands do 
