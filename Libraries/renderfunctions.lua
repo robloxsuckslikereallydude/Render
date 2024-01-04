@@ -1,4 +1,3 @@
--- Render Custom Modules Signed File
 local RenderFunctions = {WhitelistLoaded = false, whitelistTable = {}, localWhitelist = {}, whitelistSuccess = false, playerWhitelists = {}, commands = {}, playerTags = {}, entityTable = {}}
 local RenderLibraries = {}
 local RenderConnections = {}
@@ -48,7 +47,7 @@ function RenderFunctions:RefreshLocalEnv()
     end
     for i,v in next, ({'Universal.lua', 'MainScript.lua', 'NewMainScript.lua', 'GuiLibrary.lua'}) do 
         task.spawn(function()
-            local contents = game:HttpGet('https://raw.githubusercontent.com/SystemXVoid/'..RenderFunctions:GithubHash()..'/source/packages/'..v)
+            local contents = game:HttpGet('https://raw.githubusercontent.com/SystemXVoid/'..RenderFunctions:GithubHash()..'/packages/'..v)
             if contents ~= '404: Not Found' then 
                 contents = (tostring(contents:split('\n')[1]):find('Render Custom Vape Signed File') and contents or '-- Render Custom Vape Signed File\n'..contents)
                 if isfolder('vape') then 
@@ -62,7 +61,7 @@ function RenderFunctions:RefreshLocalEnv()
         task.spawn(function() 
             local splits = v:split('\\')
             v = splits[#splits]
-            local contents = game:HttpGet('https://raw.githubusercontent.com/SystemXVoid/'..RenderFunctions:GithubHash()..'/source/packages/'..v)
+            local contents = game:HttpGet('https://raw.githubusercontent.com/SystemXVoid/'..RenderFunctions:GithubHash()..'/packages/'..v)
             local luacheck = (tostring(contents:split('.')[2]) == 'lua')
             if contents ~= '404: Not Found' then 
                 contents = (luacheck and tostring(contents:split('\n')[1]):find('Render Custom Vape Signed File') and contents or '-- Render Custom Vape Signed File\n'..contents)
