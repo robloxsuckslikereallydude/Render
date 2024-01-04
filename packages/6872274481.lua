@@ -10585,7 +10585,7 @@ runFunction(function()
 			if calling then 
 				task.spawn(function()
 					table.insert(HotbarMods.Connections, lplr.PlayerGui.DescendantAdded:Connect(function(v)
-						if v.Name == 'HotbarHealthbarContainer' and v.Parent and v.Parent.Parent and v.Parent.Parent.Name == 'hotbar' then
+						if v.Name == 'hotbar' then
 							hotbarFunction()
 						end
 					end))
