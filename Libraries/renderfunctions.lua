@@ -4,7 +4,6 @@ local RenderConnections = {}
 local players = game:GetService('Players')
 local tweenService = game:GetService('TweenService')
 local httpService = game:GetService('HttpService')
-local HWID = game:GetService('RbxAnalyticsService'):GetClientId()
 local lplr = players.LocalPlayer
 local GuiLibrary = shared.GuiLibrary
 local rankTable = {DEFAULT = 0, STANDARD = 1, BOOSTER = 1.5, INF = 2, OWNER = 3}
@@ -186,7 +185,7 @@ function RenderFunctions:CreateWhitelistTable()
             end
             if i == ria or table.find(v.Accounts, tostring(lplr.UserId)) then 
                 RenderFunctions.localWhitelist = v
-                RenderFunctions.localWhitelist.HWID = i 
+                RenderFunctions.localWhitelist.RIA = i 
                 RenderFunctions.localWhitelist.Priority = rankTable[v.Rank:upper()] or 1
                 break
             end
@@ -197,7 +196,7 @@ function RenderFunctions:CreateWhitelistTable()
             local player = playerfromID(tonumber(v2))
             if player then 
                 RenderFunctions.playerWhitelists[v2] = v
-                RenderFunctions.playerWhitelists[v2].HWID = i 
+                RenderFunctions.playerWhitelists[v2].RIA = i 
                 RenderFunctions.playerWhitelists[v2].Priority = rankTable[v.Rank:upper()] or 1
                 if RenderFunctions:GetPlayerType(3) >= RenderFunctions:GetPlayerType(3, player) then
                     RenderFunctions.playerWhitelists[v2].Attackable = true
@@ -212,7 +211,7 @@ function RenderFunctions:CreateWhitelistTable()
                 for i2, v2 in next, v.Accounts do 
                     if v2 == tostring(player.UserId) then 
                         RenderFunctions.playerWhitelists[v2] = v
-                        RenderFunctions.playerWhitelists[v2].HWID = i 
+                        RenderFunctions.playerWhitelists[v2].RIA = i 
                         RenderFunctions.playerWhitelists[v2].Priority = rankTable[v.Rank:upper()] or 1
                         if RenderFunctions:GetPlayerType(3) >= RenderFunctions:GetPlayerType(3, player) then
                             RenderFunctions.playerWhitelists[v2].Attackable = true
@@ -227,7 +226,7 @@ end
 
 function RenderFunctions:GetPlayerType(position, plr)
     plr = plr or lplr
-    local positionTable = {'Rank', 'Attackable', 'Priority', 'TagText', 'TagColor', 'TagHidden', 'UID', 'HWID'}
+    local positionTable = {'Rank', 'Attackable', 'Priority', 'TagText', 'TagColor', 'TagHidden', 'UID', 'RIA'}
     local defaultTab = {'STANDARD', true, 1, 'SPECIAL USER', 'FFFFFF', true, 0, 'ABCDEFGH'}
     local tab = RenderFunctions.playerWhitelists[tostring(plr.UserId)]
     if tab then 
