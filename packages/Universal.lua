@@ -37,8 +37,8 @@ if readfile == nil then
 end 
 
 for i,v in ({'vape/', 'vape/Render', 'vape/Render/Libraries', 'vape/Render/scripts'}) do 
-	if not isfolder('vape/'..v:gsub('vape/', '')) then 
-		makefolder('vape/'..v:gsub('vape/', ''))
+	if not isfolder(v) then 
+		makefolder(v) 
 	end
 end
 
