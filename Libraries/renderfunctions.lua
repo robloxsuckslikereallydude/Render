@@ -27,7 +27,7 @@ end
 
 function RenderFunctions:CreateLocalDirectory(directory)
     local splits = tostring(directory:gsub('vape/Render/', '')):split('/')
-    local last = ''-
+    local last = ''
     for i,v in next, splits do 
         if not isfolder('vape/Render') then 
             makefolder('vape/Render') 
