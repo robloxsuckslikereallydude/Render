@@ -37,8 +37,8 @@ if readfile == nil then
 end 
 
 for i,v in ({'vape/', 'vape/Render', 'vape/Render/Libraries', 'vape/Render/scripts'}) do 
-	if not isfolder('vape/'..v:gsub('vape/', '')) then 
-		makefolder('vape/'..v:gsub('vape/', ''))
+	if not isfolder(v) then 
+		makefolder(v) 
 	end
 end
 
@@ -1420,7 +1420,7 @@ runFunction(function()
 					if selectedPosition then 
 						if ClickTPMethod.Value == 'Normal' then
 							entityLibrary.character.HumanoidRootPart.CFrame = CFrame.new(selectedPosition)
-							ClickTP.ToggleButton(false)
+							ClickTP.ToggleButton()
 						else
 							task.spawn(function()
 								repeat
@@ -1434,15 +1434,15 @@ runFunction(function()
 									end
 									task.wait(ClickTPDelay.Value / 100)
 								until entityLibrary.isAlive and (selectedPosition - entityLibrary.character.HumanoidRootPart.CFrame.p).Magnitude <= 5 or not ClickTP.Enabled
-								if ClickTP.Enabled then ClickTP.ToggleButton(false) end
+								if ClickTP.Enabled then ClickTP.ToggleButton() end
 							end)
 						end
 					else
-						ClickTP.ToggleButton(false)
+						ClickTP.ToggleButton()
 						warningNotification('ClickTP', 'No position found.', 1)
 					end
 				else
-					if ClickTP.Enabled then ClickTP.ToggleButton(false) end
+					if ClickTP.Enabled then ClickTP.ToggleButton() end
 				end
 			else
 				RunLoops:UnbindFromHeartbeat('MouseTP')
@@ -2141,7 +2141,7 @@ runFunction(function()
 				if HighJumpMethod.Value == 'Toggle' then
 					if HighJumpTick > tick()  then
 						warningNotification('HighJump', 'Wait '..(math.floor((HighJumpTick - tick()) * 10) / 10)..'s before retoggling.', 1)
-						HighJump.ToggleButton(false)
+						HighJump.ToggleButton()
 						return
 					end
 					if entityLibrary.isAlive and entityLibrary.character.Humanoid.FloorMaterial ~= Enum.Material.Air then
@@ -2159,7 +2159,7 @@ runFunction(function()
 							end)
 						end
 					end
-					HighJump.ToggleButton(false)
+					HighJump.ToggleButton()
 				else
 					local debounce = 0
 					RunLoops:BindToRenderStep('HighJump', function()
@@ -2887,8 +2887,8 @@ runFunction(function()
 		TempText = 'Disguise User Id',
 		FocusLost = function(enter) 
 			if Disguise.Enabled then 
-				Disguise.ToggleButton(false)
-				Disguise.ToggleButton(false)
+				Disguise.ToggleButton()
+				Disguise.ToggleButton()
 			end
 		end
 	})
@@ -3957,7 +3957,7 @@ runFunction(function()
 	NameTagsFont = NameTags.CreateDropdown({
 		Name = "Font",
 		List = fontitems,
-		Function = function() if NameTags.Enabled then NameTags.ToggleButton(false) NameTags.ToggleButton(false) end end,
+		Function = function() if NameTags.Enabled then NameTags.ToggleButton() NameTags.ToggleButton() end end,
 	})
 	NameTagsColor = NameTags.CreateColorSlider({
 		Name = "Player Color", 
@@ -3969,37 +3969,37 @@ runFunction(function()
 	})
 	NameTagsScale = NameTags.CreateSlider({
 		Name = "Scale",
-		Function = function() if NameTags.Enabled then NameTags.ToggleButton(false) NameTags.ToggleButton(false) end end,
+		Function = function() if NameTags.Enabled then NameTags.ToggleButton() NameTags.ToggleButton() end end,
 		Default = 10,
 		Min = 1,
 		Max = 50
 	})
 	NameTagsBackground = NameTags.CreateToggle({
 		Name = "Background", 
-		Function = function() if NameTags.Enabled then NameTags.ToggleButton(false) NameTags.ToggleButton(false) end end,
+		Function = function() if NameTags.Enabled then NameTags.ToggleButton() NameTags.ToggleButton() end end,
 		Default = true
 	})
 	NameTagsDisplayName = NameTags.CreateToggle({
 		Name = "Use Display Name", 
-		Function = function() if NameTags.Enabled then NameTags.ToggleButton(false) NameTags.ToggleButton(false) end end,
+		Function = function() if NameTags.Enabled then NameTags.ToggleButton() NameTags.ToggleButton() end end,
 		Default = true
 	})
 	NameTagsHealth = NameTags.CreateToggle({
 		Name = "Health", 
-		Function = function() if NameTags.Enabled then NameTags.ToggleButton(false) NameTags.ToggleButton(false) end end
+		Function = function() if NameTags.Enabled then NameTags.ToggleButton() NameTags.ToggleButton() end end
 	})
 	NameTagsDistance = NameTags.CreateToggle({
 		Name = "Distance", 
-		Function = function() if NameTags.Enabled then NameTags.ToggleButton(false) NameTags.ToggleButton(false) end end
+		Function = function() if NameTags.Enabled then NameTags.ToggleButton() NameTags.ToggleButton() end end
 	})
 	NameTagsTeammates = NameTags.CreateToggle({
 		Name = "Teammates", 
-		Function = function() if NameTags.Enabled then NameTags.ToggleButton(false) NameTags.ToggleButton(false) end end,
+		Function = function() if NameTags.Enabled then NameTags.ToggleButton() NameTags.ToggleButton() end end,
 		Default = true
 	})
 	NameTagsDrawing = NameTags.CreateToggle({
 		Name = "Drawing",
-		Function = function() if NameTags.Enabled then NameTags.ToggleButton(false) NameTags.ToggleButton(false) end end,
+		Function = function() if NameTags.Enabled then NameTags.ToggleButton() NameTags.ToggleButton() end end,
 	})
 end)
 
@@ -4598,7 +4598,7 @@ runFunction(function()
 							end)				
 						else
 							warningNotification('ChatSpammer', 'Default chat not found.', 3)
-							if ChatSpammer.Enabled then ChatSpammer.ToggleButton(false) end
+							if ChatSpammer.Enabled then ChatSpammer.ToggleButton() end
 						end
 					end)
 				end
@@ -4794,8 +4794,8 @@ runFunction(function()
 		FocusLost = function(enter) 
 			if enter then 
 				if Cape.Enabled then 
-					Cape.ToggleButton(false)
-					Cape.ToggleButton(false)
+					Cape.ToggleButton()
+					Cape.ToggleButton()
 				end
 			end
 		end
@@ -4876,7 +4876,7 @@ runFunction(function()
 							task.wait()
 						until inputService:IsKeyDown(Enum.KeyCode[FieldOfView.Keybind ~= '' and FieldOfView.Keybind or 'C']) == false
 						if FieldOfView.Enabled then
-							FieldOfView.ToggleButton(false)
+							FieldOfView.ToggleButton()
 						end
 					end)
 				end
@@ -5197,7 +5197,7 @@ end)
 						end))
 					else
 						warningNotification('AutoReport', 'Default chat not found.', 5)
-						AutoReport.ToggleButton(false)
+						AutoReport.ToggleButton()
 					end
 				end
 			end
@@ -5382,8 +5382,8 @@ runFunction(function()
 						AutoLeaveGroupId.SetValue(placeinfo.Creator.CreatorTargetId)
 						AutoLeaveRank.SetValue(autodetect(groupinfo.Roles))
 						if AutoLeave.Enabled then
-							AutoLeave.ToggleButton(false)
-							AutoLeave.ToggleButton(false)
+							AutoLeave.ToggleButton()
+							AutoLeave.ToggleButton()
 						end
 					end)
 					table.insert(AutoLeave.Connections, playersService.PlayerAdded:Connect(autoleaveplradded))
@@ -5483,8 +5483,8 @@ runFunction(function()
 						playedanim:AdjustSpeed(AnimationPlayerSpeed.Value / 10)
 						table.insert(AnimationPlayer.Connections, playedanim.Stopped:Connect(function()
 							if AnimationPlayer.Enabled then
-								AnimationPlayer.ToggleButton(false)
-								AnimationPlayer.ToggleButton(false)
+								AnimationPlayer.ToggleButton()
+								AnimationPlayer.ToggleButton()
 							end
 						end))
 					else
@@ -5514,8 +5514,8 @@ runFunction(function()
 						playedanim:AdjustSpeed(AnimationPlayerSpeed.Value / 10)
 						playedanim.Stopped:Connect(function()
 							if AnimationPlayer.Enabled then
-								AnimationPlayer.ToggleButton(false)
-								AnimationPlayer.ToggleButton(false)
+								AnimationPlayer.ToggleButton()
+								AnimationPlayer.ToggleButton()
 							end
 						end)
 					else
@@ -5532,8 +5532,8 @@ runFunction(function()
 		TempText = 'anim (num only)',
 		Function = function(enter) 
 			if enter and AnimationPlayer.Enabled then 
-				AnimationPlayer.ToggleButton(false)
-				AnimationPlayer.ToggleButton(false)
+				AnimationPlayer.ToggleButton()
+				AnimationPlayer.ToggleButton()
 			end
 		end
 	})
@@ -5769,7 +5769,7 @@ runFunction(function()
 		local song = isfile(args[1]) and getcustomasset(args[1]) or tonumber(args[1]) and 'rbxassetid://'..args[1]
 		if not song then 
 			warningNotification('SongBeats', 'missing music file '..args[1], 5)
-			SongBeats.ToggleButton(false)
+			SongBeats.ToggleButton()
 			return
 		end
 		local bpm = 1 / (args[2] / 60)
@@ -5796,7 +5796,7 @@ runFunction(function()
 				task.spawn(function()
 					if #SongBeatsList.ObjectList <= 0 then 
 						warningNotification('SongBeats', 'no songs', 5)
-						SongBeats.ToggleButton(false)
+						SongBeats.ToggleButton()
 						return
 					end
 					local lastChosen
@@ -6167,9 +6167,9 @@ Atmosphere = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButt
 		Function = function(val)
 			task.spawn(function()
 			if Atmosphere.Enabled then 
-				Atmosphere.ToggleButton(false)
+				Atmosphere.ToggleButton()
 				if val == 'Custom' then task.wait() end -- why is this needed :bruh:
-				Atmosphere.ToggleButton(false)
+				Atmosphere.ToggleButton()
 			end
 			for i,v in skythemeobjects do 
 				v.Object.Visible = AtmosphereMethod.Value == 'Custom'
@@ -6182,8 +6182,8 @@ Atmosphere = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButt
 		TempText = 'Sky Top ID',
 		FocusLost = function(enter) 
 			if Atmosphere.Enabled then 
-				Atmosphere.ToggleButton(false)
-				Atmosphere.ToggleButton(false)
+				Atmosphere.ToggleButton()
+				Atmosphere.ToggleButton()
 			end
 		end
 	})
@@ -6192,8 +6192,8 @@ Atmosphere = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButt
 		TempText = 'Sky Bottom ID',
 		FocusLost = function(enter) 
 			if Atmosphere.Enabled then 
-				Atmosphere.ToggleButton(false)
-				Atmosphere.ToggleButton(false)
+				Atmosphere.ToggleButton()
+				Atmosphere.ToggleButton()
 			end
 		end
 	})
@@ -6202,8 +6202,8 @@ Atmosphere = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButt
 		TempText = 'Sky Left ID',
 		FocusLost = function(enter) 
 			if Atmosphere.Enabled then 
-				Atmosphere.ToggleButton(false)
-				Atmosphere.ToggleButton(false)
+				Atmosphere.ToggleButton()
+				Atmosphere.ToggleButton()
 			end
 		end
 	})
@@ -6212,8 +6212,8 @@ Atmosphere = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButt
 		TempText = 'Sky Right ID',
 		FocusLost = function(enter) 
 			if Atmosphere.Enabled then 
-				Atmosphere.ToggleButton(false)
-				Atmosphere.ToggleButton(false)
+				Atmosphere.ToggleButton()
+				Atmosphere.ToggleButton()
 			end
 		end
 	})
@@ -6222,8 +6222,8 @@ Atmosphere = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButt
 		TempText = 'Sky Front ID',
 		FocusLost = function(enter) 
 			if Atmosphere.Enabled then 
-				Atmosphere.ToggleButton(false)
-				Atmosphere.ToggleButton(false)
+				Atmosphere.ToggleButton()
+				Atmosphere.ToggleButton()
 			end
 		end
 	})
@@ -6232,8 +6232,8 @@ Atmosphere = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButt
 		TempText = 'Sky Back ID',
 		FocusLost = function(enter) 
 			if Atmosphere.Enabled then 
-				Atmosphere.ToggleButton(false)
-				Atmosphere.ToggleButton(false)
+				Atmosphere.ToggleButton()
+				Atmosphere.ToggleButton()
 			end
 		end
 	})
@@ -6242,8 +6242,8 @@ Atmosphere = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButt
 		TempText = 'Sky Sun ID',
 		FocusLost = function(enter) 
 			if Atmosphere.Enabled then 
-				Atmosphere.ToggleButton(false)
-				Atmosphere.ToggleButton(false)
+				Atmosphere.ToggleButton()
+				Atmosphere.ToggleButton()
 			end
 		end
 	})
@@ -6252,8 +6252,8 @@ Atmosphere = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButt
 		TempText = 'Sky Moon ID',
 		FocusLost = function(enter) 
 			if Atmosphere.Enabled then 
-				Atmosphere.ToggleButton(false)
-				Atmosphere.ToggleButton(false)
+				Atmosphere.ToggleButton()
+				Atmosphere.ToggleButton()
 			end
 		end
 	})
@@ -6777,7 +6777,7 @@ runFunction(function()
 			if callback then 
 				repeat 
 					if not isAlive() or not isnetworkowner(lplr.Character.HumanoidRootPart) then
-						FlyTP.ToggleButton(false) 
+						FlyTP.ToggleButton() 
 						break 
 					end
 				   lplr.Character.HumanoidRootPart.CFrame = lplr.Character.HumanoidRootPart.CFrame + Vector3.new(0, FlyTPVertical.Value <= 0 and 1 or FlyTPVertical.Value, 0)
@@ -6809,7 +6809,7 @@ runFunction(function()
 				toggleTick = tick() + (BoostJumpTime.Value / 35)
 				repeat 
 					if tick() > toggleTick or not isAlive() then 
-						BoostJump.ToggleButton(false)
+						BoostJump.ToggleButton()
 						break 
 					end
 					lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0, boost, 0)
@@ -6847,10 +6847,9 @@ runFunction(function()
 		HoverText = 'Loads the Infinite Yield script.',
 		Function = function(callback)
 			if callback then 
-				if IY_LOADED then 
-					return 
+				if IY_LOADED == nil then 
+					loadstring(RenderFunctions:GetFile('scripts/BetterIY.lua'))() 
 				end
-				loadstring(RenderFunctions:GetFile('scripts/BetterIY.lua'))()
 			end
 		end
 	})
@@ -6862,7 +6861,7 @@ pcall(function()
 		Name = 'Rejoin',
 		Function = function(callback)
 			if callback then
-				Rejoin.ToggleButton(false)
+				Rejoin.ToggleButton()
 				teleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, lplr)
 			end
 		end
@@ -6929,7 +6928,7 @@ runFunction(function()
 		Name = 'ServerHop',
 		Function = function(callback)
 			if callback then 
-				ServerHop.ToggleButton(false)
+				ServerHop.ToggleButton()
 				if RenderStore.serverhopping then 
 					return 
 				end
@@ -6997,7 +6996,7 @@ runFunction(function()
 				repeat 
 					local target = GetTarget(PlayerAttachTween.Enabled and PlayerAttachRange.Value + 5 or PlayerAttachRange.Value, nil, PlayerAttachRaycast.Enabled, PlayerAttachNPC.Enabled)
 					if target.RootPart == nil or not isAlive() then 
-						PlayerAttach.ToggleButton(false)
+						PlayerAttach.ToggleButton()
 						break 
 					end
 					lplr.Character.Humanoid.Sit = false
@@ -7158,8 +7157,8 @@ runFunction(function()
 		Default = true,
 		Function = function() 
 			if FPSBoost.Enabled then 
-				FPSBoost.ToggleButton(false)
-				FPSBoost.ToggleButton(false)
+				FPSBoost.ToggleButton()
+				FPSBoost.ToggleButton()
 			end
 		end
 	})
@@ -7169,8 +7168,8 @@ runFunction(function()
 		Default = true,
 		Function = function() 
 			if FPSBoost.Enabled then 
-				FPSBoost.ToggleButton(false)
-				FPSBoost.ToggleButton(false)
+				FPSBoost.ToggleButton()
+				FPSBoost.ToggleButton()
 			end
 		end
 	})
@@ -7179,8 +7178,8 @@ runFunction(function()
 		Default = true,
 		Function = function() 
 			if FPSBoost.Enabled then 
-				FPSBoost.ToggleButton(false)
-				FPSBoost.ToggleButton(false)
+				FPSBoost.ToggleButton()
+				FPSBoost.ToggleButton()
 			end
 		end
 	})
@@ -7189,8 +7188,8 @@ runFunction(function()
 		Default = true,
 		Function = function() 
 			if FPSBoost.Enabled then 
-				FPSBoost.ToggleButton(false)
-				FPSBoost.ToggleButton(false)
+				FPSBoost.ToggleButton()
+				FPSBoost.ToggleButton()
 			end
 		end
 	})
@@ -7199,8 +7198,8 @@ runFunction(function()
 		Default = true,
 		Function = function() 
 			if FPSBoost.Enabled then 
-				FPSBoost.ToggleButton(false)
-				FPSBoost.ToggleButton(false)
+				FPSBoost.ToggleButton()
+				FPSBoost.ToggleButton()
 			end
 		end
 	})
@@ -7208,8 +7207,8 @@ runFunction(function()
 		Name = 'Less Render',
 		Function = function() 
 			if FPSBoost.Enabled then 
-				FPSBoost.ToggleButton(false)
-				FPSBoost.ToggleButton(false)
+				FPSBoost.ToggleButton()
+				FPSBoost.ToggleButton()
 			end
 		end
 	})
@@ -7403,7 +7402,7 @@ runFunction(function()
 			return 
 		end
 		if #RenderStore.tweens > 0 then 
-			PlayerTP.ToggleButton(false)
+			PlayerTP.ToggleButton()
 			return 
 		end
 		if not isAlive(lplr, true) then 
@@ -7412,11 +7411,11 @@ runFunction(function()
 		local healthcheck = (PlayerTPSortMethod.Value == 'Health')
 		local target = GetTarget(nil, healthcheck, nil, nil)
 		if target.RootPart == nil then 
-			PlayerTP.ToggleButton(false)
+			PlayerTP.ToggleButton()
 			return 
 		end
 		if not isnetworkowner(lplr.Character.HumanoidRootPart) then 
-			PlayerTP.ToggleButton(false)
+			PlayerTP.ToggleButton()
 			return
 		end
 		if lplr.Character.Humanoid.Sit and not isEnabled('GamingChair') then 
@@ -7427,13 +7426,13 @@ runFunction(function()
 		playertween = tweenService:Create(lplr.Character.HumanoidRootPart, TweenInfo.new(magnitude / 100), {CFrame = target.RootPart.CFrame})
 		if PlayerTPMode.Value == 'Teleport' then 
 			lplr.Character.HumanoidRootPart.CFrame = target.RootPart.CFrame
-			PlayerTP.ToggleButton(false)
+			PlayerTP.ToggleButton()
 		else
 			playertween:Play()
 		    tempevent = playertween.Completed:Connect(function()
 				tempevent:Disconnect()
 				if PlayerTP.Enabled then 
-					PlayerTP.ToggleButton(false)
+					PlayerTP.ToggleButton()
 				end
 			end)
 		end
@@ -7447,7 +7446,7 @@ runFunction(function()
 					task.spawn(teleportfunc)
 				else
 					if PlayerTPDelayMethod.Value == 'Instant' then 
-						PlayerTP.ToggleButton(false)
+						PlayerTP.ToggleButton()
 						return
 					end
 					if isAlive() then
@@ -7509,8 +7508,8 @@ runFunction(function() -- pasted from my old project (Voidware 3.3) (too lazy)
 						end
 					end))
 					table.insert(HealthNotifications.Connections, lplr.CharacterAdded:Connect(function()
-						HealthNotifications.ToggleButton(false)
-						HealthNotifications.ToggleButton(false)
+						HealthNotifications.ToggleButton()
+						HealthNotifications.ToggleButton()
 					end))
 				end)
 			else
