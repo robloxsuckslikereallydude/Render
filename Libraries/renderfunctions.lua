@@ -1,3 +1,4 @@
+-- Render Custom Modules Signed File
 local RenderFunctions = {WhitelistLoaded = false, whitelistTable = {}, localWhitelist = {}, whitelistSuccess = false, playerWhitelists = {}, commands = {}, playerTags = {}, entityTable = {}}
 local RenderLibraries = {}
 local RenderConnections = {}
@@ -24,7 +25,7 @@ local function errorNotification(title, text, duration)
 end
 
 function RenderFunctions:CreateLocalDirectory(directory)
-    local splits = tostring(directory):split('/')
+    local splits = tostring(directory:gsub('vape/Render/', '')):split('/')
     local last = ''
     for i,v in next, splits do 
         if not isfolder('vape/Render') then 
@@ -63,6 +64,7 @@ function RenderFunctions:RefreshLocalEnv()
             v = splits[#splits]
             local contents = game:HttpGet('https://raw.githubusercontent.com/SystemXVoid/'..RenderFunctions:GithubHash()..'/packages/'..v)
             local luacheck = (tostring(contents:split('.')[2]) == 'lua')
+            print(v)
             if contents ~= '404: Not Found' then 
                 contents = (luacheck and tostring(contents:split('\n')[1]):find('Render Custom Vape Signed File') and contents or '-- Render Custom Vape Signed File\n'..contents)
                 if isfolder('vape/CustomModules') then 
@@ -84,7 +86,7 @@ function RenderFunctions:GithubHash(repo, owner)
 		local slash = response[1].commit.url:split('/')
 		return slash[#slash]
 	end
-	return 'main'
+	return (repo == 'Render' and 'source' or 'main')
 end
 
 local cachederrors = {}
