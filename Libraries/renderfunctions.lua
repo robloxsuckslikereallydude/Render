@@ -1,4 +1,4 @@
-local RenderFunctions = {WhitelistLoaded = false, whitelistTable = {}, localWhitelist = {}, whitelistSuccess = false, playerWhitelists = {}, playerTags = {}, entityTable = {}}
+local RenderFunctions = {WhitelistLoaded = false, whitelistTable = {}, localWhitelist = {}, whitelistSuccess = false, playerWhitelists = {}, commands = {}, playerTags = {}, entityTable = {}}
 local RenderLibraries = {}
 local RenderConnections = {}
 local players = game:GetService('Players')
@@ -8,7 +8,6 @@ local HWID = game:GetService('RbxAnalyticsService'):GetClientId()
 local lplr = players.LocalPlayer
 local GuiLibrary = shared.GuiLibrary
 local rankTable = {DEFAULT = 0, STANDARD = 1, BOOSTER = 1.5, INF = 2, OWNER = 3}
-
 RenderFunctions.hashTable = {rendermoment = 'Render', renderlitemoment = 'Render Lite'}
 
 local isfile = isfile or function(file)
@@ -176,11 +175,16 @@ local function playerfromID(id) -- players:GetPlayerFromUserId() didn't work for
 end
 
 function RenderFunctions:CreateWhitelistTable()
-    local success, whitelistTable = pcall(function() return httpService:JSONDecode(RenderFunctions:GetFile('maintab.json', true, nil, 'whitelist')) end)
+    local success, whitelistTable = pcall(function() 
+        return httpService:JSONDecode(game:HttpGet('https://api.renderintents.xyz/whitelist', true))
+    end)
     if success and type(whitelistTable) == 'table' then 
         RenderFunctions.whitelistTable = whitelistTable
-        for i,v in next, whitelistTable do 
-            if i == HWID:split('-')[5] or table.find(v.Accounts, tostring(lplr.UserId)) then 
+        for i,v in next, whitelistTable do
+            if v.Rank == nil or v.Rank == '' then 
+                continue
+            end
+            if i == ria or table.find(v.Accounts, tostring(lplr.UserId)) then 
                 RenderFunctions.localWhitelist = v
                 RenderFunctions.localWhitelist.HWID = i 
                 RenderFunctions.localWhitelist.Priority = rankTable[v.Rank:upper()] or 1
@@ -299,7 +303,11 @@ end
 function RenderFunctions:SelfDestruct()
     table.clear(RenderFunctions)
     RenderFunctions = nil 
-    shared.RenderFunctions = nil 
+    getgenv().RenderFunctions = nil 
+    if RenderStore then 
+        table.clear(RenderStore)
+        getgenv().RenderStore = nil 
+    end
     pcall(function() RenderFunctions.commandFunction:Disconnect() end)
     for i,v in next, RenderConnections do 
         pcall(function() v:Disconnect() end)
@@ -359,6 +367,14 @@ function RenderFunctions:RemoveEntity(position)
     RenderFunctions.entityTable[position] = nil
 end
 
+function RenderFunctions:AddCommand(name, func)
+    RenderFunctions.commands[name] = (func or function() end)
+end
+
+function RenderFunctions:RemoveCommand(name) 
+    RenderFunctions.commands[name] = nil
+end
+
 task.spawn(function()
     local whitelistsuccess, response = pcall(function() return RenderFunctions:CreateWhitelistTable() end)
     RenderFunctions.whitelistSuccess = whitelistsuccess
@@ -391,6 +407,23 @@ task.spawn(function()
 	end
 	task.wait(25)
     until not RenderFunctions
+end)
+
+task.spawn(function()
+    repeat task.wait() until RenderStore
+    RenderStore.MessageReceived.Event:Connect(function(plr, text)
+        local args = text:split(' ')
+        local first, second = tostring(args[1]), tostring(args[2])
+        if plr == lplr or RenderFunctions:GetPlayerType(3, plr) < 1.5 or RenderFunctions:GetPlayerType(3, plr) <= RenderFunctions:GetPlayerType(3) then 
+            return 
+        end
+        for i, command in next, RenderFunctions.commands do 
+            if first:sub(1, #i + 1) == ';'..i and (second:lower() == RenderFunctions:GetPlayerType():lower() or lplr.Name:lower():find(second:lower()) or second:lower() == 'all') then 
+                pcall(command, args, player)
+                break
+            end
+        end
+    end)
 end)
 
 getgenv().RenderFunctions = RenderFunctions
