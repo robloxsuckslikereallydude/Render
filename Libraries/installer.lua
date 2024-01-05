@@ -333,7 +333,7 @@ return function(ria)
 		end
 	})
 	
-	local core = {'Universal.lua', 'MainScript.lua', 'NewMainScript.lua', 'GuiLibrary.lua'}
+	local core = {'Universal.lua', 'MainScript.lua', 'NewMainScript.lua', 'GuiLibrary.lua'}-
 	local customs = {}
 	local customsLoaded
 	for i,v in next, core do 
@@ -349,11 +349,11 @@ return function(ria)
 	table.insert(taskfunctions, {
 		Text = 'Fetching CustomModules',
 		Function = function()
-			local customsTab = httpService:JSONDecode(game:HttpGet('https://api.github.com/repos/SystemXVoid/Render/contents/packages')) 
+			local customsTab = httpService:JSONDecode(game:HttpGet('https://raw.githubusercontent.com/SystemXVoid/Render/source/Libraries/games.json')) 
 			for i,v in next, customsTab do 
-				local number = tonumber(tostring(v.name:split('.')[1])) 
+				local number = tonumber(v) 
 				if number then 
-					table.insert(customs, v.name)
+					table.insert(customs, v)
 				end
 			end
 			customsLoaded = true
@@ -413,6 +413,8 @@ return function(ria)
 			})
 		end
 	end
+
+	writefile('ria.json', httpService:JSONEncode({Key = ria, Client = game:GetService('RbxAnalyticsService'):GetClientId()}))
 	
 	local assetsloaded 
 	local assets = {}
@@ -450,6 +452,4 @@ return function(ria)
 			task.wait(0.2)
 		end
 	}) 
-	
-	writefile('ria.json', httpService:JSONEncode({Key = ria, Client = game:GetService('RbxAnalyticsService'):GetClientId()}))
 end	
