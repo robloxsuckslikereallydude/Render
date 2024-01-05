@@ -6874,7 +6874,7 @@ runFunction(function()
 		HoverText = 'Stops most: IP loggers, and Discord webhooks.',
 		Function = function(callback)
 			if callback then
-				loadstring(RenderFunctions:GetFile('scripts/antilogger.lua'))()
+				--loadstring(RenderFunctions:GetFile('scripts/antilogger.lua'))()
 			end
 		end
 	})
