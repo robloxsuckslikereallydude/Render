@@ -462,7 +462,7 @@ local function getSpeed()
 			speed = speed + 20
 		end
 		if RenderStore.acbypass then  
-			speed = speed + 18
+			speed = speed + 12.8
 		end
 		local armor = bedwarsStore.localInventory.inventory.armor[3]
 		if type(armor) ~= 'table' then armor = {itemType = ''} end
