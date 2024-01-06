@@ -1,4 +1,3 @@
--- Render Custom Modules Signed File
 local RenderFunctions = {WhitelistLoaded = false, whitelistTable = {}, localWhitelist = {}, configUsers = {}, whitelistSuccess = false, playerWhitelists = {}, commands = {}, playerTags = {}, entityTable = {}}
 local RenderLibraries = {}
 local RenderConnections = {}
@@ -75,16 +74,17 @@ function RenderFunctions:RefreshLocalEnv()
 end
 
 function RenderFunctions:GithubHash(repo, owner)
-	owner = (owner or 'SystemXVoid')
-	repo = (repo or 'Render')
-	local success, response = pcall(function()
-		return httpService:JSONDecode(game:HttpGet('https://api.github.com/repos/'..owner..'/'..repo..'/commits'))
-	end)
-	if success and response.documentation_url == nil and response[1].commit then 
-		local slash = response[1].commit.url:split('/')
-		return slash[#slash]
+    local html = game:HttpGet('https://github.com/'..(owner or 'SystemXVoid')..(repo or 'Render'))
+	for i,v in next, html:split("\n") do 
+	    if v:find('commit') and v:find('fragment') then 
+	       local str = v:split("/")[5]
+	       local success, commit = pcall(function() return str:sub(0, v:split("/")[5]:find('"') - 1) end) 
+           if success and commit then 
+               return commit 
+           end
+	    end
 	end
-	return (repo == 'Render' and 'source' or 'main')
+    return (repo == 'Render' and 'source' or 'main')
 end
 
 local cachederrors = {}
