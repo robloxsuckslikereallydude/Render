@@ -4411,8 +4411,8 @@ runFunction(function()
 			if calling then
 				oldCalculateAim = bedwars.ProjectileController.calculateImportantLaunchValues
 				bedwars.ProjectileController.calculateImportantLaunchValues = function(self, projmeta, worldmeta, shootpospart, ...)
-					local plr = EntityNearMouse(BowAimbotFOV.Value)
-					if plr then
+					local plr = GetTarget(BowAimbotFOV.Value / 3, nil, nil, true)
+					if plr.RootPart then
 						local startPos = self:getLaunchPosition(shootpospart)
 						if not startPos then
 							return oldCalculateAim(self, projmeta, worldmeta, shootpospart, ...)
@@ -4431,6 +4431,7 @@ runFunction(function()
 						local pos = plr.Character[BowAimbotPart.Value].Position
 						local playerGravity = workspace.Gravity
 						local balloons = plr.Character:GetAttribute('InflatedBalloons')
+						plr.JumpTick = tick()
 
 						if balloons and balloons > 0 then 
 							playerGravity = (workspace.Gravity * (1 - ((balloons >= 4 and 1.2 or balloons >= 3 and 1 or 0.975))))
@@ -12296,7 +12297,7 @@ runFunction(function()
 	})
 end)
 
-runFunction(function()
+--[[runFunction(function()
 	local AutoTouch = {}
 	AutoTouch = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
 		Name = 'AutoTouchdown',
@@ -12317,7 +12318,7 @@ runFunction(function()
 			end
 		end
 	})
-end)
+end)]]
 
 --[[runFunction(function()
 	local Autowin = {}
