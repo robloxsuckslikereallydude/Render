@@ -469,7 +469,7 @@ local function getSpeed()
 		if armor.itemType == 'speed_boots' then 
 			speed = speed + 12
 		end
-		if bedwarsStore.zephyrOrb ~= 0 then 
+		if type(bedwarsStore.zephyrOrb) == 'number' and bedwarsStore.zephyrOrb > 0 then 
 			speed = speed + (RenderStore.acbypass and 28 or 25)
 		end
 	end
