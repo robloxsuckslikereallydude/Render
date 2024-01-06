@@ -4411,8 +4411,8 @@ runFunction(function()
 			if calling then
 				oldCalculateAim = bedwars.ProjectileController.calculateImportantLaunchValues
 				bedwars.ProjectileController.calculateImportantLaunchValues = function(self, projmeta, worldmeta, shootpospart, ...)
-					local plr = GetTarget(BowAimbotFOV.Value / 3, nil, nil, true)
-					if plr.RootPart then
+					local plr = EntityNearMouse(BowAimbotFOV.Value / 4)
+					if plr then
 						local startPos = self:getLaunchPosition(shootpospart)
 						if not startPos then
 							return oldCalculateAim(self, projmeta, worldmeta, shootpospart, ...)
@@ -4431,7 +4431,6 @@ runFunction(function()
 						local pos = plr.Character[BowAimbotPart.Value].Position
 						local playerGravity = workspace.Gravity
 						local balloons = plr.Character:GetAttribute('InflatedBalloons')
-						plr.JumpTick = tick()
 
 						if balloons and balloons > 0 then 
 							playerGravity = (workspace.Gravity * (1 - ((balloons >= 4 and 1.2 or balloons >= 3 and 1 or 0.975))))
@@ -4441,7 +4440,7 @@ runFunction(function()
 							playerGravity = (workspace.Gravity * 0.3)
 						end
 
-						local shootpos, shootvelo = predictGravity(pos, plr.RootPart.Velocity, (pos - offsetStartPos).Magnitude / projectileSpeed, plr, playerGravity)
+						local shootpos, shootvelo = predictGravity(pos, plr.Character.HumanoidRootPart.Velocity, (pos - offsetStartPos).Magnitude / projectileSpeed, plr, playerGravity)
 						if projmeta.projectile == 'telepearl' then
 							shootpos = pos
 							shootvelo = Vector3.zero
@@ -4450,7 +4449,7 @@ runFunction(function()
 						local newlook = CFrame.new(offsetStartPos, shootpos) * CFrame.new(Vector3.new(-bedwars.BowConstantsTable.RelX, -bedwars.BowConstantsTable.RelY, 0))
 						shootpos = newlook.p + (newlook.lookVector * (offsetStartPos - shootpos).magnitude)
 						local calculated = LaunchDirection(offsetStartPos, shootpos, projectileSpeed, projectileGravity, false)
-						oldmove = plr.Humanoid.MoveDirection
+						oldmove = plr.Character.Humanoid.MoveDirection
 						if calculated then
 							return {
 								initialVelocity = calculated,
@@ -12297,7 +12296,7 @@ runFunction(function()
 	})
 end)
 
---[[runFunction(function()
+runFunction(function()
 	local AutoTouch = {}
 	AutoTouch = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
 		Name = 'AutoTouchdown',
@@ -12318,7 +12317,7 @@ end)
 			end
 		end
 	})
-end)]]
+end)
 
 --[[runFunction(function()
 	local Autowin = {}
