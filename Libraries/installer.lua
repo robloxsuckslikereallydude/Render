@@ -353,7 +353,7 @@ return function(ria)
 			for i,v in next, customsTab do 
 				local number = tonumber(v) 
 				if number then 
-					table.insert(customs, v)
+					table.insert(customs, v..'.lua')
 				end
 			end
 			customsLoaded = true
