@@ -333,7 +333,7 @@ return function(ria)
 		end
 	})
 	
-	local core = {'Universal.lua', 'MainScript.lua', 'NewMainScript.lua', 'GuiLibrary.lua'}-
+	local core = {'Universal.lua', 'MainScript.lua', 'NewMainScript.lua', 'GuiLibrary.lua'}
 	local customs = {}
 	local customsLoaded
 	for i,v in next, core do 
