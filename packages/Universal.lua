@@ -6470,6 +6470,42 @@ runFunction(function()
 	createKeystroke(Enum.KeyCode.A, UDim2.new(0, 0, 0, 42), UDim2.new(0, 7, 0, 5))
 	createKeystroke(Enum.KeyCode.D, UDim2.new(0, 76, 0, 42), UDim2.new(0, 8, 0, 5))
 	createKeystroke(Enum.KeyCode.Space, UDim2.new(0, 0, 0, 83), UDim2.new(0, 25, 0, -10))
+end) 
+
+runFunction(function()
+	local sps = {}
+	local spslabel
+	local oldpos = Vector3.zero 
+	sps = GuiLibrary.CreateLegitModule({
+		Name = 'Speed',
+		Function = function(calling) 
+			repeat 
+				local allowed = isAlive(lplr, true) 
+				if allowed and lplr.Character.Humanoid.FloorMaterial ~= Enum.Material.Air then 
+					allowed = (isEnabled('Fly') or isEnabled('LongJump') or isEnabled('InfiniteFly')) 
+				end
+				if allowed then 
+					local newpos = (lplr.Character.Humanoid.MoveDirection ~= Vector3.zero and lplr.Character.HumanoidRootPart.Position or Vector3.zero)
+					local mag = (oldpos - newpos).Magnitude
+					spslabel.Text = (math.floor(mag * 2)..' SPS') 
+					oldpos = newpos
+				end
+				task.wait(0.35) 
+			until not sps.Enabled
+		end
+	})
+	spslabel = Instance.new('TextLabel')
+	spslabel.Size = UDim2.new(0, 100, 0, 41)
+	spslabel.BackgroundTransparency = 0.5
+	spslabel.TextSize = 15
+	spslabel.Font = Enum.Font.Gotham
+	spslabel.Text = '0 SPS'
+	spslabel.TextColor3 = Color3.new(1, 1, 1)
+	spslabel.BackgroundColor3 = Color3.new()
+	spslabel.Parent = sps.GetCustomChildren()
+	local spsrounding = Instance.new('UICorner')
+	spsrounding.CornerRadius = UDim.new(0, 4)
+	spsrounding.Parent = spslabel
 end)
 
 task.spawn(function()
