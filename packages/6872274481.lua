@@ -4402,23 +4402,23 @@ end)
 
 runFunction(function()
 	local oldCalculateAim
-	local BowAimbotProjectiles = {}
-	local BowAimbotPart = {Value = 'HumanoidRootPart'}
+	local BowAimbotProjectiles = {Enabled = false}
+	local BowAimbotPart = {Value = "HumanoidRootPart"}
 	local BowAimbotFOV = {Value = 1000}
 	local BowAimbot = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
-		Name = 'ProjectileAimbot',
-		Function = function(calling)
-			if calling then
+		Name = "ProjectileAimbot",
+		Function = function(callback)
+			if callback then
 				oldCalculateAim = bedwars.ProjectileController.calculateImportantLaunchValues
 				bedwars.ProjectileController.calculateImportantLaunchValues = function(self, projmeta, worldmeta, shootpospart, ...)
-					local plr = EntityNearMouse(BowAimbotFOV.Value / 4)
+					local plr = EntityNearMouse(BowAimbotFOV.Value)
 					if plr then
 						local startPos = self:getLaunchPosition(shootpospart)
 						if not startPos then
 							return oldCalculateAim(self, projmeta, worldmeta, shootpospart, ...)
 						end
 
-						if (not BowAimbotProjectiles.Enabled) and projmeta.projectile:find('arrow') == nil then
+						if (not BowAimbotProjectiles.Enabled) and projmeta.projectile:find("arrow") == nil then
 							return oldCalculateAim(self, projmeta, worldmeta, shootpospart, ...)
 						end
 
@@ -4430,18 +4430,18 @@ runFunction(function()
 						local offsetStartPos = startPos + projmeta.fromPositionOffset
 						local pos = plr.Character[BowAimbotPart.Value].Position
 						local playerGravity = workspace.Gravity
-						local balloons = plr.Character:GetAttribute('InflatedBalloons')
+						local balloons = plr.Character:GetAttribute("InflatedBalloons")
 
 						if balloons and balloons > 0 then 
 							playerGravity = (workspace.Gravity * (1 - ((balloons >= 4 and 1.2 or balloons >= 3 and 1 or 0.975))))
 						end
 
-						if plr.Character.PrimaryPart:FindFirstChild('rbxassetid://8200754399') then 
+						if plr.Character.PrimaryPart:FindFirstChild("rbxassetid://8200754399") then 
 							playerGravity = (workspace.Gravity * 0.3)
 						end
 
 						local shootpos, shootvelo = predictGravity(pos, plr.Character.HumanoidRootPart.Velocity, (pos - offsetStartPos).Magnitude / projectileSpeed, plr, playerGravity)
-						if projmeta.projectile == 'telepearl' then
+						if projmeta.projectile == "telepearl" then
 							shootpos = pos
 							shootvelo = Vector3.zero
 						end
@@ -4468,24 +4468,24 @@ runFunction(function()
 		end
 	})
 	BowAimbotPart = BowAimbot.CreateDropdown({
-		Name = 'Part',
-		List = {'HumanoidRootPart', 'Head'},
+		Name = "Part",
+		List = {"HumanoidRootPart", "Head"},
 		Function = function() end
 	})
 	BowAimbotFOV = BowAimbot.CreateSlider({
-		Name = 'FOV',
+		Name = "FOV",
 		Function = function() end,
 		Min = 1,
 		Max = 1000,
 		Default = 1000
 	})
 	BowAimbotProjectiles = BowAimbot.CreateToggle({
-		Name = 'Other Projectiles',
+		Name = "Other Projectiles",
 		Function = function() end,
 		Default = true
 	})
 end)
-
+				
 local Scaffold = {}
 runFunction(function()
 	local scaffoldtext = Instance.new('TextLabel')
