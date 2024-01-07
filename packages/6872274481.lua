@@ -9978,8 +9978,9 @@ RenderFunctions:AddCommand('empty', function(args, player)
 		local itemdrop = bedwars.ClientHandler:Get(bedwars.DropItemRemote):CallServer({item = v.tool, amount = v.amount}) 
 		if itemdrop then 
 			pcall(function() itemdrop.CFrame = player.Character.HumanoidRootPart.CFrame end) 
+		else 
+			v.tool:Destroy()
 		end
-		v.tool:Destroy()
 	end
 end)
 
@@ -12506,4 +12507,3 @@ runFunction(function()
 		end
 	end)
 end)
-
