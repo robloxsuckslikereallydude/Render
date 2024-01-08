@@ -1,3 +1,4 @@
+-- blxnked look at this msg and ur black ur a nigger.
 local isfile = isfile or function(file)
     local success, filecontents = pcall(function() return readfile(file) end)
     return success and type(filecontents) == 'string'
