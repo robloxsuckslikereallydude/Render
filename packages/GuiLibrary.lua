@@ -6884,12 +6884,9 @@ if shared.VapeExecuted then
 
 	GuiLibrary["LoadedAnimation"] = function(enabled)
 		if enabled then
-			touch = inputService.TouchEnabled
-		    --[[GuiLibrary.CreateNotification(
-				"Script Loaded",
-				(touch or GuiLibrary.GUIKeybind == "RightShift") and GuiLibrary.Emulator == nil and "Press the button on the top right to open the Interface." or "Press "..GuiLibrary.GUIKeybind.." to open the Interface.",
-				7
-			)]]
+			local touch = inputService.TouchEnabled
+			local text = (touch or GuiLibrary.GUIKeybind == "RightShift") and GuiLibrary.Emulator == nil and "Press the button on the top right to open the Interface." or "Press "..GuiLibrary.GUIKeybind.." to open the Interface."
+		    GuiLibrary.CreateNotification("GUI Loaded", text, 7)
 		end
 	end
 
