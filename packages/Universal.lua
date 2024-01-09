@@ -6472,42 +6472,6 @@ runFunction(function()
 	createKeystroke(Enum.KeyCode.Space, UDim2.new(0, 0, 0, 83), UDim2.new(0, 25, 0, -10))
 end) 
 
-runFunction(function()
-	local sps = {}
-	local spslabel
-	local oldpos = Vector3.zero 
-	sps = GuiLibrary.CreateLegitModule({
-		Name = 'Speed',
-		Function = function(calling) 
-			repeat 
-				local allowed = isAlive(lplr, true) 
-				if allowed and lplr.Character.Humanoid.FloorMaterial ~= Enum.Material.Air then 
-					allowed = (isEnabled('Fly') or isEnabled('LongJump') or isEnabled('InfiniteFly')) 
-				end
-				if allowed then 
-					local newpos = (lplr.Character.Humanoid.MoveDirection ~= Vector3.zero and lplr.Character.HumanoidRootPart.Position or Vector3.zero)
-					local mag = (oldpos - newpos).Magnitude
-					spslabel.Text = (math.floor(mag * 2)..' SPS') 
-					oldpos = newpos
-				end
-				task.wait(0.35) 
-			until not sps.Enabled
-		end
-	})
-	spslabel = Instance.new('TextLabel')
-	spslabel.Size = UDim2.new(0, 100, 0, 41)
-	spslabel.BackgroundTransparency = 0.5
-	spslabel.TextSize = 15
-	spslabel.Font = Enum.Font.Gotham
-	spslabel.Text = '0 SPS'
-	spslabel.TextColor3 = Color3.new(1, 1, 1)
-	spslabel.BackgroundColor3 = Color3.new()
-	spslabel.Parent = sps.GetCustomChildren()
-	local spsrounding = Instance.new('UICorner')
-	spsrounding.CornerRadius = UDim.new(0, 4)
-	spsrounding.Parent = spslabel
-end)
-
 task.spawn(function()
 	repeat 
 		local success, ping = pcall(function() return game:GetService('Stats').PerformanceStats.Ping:GetValue() end)
@@ -6801,6 +6765,21 @@ runFunction(function()
 			task.wait() 
 		until not vapeInjected 
 	end)
+end)
+
+pcall(function()
+	local textlabel = Instance.new('TextLabel')
+	textlabel.Size = UDim2.new(1, 0, 0, 36)
+	textlabel.Text = 'This build of Render is a public alpha. Please report any bugs to renderintents.xyz'
+	textlabel.BackgroundTransparency = 1
+	textlabel.ZIndex = 10
+	textlabel.TextStrokeTransparency = 1
+	textlabel.Font = Enum.Font.Gotham
+	textlabel.TextScaled = true
+	textlabel.Font = Enum.Font.SourceSans
+	textlabel.TextColor3 = Color3.new(1, 1, 1)
+	textlabel.Position = UDim2.new(0, 0, 1, -36)
+	textlabel.Parent = GuiLibrary.MainGui.ScaledGui.ClickGui 
 end)
 
 runFunction(function()
