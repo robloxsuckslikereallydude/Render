@@ -195,18 +195,10 @@ for i,v in pairs({baseDirectory:gsub("/", ""), "vape", "vape/Libraries", "vape/C
 	if not isfolder(v) then makefolder(v) end
 end
 task.spawn(function()
-	local success, assetver = pcall(function() return vapeGithubRequest("assetsversion.txt") end)
-	if not isfile("vape/assetsversion.txt") then writefile("vape/assetsversion.txt", "0") end
-	if success and assetver > readfile("vape/assetsversion.txt") then
-		redownloadedAssets = true
-		if isfolder("vape/assets") and not shared.VapeDeveloper then
-			if delfolder then
-				delfolder("vape/assets")
-				makefolder("vape/assets")
-			end
-		end
-		writefile("vape/assetsversion.txt", assetver)
-	end
+	repeat 
+		pcall(GuiLibrary.SaveSettings)
+		task.wait(15) 
+	until not vapeInjected
 end)
 
 GuiLibrary = loadstring(vapeGithubRequest("GuiLibrary.lua"))()
