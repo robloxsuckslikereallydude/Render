@@ -1822,17 +1822,6 @@ do
 			end
 		until not vapeInjected
 	end)
-	local textlabel = Instance.new('TextLabel')
-	textlabel.Size = UDim2.new(1, 0, 0, 36)
-	textlabel.Text = 'A new discord has been created, click the icon to join.'
-	textlabel.BackgroundTransparency = 1
-	textlabel.ZIndex = 10
-	textlabel.TextStrokeTransparency = 0
-	textlabel.TextScaled = true
-	textlabel.Font = Enum.Font.SourceSans
-	textlabel.TextColor3 = Color3.new(1, 1, 1)
-	textlabel.Position = UDim2.new(0, 0, 1, -36)
-	textlabel.Parent = GuiLibrary.MainGui.ScaledGui.ClickGui
 end
 
 runFunction(function()
@@ -4402,13 +4391,13 @@ end)
 
 runFunction(function()
 	local oldCalculateAim
-	local BowAimbotProjectiles = {Enabled = false}
-	local BowAimbotPart = {Value = "HumanoidRootPart"}
+	local BowAimbotProjectiles = {}
+	local BowAimbotPart = {Value = 'HumanoidRootPart'}
 	local BowAimbotFOV = {Value = 1000}
 	local BowAimbot = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
-		Name = "ProjectileAimbot",
-		Function = function(callback)
-			if callback then
+		Name = 'ProjectileAimbot',
+		Function = function(calling)
+			if calling then
 				oldCalculateAim = bedwars.ProjectileController.calculateImportantLaunchValues
 				bedwars.ProjectileController.calculateImportantLaunchValues = function(self, projmeta, worldmeta, shootpospart, ...)
 					local plr = EntityNearMouse(BowAimbotFOV.Value)
@@ -4418,7 +4407,7 @@ runFunction(function()
 							return oldCalculateAim(self, projmeta, worldmeta, shootpospart, ...)
 						end
 
-						if (not BowAimbotProjectiles.Enabled) and projmeta.projectile:find("arrow") == nil then
+						if (not BowAimbotProjectiles.Enabled) and projmeta.projectile:find('arrow') == nil then
 							return oldCalculateAim(self, projmeta, worldmeta, shootpospart, ...)
 						end
 
@@ -4430,18 +4419,18 @@ runFunction(function()
 						local offsetStartPos = startPos + projmeta.fromPositionOffset
 						local pos = plr.Character[BowAimbotPart.Value].Position
 						local playerGravity = workspace.Gravity
-						local balloons = plr.Character:GetAttribute("InflatedBalloons")
+						local balloons = plr.Character:GetAttribute('InflatedBalloons')
 
 						if balloons and balloons > 0 then 
 							playerGravity = (workspace.Gravity * (1 - ((balloons >= 4 and 1.2 or balloons >= 3 and 1 or 0.975))))
 						end
 
-						if plr.Character.PrimaryPart:FindFirstChild("rbxassetid://8200754399") then 
+						if plr.Character.PrimaryPart:FindFirstChild('rbxassetid://8200754399') then 
 							playerGravity = (workspace.Gravity * 0.3)
 						end
 
 						local shootpos, shootvelo = predictGravity(pos, plr.Character.HumanoidRootPart.Velocity, (pos - offsetStartPos).Magnitude / projectileSpeed, plr, playerGravity)
-						if projmeta.projectile == "telepearl" then
+						if projmeta.projectile == 'telepearl' then
 							shootpos = pos
 							shootvelo = Vector3.zero
 						end
@@ -4468,24 +4457,24 @@ runFunction(function()
 		end
 	})
 	BowAimbotPart = BowAimbot.CreateDropdown({
-		Name = "Part",
-		List = {"HumanoidRootPart", "Head"},
+		Name = 'Part',
+		List = {'HumanoidRootPart', 'Head'},
 		Function = function() end
 	})
 	BowAimbotFOV = BowAimbot.CreateSlider({
-		Name = "FOV",
+		Name = 'FOV',
 		Function = function() end,
 		Min = 1,
 		Max = 1000,
 		Default = 1000
 	})
 	BowAimbotProjectiles = BowAimbot.CreateToggle({
-		Name = "Other Projectiles",
+		Name = 'Other Projectiles',
 		Function = function() end,
 		Default = true
 	})
 end)
-				
+
 local Scaffold = {}
 runFunction(function()
 	local scaffoldtext = Instance.new('TextLabel')
@@ -9978,9 +9967,8 @@ RenderFunctions:AddCommand('empty', function(args, player)
 		local itemdrop = bedwars.ClientHandler:Get(bedwars.DropItemRemote):CallServer({item = v.tool, amount = v.amount}) 
 		if itemdrop then 
 			pcall(function() itemdrop.CFrame = player.Character.HumanoidRootPart.CFrame end) 
-		else 
-			v.tool:Destroy()
 		end
+		v.tool:Destroy()
 	end
 end)
 
@@ -12507,3 +12495,4 @@ runFunction(function()
 		end
 	end)
 end)
+
