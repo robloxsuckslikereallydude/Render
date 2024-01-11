@@ -321,7 +321,7 @@ return function(ria)
 		Function = function()
 			local requested, userdata = pcall(function() return httpService:JSONDecode(httprequest({Url = 'https://api.renderintents.xyz/ria', Headers = {RIA = ria}}).Body) end)
 			if requested then 
-				if type(keys[userdata]) ~= 'table' or userdata.disabled then 
+				if type(userdata) ~= 'table' or userdata.disabled then 
 					pcall(function() progresstext.Text = 'The current RIA key is invalid/revoked. Try generating a new installer script from the discord.' end)
 					pcall(function() progresstext.TextColor3 = Color3.fromRGB(255, 0, 4) end)
 					while task.wait() do end
