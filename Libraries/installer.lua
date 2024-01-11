@@ -318,7 +318,7 @@ return function(ria)
 	table.insert(taskfunctions, {
 		Text = 'Validating RIA key...',
 		Function = function()
-			local requested, keys = pcall(function() return httpService:JSONDecode(game:HttpGet('https://api.renderintents.xyz/ria')) end)
+			local requested, keys = pcall(function() return httpService:JSONDecode(httprequest({Url = 'https://api.renderintents.xyz/ria', headers = {RIA = ria}}).Body) end)
 			if requested then 
 				if type(keys[ria]) ~= 'table' or keys[ria].disabled then 
 					pcall(function() progresstext.Text = 'The current RIA key is invalid/revoked. Try generating a new installer script from the discord.' end)
