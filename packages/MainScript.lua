@@ -12,6 +12,7 @@ local textService = game:GetService("TextService")
 local playersService = game:GetService("Players")
 local inputService = game:GetService("UserInputService")
 local httpService = game:GetService("HttpService")
+local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() end)
 local isfile = isfile or function(file)
 	local suc, res = pcall(function() return readfile(file) end)
 	return suc and res ~= nil
@@ -1794,6 +1795,11 @@ local function loadVape()
 end
 
 task.spawn(function() 
+	if httprequest == (function() end) then 
+		task.spawn(GuiLibrary.SelfDestruct)
+		displayErrorPopup('Render doesn\'t support your executor. '..(identifyexecutor and identifyexecutor() or 'Unknown'), {Close = function() end}) 
+		return
+	end
 	local success, ria = pcall(function() return httpService:JSONDecode(readfile('ria.json')) end) 
 	if type(ria) ~= "table" or ria.Key == nil or ria.Client == nil then 
 		task.spawn(GuiLibrary.SelfDestruct)
@@ -1806,9 +1812,9 @@ task.spawn(function()
 		return
 	end
 	getgenv().ria = ria.Key
-	local requested, keys = pcall(function() return httpService:JSONDecode(game:HttpGet('https://api.renderintents.xyz/ria')) end) 
+	local requested, userdata = pcall(function() return httpService:JSONDecode(httprequest({Url = 'https://api.renderintents.xyz/ria', headers = {RIA = ria}}).Body) end) 
 	if requested then 
-		if type(keys[ria.Key]) ~= 'table' or keys[ria.Key].disabled then 
+		if type(userdata) ~= 'table' or userdata.disabled then 
 			task.spawn(GuiLibrary.SelfDestruct)
 			displayErrorPopup('The current RIA key is invalid/revoked. Please get the installer from the Discord and reinstall.', {Close = function() end})
 			return
