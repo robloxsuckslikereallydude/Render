@@ -7,7 +7,7 @@ return function(ria)
 		local success, filecontents = pcall(function() return readfile(file) end)
 		return success and type(filecontents) == 'string'
 	end 
-	
+    ria = base64_decode(ria)
 	local parent = pcall(function() 
 		maingui.Parent = (gethui and gethui() or game:GetService('CoreGui')) 
 	end)
