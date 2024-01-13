@@ -17,6 +17,7 @@ return function(ria)
 		maingui.Parent = game:GetService('Players').LocalPlayer.PlayerGui 
 	end
 	
+	maingui.IgnoreGuiInset = true
 	local mainframe = Instance.new('Frame')
 	mainframe.Position = UDim2.new(0.287, 0, 0.409, 0)
 	mainframe.Size = UDim2.new(0, 539, 0, 236)
