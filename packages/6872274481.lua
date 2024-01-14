@@ -170,8 +170,10 @@ end
 
 warningNotification = function(title, text, delay)
 	local suc, res = pcall(function()
+		local color = GuiLibrary.ObjectsThatCanBeSaved['Gui ColorSliderColor'].Api
 		local frame = GuiLibrary.CreateNotification(title, text, delay, 'assets/WarningNotification.png')
-		frame.Frame.Frame.ImageColor3 = Color3.fromRGB(236, 129, 44)
+		frame.Frame.Frame.ImageColor3 = Color3.fromHSV(color.Hue, color.Sat, color.Value)
+		frame.Frame.Frame.ImageColor3 = Color3.fromHSV(color.Hue, color.Sat, color.Value)
 		return frame
 	end)
 	return (suc and res)
@@ -3020,7 +3022,7 @@ runFunction(function()
 							local speedCFrame = {oldcloneroot.CFrame:GetComponents()}
 							speedCFrame[1] = clone.CFrame.X
 							if speedCFrame[2] < 1000 or (not goneup) then 
-								task.spawn(warningNotification, 'InfiniteFly', 'Teleported Up', 3)
+								task.spawn(InfoNotification, 'InfiniteFly', 'Teleported Up', 3)
 								speedCFrame[2] = 100000
 								goneup = true
 							end
@@ -3073,7 +3075,7 @@ runFunction(function()
 					entityLibrary.character.Humanoid:ChangeState(Enum.HumanoidStateType.Landed)
 					disabledproper = false
 					if isnetworkowner(oldcloneroot) then 
-						warningNotification('InfiniteFly', 'Waiting 1.5s to not flag', 3)
+						InfoNotification('InfiniteFly', 'Waiting 1.5s to not flag', 3)
 						task.delay(1.5, disablefunc)
 					else
 						disablefunc()
@@ -5975,7 +5977,7 @@ runFunction(function()
 					GameTheme.ToggleButton(false)
 				end
 			else
-				warningNotification('GameTheme', 'Disabled Next Game', 10)
+				InfoNotification('GameTheme', 'Disabled Next Game', 10)
 			end
 		end,
 		ExtraText = function()
@@ -8230,7 +8232,7 @@ runFunction(function()
 								bedwars.ClientHandler:Get(bedwars.ReportRemote):SendToServer(v.UserId)
 								bedwarsStore.statistics.reported = bedwarsStore.statistics.reported + 1
 								if AutoReportV2Notify.Enabled then 
-									warningNotification('AutoReportV2', 'Reported '..v.Name, 15)
+									InfoNotification('AutoReportV2', 'Reported '..v.Name, 15)
 								end
 							end
 						end
@@ -9605,7 +9607,7 @@ runFunction(function()
 						until #positions.blocks == 0 or (not Schematica.Enabled)
 						if Schematica.Enabled then 
 							Schematica.ToggleButton(false)
-							warningNotification('Schematica', 'Finished Placing Blocks', 4)
+							InfoNotification('Schematica', 'Finished Placing Blocks', 4)
 						end
 					end)
 				end
@@ -11617,7 +11619,7 @@ runFunction(function() -- pasted from my old project (Voidware 3.3) (too lazy)
 							end
 							task.spawn(playSound, '7396762708')
 							notallowed = true
-							warningNotification('HealthNotifications', 'Your health is '..(health < HealthSlider.Value and 'below' or 'at')..' '..HealthSlider.Value, 10)
+							InfoNotification('HealthNotifications', 'Your health is '..(health < HealthSlider.Value and 'below' or 'at')..' '..HealthSlider.Value, 10)
 							task.spawn(function()
 								repeat task.wait() until isAlive(lplr, true) and lplr.Character:GetAttribute('Health') > HealthSlider.Value 
 								notallowed = false
