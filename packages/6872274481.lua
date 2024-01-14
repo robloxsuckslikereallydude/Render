@@ -461,7 +461,7 @@ local function getSpeed()
 		if lplr.Character:GetAttribute('GrimReaperChannel') then 
 			speed = speed + 20
 		end
-		if RenderStore.acbypass then  
+		if lplr.Character:FindFirstChild('elk') then  
 			speed = speed + 12.8
 		end
 		local armor = bedwarsStore.localInventory.inventory.armor[3]
@@ -12497,39 +12497,39 @@ runFunction(function()
 end)
 
 runFunction(function() 
- local AntiCheatBypass = {}
-local fixedanims
-local olhip
-AntiCheatBypass = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
-	Name = 'Disabler',
-	ExtraText = function() return 'Taz 🔥' end,
-	HoverText = 'Allows movement up to 40 speed alone. (Thank you Taz)',
-	Function = function(calling)
-		if calling then 
-			if not isAlive() then
-				repeat task.wait() until isAlive() or not AntiCheatBypass.Enabled  
-			end
-			if not AntiCheatBypass.Enabled then
-				return 
-			end
-			for i,v in next, bedwars.SoundList do 
-				if i:lower():find('elk') then 
-					bedwars.SoundList[i] = '' 
-				end 
-			end
-			oldhip = lplr.Character.Humanoid.HipHeight
-			repeat 
-				pcall(function() lplr.Character.elk:FindFirstChild('body_mesh'):Destroy() end)
-				pcall(function() lplr.Character.elk.PrimaryPart:Destroy() end) 
-				pcall(function() lplr.Character.Humanoid.HipHeight = oldhip end)
-				if isAlive() and bedwars.AbilityController:canUseAbility('elk_summon') and lplr.Character:FindFirstChild('elk') == nil then 
-					bedwars.AbilityController:useAbility('elk_summon')
-					lplr.Character.Humanoid.HipHeight = oldhip
-					InfoNotification('WatchdogDisabler', 'Successfully bypassed Anticheat.', 5)
+	local AntiCheatBypass = {}
+	local fixedanims
+	local olhip
+	AntiCheatBypass = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
+		Name = 'Disabler',
+		ExtraText = function() return 'Taz 🔥' end,
+		HoverText = 'Allows movement up to 40 speed alone. (Thank you Taz)',
+		Function = function(calling)
+			if calling then 
+				if not isAlive() then
+					repeat task.wait() until isAlive() or not AntiCheatBypass.Enabled  
 				end
-				task.wait()
-			until not AntiCheatBypass.Enabled
+				if not AntiCheatBypass.Enabled then
+					return 
+				end
+				for i,v in next, bedwars.SoundList do 
+					if i:lower():find('elk') then 
+						bedwars.SoundList[i] = '' 
+					end 
+				end
+				oldhip = lplr.Character.Humanoid.HipHeight
+				repeat 
+					pcall(function() lplr.Character.elk:FindFirstChild('body_mesh'):Destroy() end)
+					pcall(function() lplr.Character.elk.PrimaryPart:Destroy() end) 
+					pcall(function() lplr.Character.Humanoid.HipHeight = oldhip end)
+					if isAlive() and bedwars.AbilityController:canUseAbility('elk_summon') and lplr.Character:FindFirstChild('elk') == nil then 
+						bedwars.AbilityController:useAbility('elk_summon')
+						lplr.Character.Humanoid.HipHeight = oldhip
+						InfoNotification('WatchdogDisabler', 'Successfully bypassed Anticheat.', 5)
+					end
+					task.wait()
+				until not AntiCheatBypass.Enabled
+			end
 		end
-	end
-}) 
+	}) 
 end)
