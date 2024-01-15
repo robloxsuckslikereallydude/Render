@@ -2821,7 +2821,7 @@ runFunction(function()
 			Disguiseclone.Name = 'Disguisechar'
 			Disguiseclone.Parent = workspace
 			for i,v in next, (Disguiseclone:GetChildren()) do 
-				if v:IsA('Accessory') or v:IsA('ShirtGraphic') or v:IsA('Shirt') or v:IsA('Pants') then  
+				if v:IsA('Accessory') or v:IsA('ShirtGraphic') or v:IsA('Shirt') or v:IsA('Pants') and v.Name ~= 'elk' then  
 					v:Destroy()
 				end
 			end
@@ -2836,7 +2836,7 @@ runFunction(function()
 				end
 			end
 			char.ChildAdded:Connect(function(v)
-				if ((v:IsA('Accessory') and v:GetAttribute('InvItem') == nil and v:GetAttribute('ArmorSlot') == nil) or v:IsA('ShirtGraphic') or v:IsA('Shirt') or v:IsA('Pants') or v:IsA('BodyColors')) and v:GetAttribute('Disguise') == nil then 
+				if ((v:IsA('Accessory') and v:GetAttribute('InvItem') == nil and v:GetAttribute('ArmorSlot') == nil and v.Name ~= 'elk') or v:IsA('ShirtGraphic') or v:IsA('Shirt') or v:IsA('Pants') or v:IsA('BodyColors')) and v:GetAttribute('Disguise') == nil then 
 					repeat task.wait() v.Parent = game until v.Parent == game
 				end
 			end)
@@ -4597,7 +4597,7 @@ runFunction(function()
 								until not ChatSpammer.Enabled
 							end)				
 						else
-							warningNotification('ChatSpammer', 'Default chat not found.', 3)
+							errorNotification('ChatSpammer', 'Default chat not found.', 3)
 							if ChatSpammer.Enabled then ChatSpammer.ToggleButton() end
 						end
 					end)
@@ -5336,7 +5336,7 @@ runFunction(function()
 					elseif AutoLeaveMode.Value == 'Rejoin' then 
 						getrandomserver()
 					else
-						warningNotification('AutoLeave', 'Staff Detected : '..(plr.DisplayName and plr.DisplayName..' ('..plr.Name..')' or plr.Name), 60)
+						errorNotification('AutoLeave', 'Staff Detected : '..(plr.DisplayName and plr.DisplayName..' ('..plr.Name..')' or plr.Name), 60)
 					end
 				end
 			end)
@@ -5488,7 +5488,7 @@ runFunction(function()
 							end
 						end))
 					else
-						warningNotification('AnimationPlayer', 'failed to load anim : '..(res or 'invalid animation id'), 5)
+						errorNotification('AnimationPlayer', 'failed to load anim : '..(res or 'invalid animation id'), 5)
 					end
 				end
 				table.insert(AnimationPlayer.Connections, lplr.CharacterAdded:Connect(function()
@@ -5519,7 +5519,7 @@ runFunction(function()
 							end
 						end)
 					else
-						warningNotification('AnimationPlayer', 'failed to load anim : '..(res or 'invalid animation id'), 5)
+						errorNotification('AnimationPlayer', 'failed to load anim : '..(res or 'invalid animation id'), 5)
 					end
 				end))
 			else
