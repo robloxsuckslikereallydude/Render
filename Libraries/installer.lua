@@ -32,7 +32,7 @@ return function(ria)
 	maingradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(3, 3, 42)), ColorSequenceKeypoint.new(1, Color3.fromRGB(11, 7, 75))})
 	maingradient.Parent = mainframe 
 	
-	local topbar = Instance.new('Frame') -- didn't need to set the position cause the original position is all zeros :omegalol:
+	local topbar = Instance.new('Frame')
 	topbar.Size = UDim2.new(0, 539, 0, 34)
 	topbar.ZIndex = 3
 	topbar.Parent = mainframe 
@@ -317,6 +317,19 @@ return function(ria)
 		end 
 	end
 	
+	local core = {'Universal.lua', 'MainScript.lua', 'NewMainScript.lua', 'GuiLibrary.lua'}
+	for i,v in next, listfiles('vape/CustomModules') do 
+		if isfile(v) then 
+			delfile(v) 
+		end 
+	end
+
+	for i,v in next, core do 
+		if isfile('vape/'..v) then 
+			delfile('vape/'..v)
+		end 
+	end
+	
 	table.insert(taskfunctions, {
 		Text = 'Validating RIA key...',
 		Function = function()
@@ -335,7 +348,6 @@ return function(ria)
 		end
 	})
 	
-	local core = {'Universal.lua', 'MainScript.lua', 'NewMainScript.lua', 'GuiLibrary.lua'}
 	local customs = {}
 	local customsLoaded
 	for i,v in next, core do 
