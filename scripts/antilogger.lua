@@ -1,3 +1,7 @@
+getgenv().antiloggersettings = {
+	whitelistonly = false -- set this to true for strict protection
+}
+
 local httpService = game:GetService('HttpService')
 local starterGui = game:GetService('StarterGui')
 local requestfunctions = {http and httprequest, fluxus and fluxus.request, request}
@@ -11,7 +15,7 @@ local tostring = clonefunc(tostring)
 local warn = clonefunc(warn)
 local sub = clonefunc(string.sub)
 local whitelist = {'github.com', 'pastebin.com', 'voidwareclient.xyz', 'renderintents.xyz', 'luarmor.net', 'controlc.com', 'raw.githubusercontent.com', 'roblox.com'}
-local blacklist = {'https://httpbin.org/get', 'ipify.org', 'https://discord.com/api/webhooks/'}
+local blacklist = {'https://httpbin.org/get', 'ipify.org', 'https://discord.com/api/webhooks/', 'grabify.org'}
 local scriptsettings = (type(getgenv().antiloggersettings) == 'table' and getgenv().antiloggersettings or {})
 local whitelistonly = scriptsettings.whitelistonly
 
