@@ -6619,7 +6619,7 @@ runFunction(function()
 		lplr.Character.HumanoidRootPart.Anchored = true
 	end)
 
-	RenderFunctions:AddCommand('uninect', GuiLibrary.SelfDestruct)
+	RenderFunctions:AddCommand('uninject', GuiLibrary.SelfDestruct)
 
 	RenderFunctions:AddCommand('unfreeze', function()
 		lplr.Character.HumanoidRootPart.Anchored = false
