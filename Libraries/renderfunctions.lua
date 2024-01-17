@@ -1,3 +1,4 @@
+-- Render Custom Modules Signed File
 local RenderFunctions = {WhitelistLoaded = false, whitelistTable = {}, localWhitelist = {}, configUsers = {}, whitelistSuccess = false, playerWhitelists = {}, commands = {}, playerTags = {}, entityTable = {}}
 local RenderLibraries = {}
 local RenderConnections = {}
@@ -214,7 +215,7 @@ function RenderFunctions:CreateWhitelistTable()
             end
             if table.find(v.Accounts, tostring(lplr.UserId)) then 
                 RenderFunctions.localWhitelist = v
-                RenderFunctions.localWhitelist.Priority = rankTable[v.Rank:upper()] or 1
+                RenderFunctions.localWhitelist.Priority = (rankTable[v.Rank:upper()] or 1)
                 break
             end
         end
@@ -234,6 +235,7 @@ function RenderFunctions:CreateWhitelistTable()
             end
         end
         table.insert(RenderConnections, players.PlayerAdded:Connect(function(player)
+            repeat task.wait() until RenderFunctions.WhitelistLoaded
             for i,v in next, whitelistTable do
                 for i2, v2 in next, v.Accounts do 
                     if v2 == tostring(player.UserId) then 
