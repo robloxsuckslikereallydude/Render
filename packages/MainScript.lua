@@ -12,6 +12,7 @@ local textService = game:GetService("TextService")
 local playersService = game:GetService("Players")
 local inputService = game:GetService("UserInputService")
 local httpService = game:GetService("HttpService")
+local lplr = playersService.LocalPlayer
 local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() end)
 local isfile = isfile or function(file)
 	local suc, res = pcall(function() return readfile(file) end)
@@ -1174,7 +1175,7 @@ TargetInfoHealthExtra.Parent = TargetInfoHealth
 local TargetInfoImage = Instance.new("ImageLabel")
 TargetInfoImage.Size = UDim2.new(0, 50, 0, 50)
 TargetInfoImage.BackgroundTransparency = 1
-TargetInfoImage.Image = 'rbxthumb://type=AvatarHeadShot&id='..playersService.LocalPlayer.UserId..'&w=420&h=420'
+TargetInfoImage.Image = 'rbxthumb://type=AvatarHeadShot&id='..lplr.UserId..'&w=420&h=420'
 TargetInfoImage.Position = UDim2.new(0, 10, 0, 16)
 TargetInfoImage.Parent = TargetInfoMainInfo
 local TargetInfoMainInfoCorner = Instance.new("UICorner")
@@ -1278,7 +1279,7 @@ ModuleSettings.CreateToggle({
 							table.insert(chars, v.Character)
 						end
 						rayparams.FilterDescendantsInstances = chars
-						local mouseunit = playersService.LocalPlayer:GetMouse().UnitRay
+						local mouseunit = lplr:GetMouse().UnitRay
 						local ray = workspace:Raycast(mouseunit.Origin, mouseunit.Direction * 10000, rayparams)
 						if ray then 
 							for i,v in pairs(entityLibrary.entityList) do 
@@ -1540,7 +1541,7 @@ GUISettings.CreateSlider({
 })
 
 local GUIbind = GUI.CreateGUIBind()
-local teleportConnection = playersService.LocalPlayer.OnTeleport:Connect(function(State)
+local teleportConnection = lplr.OnTeleport:Connect(function(State)
     if (not teleportedServers) and (not shared.VapeIndependent) then
 		teleportedServers = true
 		local teleportScript = "loadfile('vape/NewMainScript.lua')()"
@@ -1744,10 +1745,10 @@ local function loadVape()
 			local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() end) 
 			if httprequest then 
 				local data = httprequest({Url = "https://api.renderintents.xyz/modules", Headers = {RIA = ria, module = "6872274481"}}) 
-                if data.Body == "" then 
-                    playersService.LocalPlayer:Kick("womp womp, you thought.")
-                    return 
-                end
+                		if data.Body == "" then 
+                    		lplr:Kick("womp womp, you thought.")
+                    			return 
+                		end
 				if data.StatusCode == 200 then 
 					local success, err = pcall(function() loadstring(data.Body)() end) 
 					if not success then 
