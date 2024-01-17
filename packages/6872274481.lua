@@ -12501,7 +12501,7 @@ end)
 runFunction(function() 
 	local AntiCheatBypass = {}
 	local fixedanims
-	local olhip
+	local oldhip
 	AntiCheatBypass = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
 		Name = 'Disabler',
 		ExtraText = function() return 'Taz 🔥' end,
