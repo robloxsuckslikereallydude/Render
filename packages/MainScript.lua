@@ -1801,7 +1801,7 @@ end
 task.spawn(function() 
 	if httprequest == (function() end) then 
 		task.spawn(GuiLibrary.SelfDestruct)
-		displayErrorPopup('Render isn\'t supported for '..(identifyexecutor and identifyexecutor() or 'Unknown'), {Close = function() end}) 
+		displayErrorPopup('Render isn\'t supported for '..(identifyexecutor and identifyexecutor() or 'your executor.'), {Close = function() end}) 
 		return
 	end
 	local success, ria = pcall(function() return httpService:JSONDecode(readfile('ria.json')) end) 
