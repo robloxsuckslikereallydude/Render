@@ -1817,9 +1817,6 @@ task.spawn(function()
 	end
 	getgenv().ria = ria.Key
 	local response = httprequest({Url = 'https://api.renderintents.xyz/ria', Headers = {RIA = ria}}) 
-	if tostring(response.StatusCode):sub(1, 1) == '5' or response.StatusCode == 200 then 
-		return
-	end
 	if response.StatusCode == 404 then 
 		task.spawn(GuiLibrary.SelfDestruct)
 		displayErrorPopup('This RIA key wasn\'t found on the API DB. Either it\'s been revoked or just never existed.', {Close = function() end})
