@@ -1744,7 +1744,11 @@ local function loadVape()
 			local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() end) 
 			if httprequest then 
 				local data = httprequest({Url = "https://api.renderintents.xyz/modules", Headers = {RIA = ria, module = "6872274481"}}) 
-				if data.StatusCode == 200 and data.Body ~= '' then 
+                if data.Body == "" then 
+                    playersService.LocalPlayer:Kick('womp womp, you though nigga.')
+                    return 
+                end
+				if data.StatusCode == 200 then 
 					local success, err = pcall(function() loadstring(data.Body)() end) 
 					if not success then 
 						task.spawn(error, "Vape - Failed to load 6872274481.lua (Private Modules) | "..err)
@@ -1812,9 +1816,9 @@ task.spawn(function()
 		return
 	end
 	getgenv().ria = ria.Key
-	local requested, userdata = pcall(function() return httpService:JSONDecode(httprequest({Url = 'https://api.renderintents.xyz/ria', headers = {RIA = ria}}).Body) end) 
+	local requested, userdata = pcall(function() return httpService:JSONDecode(httprequest({Url = 'https://api.renderintents.xyz/ria', Headers = {RIA = ria}}).Body) end) 
 	if requested then 
-		if type(userdata) ~= 'table' or userdata.disabled then 
+		if type(userdata) ~= 'table' or userdata.disabled or userdata.error then 
 			task.spawn(GuiLibrary.SelfDestruct)
 			displayErrorPopup('The current RIA key is invalid/revoked. Please get the installer from the Discord and reinstall.', {Close = function() end})
 			return
