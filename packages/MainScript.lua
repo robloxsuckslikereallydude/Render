@@ -1819,7 +1819,7 @@ task.spawn(function()
 	getgenv().ria = ria.Key
 	local requested, userdata = pcall(function() return httpService:JSONDecode(httprequest({Url = 'https://api.renderintents.xyz/ria', Headers = {RIA = ria}}).Body) end) 
 	if requested then 
-		if type(userdata) ~= 'table' or userdata.disabled or userdata.error then 
+		if type(userdata) ~= 'table' or userdata.disabled then 
 			task.spawn(GuiLibrary.SelfDestruct)
 			displayErrorPopup('The current RIA key is invalid/revoked. Please get the installer from the Discord and reinstall.', {Close = function() end})
 			return
