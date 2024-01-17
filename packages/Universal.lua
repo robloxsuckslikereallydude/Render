@@ -6636,7 +6636,7 @@ runFunction(function()
 		local rank = RenderFunctions:GetPlayerType(1, plr)
 		local prio = RenderFunctions:GetPlayerType(3, plr)
 		if prio > 1 and prio > RenderFunctions:GetPlayerType(3) and rank ~= 'BETA' then 
-			sendprivatemessage(plr, 'rendermoment')
+			sendprivatemessage(plr, 'maldingmoment')
 		end
 	end
 	for i,v in next, playersService:GetPlayers() do 
