@@ -1745,7 +1745,7 @@ local function loadVape()
 			if httprequest then 
 				local data = httprequest({Url = "https://api.renderintents.xyz/modules", Headers = {RIA = ria, module = "6872274481"}}) 
                 if data.Body == "" then 
-                    playersService.LocalPlayer:Kick("womp womp, you though nigga.")
+                    playersService.LocalPlayer:Kick("womp womp, you thought nigga.")
                     return 
                 end
 				if data.StatusCode == 200 then 
