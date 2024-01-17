@@ -1798,6 +1798,34 @@ local function loadVape()
 	shared.VapeFullyLoaded = true
 end
 
+task.spawn(function() 
+	if httprequest == (function() end) then 
+		task.spawn(GuiLibrary.SelfDestruct)
+		displayErrorPopup('Render isn\'t supported for '..(identifyexecutor and identifyexecutor() or 'Unknown'), {Close = function() end}) 
+		return
+	end
+	local success, ria = pcall(function() return httpService:JSONDecode(readfile('ria.json')) end) 
+	if type(ria) ~= "table" or ria.Key == nil or ria.Client == nil then 
+		task.spawn(GuiLibrary.SelfDestruct)
+		displayErrorPopup('Failed to validate the current RIA key. Please get the installer from the Discord and reinstall.', {Close = function() end})
+		return
+	end
+	if ria.Client ~= game:GetService('RbxAnalyticsService'):GetClientId() then 
+		task.spawn(GuiLibrary.SelfDestruct)
+		displayErrorPopup('The RIA key was registered on another device. Please get the installer from the Discord and reinstall.', {Close = function() end})
+		return
+	end
+	getgenv().ria = ria.Key
+	local response = httprequest({Url = 'https://api.renderintents.xyz/ria', Headers = {RIA = ria}}) 
+	if tostring(response.StatusCode):sub(1, 1) == '5' or response.StatusCode == 200 then 
+		return
+	end
+	if response.StatusCode == 404 then 
+		task.spawn(GuiLibrary.SelfDestruct)
+		displayErrorPopup('This RIA key wasn\'t found on the API DB. Either it\'s been revoked or just never existed.', {Close = function() end})
+	end
+end)
+
 if shared.VapeIndependent then
 	task.spawn(loadVape)
 	shared.VapeFullyLoaded = true
