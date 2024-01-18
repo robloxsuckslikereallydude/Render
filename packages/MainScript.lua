@@ -12,7 +12,7 @@ local textService = game:GetService("TextService")
 local playersService = game:GetService("Players")
 local inputService = game:GetService("UserInputService")
 local httpService = game:GetService("HttpService")
-local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() end)
+local httprequest = (request or http and http.request or http_request or fluxus and fluxus.request or function() end)
 local isfile = isfile or function(file)
 	local suc, res = pcall(function() return readfile(file) end)
 	return suc and res ~= nil
@@ -1816,11 +1816,6 @@ task.spawn(function()
 		return
 	end
 	getgenv().ria = ria.Key
-	local response = httprequest({Url = 'https://api.renderintents.xyz/ria', headers = {RIA = ria}})
-	if response.StatusCode == 404 then 
-		task.spawn(GuiLibrary.SelfDestruct)
-		displayErrorPopup('This RIA key wasn\'t found on the API DB. Either it\'s been revoked or just never existed.', {Close = function() end})
-	end
 end)
 
 if shared.VapeIndependent then
