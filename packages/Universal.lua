@@ -6831,7 +6831,7 @@ runFunction(function()
 	local toggleTick = tick()
 	BoostJump = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
 		Name = 'BoostJump',
-		HoverText = 'an indeed interesting high jump.',
+		HoverText = 'An indeed interesting high jump.',
 		Function = function(callback)
 			if callback then 
 				toggleTick = tick() + (BoostJumpTime.Value / 35)
@@ -6865,24 +6865,6 @@ runFunction(function()
 	})
 end)
 
-runFunction(function()
-	if RenderDeveloper == nil then 
-		return 
-	end
-	local InfiniteYield = {}
-	InfiniteYield = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
-		Name = 'InfiniteYield',
-		HoverText = 'Loads the Infinite Yield script.',
-		Function = function(callback)
-			if callback then 
-				if IY_LOADED == nil then 
-					loadstring(RenderFunctions:GetFile('scripts/BetterIY.lua'))() 
-				end
-			end
-		end
-	})
-end)
-
 pcall(function()
 	local Rejoin = {}
 	Rejoin = GuiLibrary.ObjectsThatCanBeSaved.MatchmakingWindow.Api.CreateOptionsButton({
@@ -6897,55 +6879,108 @@ pcall(function()
 end)
 
 runFunction(function()
-	GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
+	local AntiLogger = {Enabled = false}
+	local AntiLoggerSP = {Enabled = false}
+	AntiLogger = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
 		Name = 'AntiLogger',
-		HoverText = 'Stops most: IP loggers, and Discord webhooks.',
+		HoverText = 'Stops most loggers',
 		Function = function(callback)
 			if callback then
-				--loadstring(RenderFunctions:GetFile('scripts/antilogger.lua'))()
+				-- loadstring(RenderFunctions:GetFile('scripts/antilogger.lua'))()
+				getgenv().antiloggersettings = {
+					whitelistonly = AntiLoggerSP.Enabled
+				}
+				local httpService = game:GetService('HttpService')
+				local starterGui = game:GetService('StarterGui')
+				local requestfunctions = {http and httprequest, fluxus and fluxus.request, request}
+				local hookfunction = (hookfunction or hookfunc or function() end)
+				local hookmetamethod = (hookmetamethod or function() end)
+				local clonefunc = (clonefunction or clonefunc or function(func) return func end) 
+				local saferequest = clonefunc(#requestfunctions > 0 and requestfunctions[math.random(1, #requestfunctions)] or function() end)
+				local type = clonefunc(type)
+				local find = clonefunc(string.find)
+				local tostring = clonefunc(tostring)
+				local warn = clonefunc(warn)
+				local sub = clonefunc(string.sub)
+				local whitelist = {'github.com', 'pastebin.com', 'voidwareclient.xyz', 'renderintents.xyz', 'luarmor.net', 'controlc.com', 'raw.githubusercontent.com', 'roblox.com'}
+				local blacklist = {'https://httpbin.org/get', 'ipify.org', 'https://discord.com/api/webhooks/', 'grabify.org'}
+				local scriptsettings = (type(getgenv().antiloggersettings) == 'table' and getgenv().antiloggersettings or {})
+				local whitelistonly = scriptsettings.whitelistonly
+				getgenv().antiloggersettings = nil
+				local function whitelistedurl(url)
+					url = tostring(url):lower()
+					for i,v in next, whitelist do 
+						if find(url, v:lower()) then
+							return true
+						end
+					end 
+					for i,v in next, blacklist do 
+						if find(url, v) then 
+							return
+						end
+					end
+					if not whitelistonly then 
+						return true 
+					end
+				end
+				local function blank(url, str) 
+					url = tostring(url):lower()
+					local blankstring = '[]'
+					--[[warn('AntiLogger - Successfully stopped the client from sending an http request to '..url) 
+					if shared.GuiLibrary then 
+						pcall(function() shared.GuiLibrary.CreateNotification('AntiLogger', 'Successfully stopped the client from sending an http request. (check console for details)', 15) end)
+					end]]
+					warningNotification('AntiLogger', 'Successfully stopped the client from sending an http request to '..url, 15)
+					if sub(url, 1, 33) == 'https://discord.com/api/webhooks/' then 
+						saferequest({Url = url, Method = 'DELETE'})
+					end
+					if sub(url, 1, 23) == 'https://httpbin.org/get' then 
+						blankstring = httpService:JSONEncode({args = {}, headers = {}, origin = 'protected', url = url})
+					end
+					return str and blankstring or {Body = blankstring, StatusCode = 200}
+				end
+				local function hookrequestfunc(func)
+					local oldrequest 
+					oldrequest = hookfunction(func, function(self, ...)
+						if type(self) == 'table' and self.Url then 
+							if whitelistedurl(self.Url) == nil then 
+								return blank(self.Url)
+							end
+						end
+						return oldrequest(self, ...)
+					end)
+				end
+				for i,v in next, requestfunctions do
+					hookrequestfunc(v) 
+				end
+				local oldmethod
+				oldmethod = hookmetamethod(game, '__namecall', function(self, ...)
+					local method = getnamecallmethod()
+					if method == 'PostAsync' or method == 'CallAsync' or method == 'GetAsync' or method == 'HttpGetAsync' then 
+						if whitelistedurl(self) == nil then
+							return blank(self, true)
+						end
+					end
+					return oldmethod(self, ...)
+				end) 
+				if getgenv().hookfunction == nil and getgenv().hookfunc == nil then 
+					print('⚠ AntiLogger - Your exploit doesn\'t support hookfunction. Protection may not be as efficient.')
+				end
+				if getgenv().hookmetamethod == nil then 
+					print('⚠ AntiLogger - Your exploit doesn\'t support hookmetamethod. Protection may not be as efficient.')
+				end
+				if #({getgenv().hookfunction, getgenv().hookfunc, getgenv().hookmetamethod}) == 0 then 
+					error('❌ AntiLogger - Failed to execute. Your exploit doesn\'t support hookfunction or hookmetamethod.')
+				end
 			end
 		end
 	})
-end)
-
-runFunction(function()
-	local InfiniteJump = {}
-	local InfiniteJumpMode = {Value = 'Normal'}
-	local InfiniteJumpBoost = {Value = 1}
-	local jumpTick = tick()
-	InfiniteJump = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
-		Name= 'InfiniteJump',
-		HoverText = 'Jump freely without limitations (unless anticheat).',
-		Function = function(callback)
-			if callback then 
-				table.insert(InfiniteJump.Connections, inputService.JumpRequest:Connect(function()
-					if not isAlive(lplr) then 
-						return 
-					end
-					if InfiniteJumpMode.Value == 'Normal' then
-						lplr.Character.HumanoidRootPart.Velocity = Vector3.new(lplr.Character.HumanoidRootPart.Velocity.X, lplr.Character.Humanoid.JumpPower, lplr.Character.HumanoidRootPart.Velocity.Z)
-					else
-						lplr.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-					end
-				end))
-			end
-		end
-	})
-	InfiniteJumpMode = InfiniteJump.CreateDropdown({
-		Name = 'Mode',
-		List = {'Normal', 'Hold'},
-		Function = function(callback) 
-			pcall(function() InfiniteJumpBoost.Object.Visible = callback == 'Normal' end) 
-		end
-	})
-	InfiniteJumpBoost = InfiniteJump.CreateSlider({
-		Name = 'Extra Height',
-		Min = 0,
-		Max = 30,
-		Default = 1,
+	AntiLoggerSP = AntiLogger.CreateToggle({
+		Name = 'Strict Protection',
+		HoverText = 'Enabled Strict Protection',
+		Default = false,
 		Function = function() end
 	})
-	InfiniteJumpBoost.Object.Visible = false
 end)
 
 runFunction(function()
@@ -6958,7 +6993,7 @@ runFunction(function()
 			if callback then 
 				ServerHop.ToggleButton()
 				if RenderStore.serverhopping then 
-					return 
+					return
 				end
 				RenderStore.serverhopping = true
 				InfoNotification('ServerHop', 'Searching for a new server..', 10)
@@ -7016,6 +7051,7 @@ runFunction(function()
 	local PlayerAttachTween = {}
 	local PlayerAttachRaycast = {}
 	local PlayerAttachRange = {Value = 30}
+	local PlayerAttachTS = {Value = 15}
 	PlayerAttach = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
 		Name = 'PlayerAttach',
 		HoverText = 'Rapes others :omegalol:',
@@ -7029,7 +7065,7 @@ runFunction(function()
 					end
 					lplr.Character.Humanoid.Sit = false
 					if PlayerAttachTween.Enabled then 
-						tweenService:Create(lplr.Character.HumanoidRootPart, TweenInfo.new(0.15, Enum.EasingStyle.Linear), {CFrame = target.RootPart.CFrame}):Play()
+						tweenService:Create(lplr.Character.HumanoidRootPart, TweenInfo.new(PlayerAttachTS.Value / 100, Enum.EasingStyle.Linear), {CFrame = target.RootPart.CFrame}):Play()
 					else
 					   lplr.Character.HumanoidRootPart.CFrame = target.RootPart.CFrame
 					end
@@ -7044,6 +7080,13 @@ runFunction(function()
 		Max = 50, 
 		Function = function() end,
 		Default = 20
+	})
+	PlayerAttachTS = PlayerAttach.CreateSlider({
+		Name = 'Tween Speed',
+		Min = 1, 
+		Max = 50,
+		Default = 15,
+		Function = function() end
 	})
 	PlayerAttachRaycast = PlayerAttach.CreateToggle({
 		Name = 'Void Check',
@@ -7242,31 +7285,58 @@ runFunction(function()
 	})
 end)
 
-runFunction(function()
-	local cameraunlocker = {}
-	local camdistance = {Value = 0}
-	cameraunlocker = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
+runLunar(function()
+	local ZoomUnlocker = {Enabled = false}
+	local ZoomUnlockerMode = {Value = 'Infinite'}
+	local ZoomUnlockerZoom = {Value = 25}
+	local ZoomConnection, OldZoom = nil, nil
+	ZoomUnlocker = GuiLibrary.ObjectsThatCanBeSaved['RenderWindow'].Api.CreateOptionsButton({
 		Name = 'CameraUnlocker',
-		HoverText = 'Mods your camera\'s zoom distance.',
+        HoverText = 'Unlocks the abillity to zoom more',
 		Function = function(callback)
 			if callback then
-			   oldzoom = lplr.CameraMaxZoomDistance
-			   lplr.CameraMaxZoomDistance = camdistance.Value
+				OldZoom = lplr.CameraMaxZoomDistance
+				ZoomUnlocker = runService.Heartbeat:Connect(function()
+					if ZoomUnlockerMode.Value == 'Infinite' then
+						lplr.CameraMaxZoomDistance = 9e9
+					else
+						lplr.CameraMaxZoomDistance = ZoomUnlockerZoom.Value
+					end
+				end)
 			else
-			   lplr.CameraMaxZoomDistance = oldzoom 
+				if ZoomUnlocker then ZoomUnlocker:Disconnect() end
+				lplr.CameraMaxZoomDistance = OldZoom
+				OldZoom = nil
+			end
+		end,
+        Default = false,
+		ExtraText = function()
+            return ZoomUnlockerMode.Value
+        end
+	})
+	ZoomUnlockerMode = ZoomUnlocker.CreateDropdown({
+		Name = 'Mode',
+		List = {
+			'Infinite',
+			'Custom'
+		},
+		HoverText = 'Mode to unlock the zoom',
+		Value = 'Infinite',
+		Function = function(val)
+			if val == 'Infinite' then
+				ZoomUnlockerZoom.Object.Visible = false
+			elseif val == 'Custom' then
+				ZoomUnlockerZoom.Object.Visible = true
 			end
 		end
 	})
-	camdistance = cameraunlocker.CreateSlider({
-		Name = 'Distance',
+	ZoomUnlockerZoom = ZoomUnlocker.CreateSlider({
+		Name = 'Zoom',
 		Min = 14,
-		Max = 30,
-		Default = 16,
-		Function = function(value)
-			if cameraunlocker.Enabled then 
-			   lplr.CameraMaxZoomDistance = value
-			end
-		end
+		Max = 50,
+		HoverText = 'Zoom Unlock Amount',
+		Function = function() end,
+		Default = 25
 	})
 end)
 
