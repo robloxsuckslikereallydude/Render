@@ -1,3 +1,11 @@
+--[[
+
+    Render Intents | Universal
+    The #1 vape mod you'll ever see.
+
+]]
+
+local LunarLoad = tick()
 repeat task.wait() until pcall(function() return game.HttpGet and ria end)
 local GuiLibrary = shared.GuiLibrary
 local identifyexecutor = identifyexecutor or function() return 'Unknown' end
@@ -25,7 +33,8 @@ local RenderFunctions = {}
 local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() end)
 local RenderStore = {Bindable = {}, raycast = RaycastParams.new(), MessageReceived = Instance.new('BindableEvent'), tweens = {}, ping = 0, platform = inputService:GetPlatform()}
 getgenv().RenderStore = RenderStore
-
+local vec3 = Vector3.new
+local vec2 = Vector2.new
 local isfile = isfile or function(file)
 	local suc, res = pcall(function() return readfile(file) end)
 	return suc and res ~= nil
@@ -164,6 +173,7 @@ errorNotification = function(title, text, delay)
 end
 
 local function runFunction(func) func() end
+local function runLunar(func) func() end
 
 local function isFriend(plr, recolor)
 	if GuiLibrary.ObjectsThatCanBeSaved['Use FriendsToggle'].Api.Enabled then
@@ -395,6 +405,7 @@ sendprivatemessage = function(player, text)
 end
 
 local entityLibrary = loadstring(vapeGithubRequest('Libraries/entityHandler.lua'))()
+local entityLunar = entityLibrary
 shared.vapeentity = entityLibrary
 do
 	entityLibrary.selfDestruct()
@@ -7351,7 +7362,7 @@ runFunction(function()
 	local ChatMimic = {}
 	local ChatShowSender = {Enabled = true}
 	local customblocklist = {ObjectList = {}}
-	local blacklisted = {'niga', 'niger', 'retard', 'ah', 'monkey', 'black'}
+	local blacklisted = {'niga', 'niger', 'retard', 'ah', 'monkey', 'black', 'hitler', 'nazi', 'vape', 'shit', 'cum', 'dick', 'pussy', 'cock'}
 	local lastsent = {}
 	local messages = {}
 	ChatMimic = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
@@ -7714,4 +7725,1586 @@ runFunction(function()
 		BlinkDuration.Object.Visible = BlinkRepeat.Enabled
 		BlinkDelay.Object.Visible = BlinkRepeat.Enabled 
 	end)
+end)
+
+runLunar(function()
+	local FastStop = {Enabled = false}
+	local MovementKeys = {
+		[Enum.KeyCode.W] = false,
+		[Enum.KeyCode.A] = false,
+		[Enum.KeyCode.S] = false,
+		[Enum.KeyCode.D] = false,
+		[Enum.KeyCode.Up] = false,
+		[Enum.KeyCode.Down] = false,
+		[Enum.KeyCode.Left] = false,
+		[Enum.KeyCode.Right] = false
+	}
+	local function UpdateVelo()
+		local velocity = vec3(0, 0, 0)
+		for key, isPressed in pairs(MovementKeys) do
+			if isPressed then
+				if not FastStop.Enabled then return end
+				if key == Enum.KeyCode.W then
+					velocity += vec3(0, 0, 1)
+				elseif key == Enum.KeyCode.A then
+					velocity += vec3(-1, 0, 0)
+				elseif key == Enum.KeyCode.S then
+					velocity += vec3(0, 0, -1)
+				elseif key == Enum.KeyCode.D then
+					velocity += vec3(1, 0, 0)
+				end
+			end
+		end
+		lplr.Character:WaitForChild('Humanoid'):Move(velocity)
+	end
+	local function InputBegan(input)
+		if MovementKeys[input.KeyCode] ~= nil then
+			MovementKeys[input.KeyCode] = true
+			UpdateVelo()
+		end
+	end
+	local function InputEnded(input)
+		if MovementKeys[input.KeyCode] ~= nil then
+			MovementKeys[input.KeyCode] = false
+			UpdateVelo()
+		end
+	end
+	FastStop = GuiLibrary.ObjectsThatCanBeSaved['UtilityWindow'].Api.CreateOptionsButton({
+		Name = 'FastStop',
+        HoverText = 'Instantly stops your character when stopping',
+		Function = function(callback)
+			if callback then
+				inputService.InputBegan:Connect(InputBegan)
+				inputService.InputEnded:Connect(InputEnded)
+			end
+		end,
+        Default = false
+	})
+end)
+
+runLunar(function()
+	local AutoYap = {Enabled = false}
+	local AutoYapMode = {Value = 'Custom'}
+	local AutoYapMessage = {Value = ''}
+	local AutoYapDelay, AutoYapMSG = {Value = 10}, nil
+	AutoYap = GuiLibrary.ObjectsThatCanBeSaved['UtilityWindow'].Api.CreateOptionsButton({
+		Name = 'AutoYap',
+        HoverText = 'Automatically yapps',
+		Function = function(callback)
+			if callback then
+				task.spawn(function()
+					repeat task.wait()
+						pcall(function()
+							if AutoYapMode.Value == 'Custom' then
+								textChatService.ChatInputBarConfiguration.TargetTextChannel:SendAsync((#AutoYapMessage.ObjectList > 0 and AutoYapMessage.ObjectList[math.random(1, #AutoYapMessage.ObjectList)] or 'lunar on top | gg/LunarRBX'))
+							else
+								AutoYapMSG = {
+									'AlSploit on top!',
+                                    'Raven on top!',
+                                    'I love to skid!',
+                                    '"exploiting is cringe"',
+                                    '"skibidi toilet has a deep lore"'
+								}
+								textChatService.ChatInputBarConfiguration.TargetTextChannel:SendAsync((AutoYapMSG[math.random(1, #AutoYapMSG)] or 'Render on top | gg/render'))
+							end
+							task.wait(AutoYapDelay.Value / 100)
+						end)
+					until not AutoYap.Enabled
+				end)
+			end
+		end,
+        Default = false,
+        ExtraText = function()
+            return AutoYapMode.Value
+        end
+	})
+	AutoYapMode = AutoYap.CreateDropdown({
+		Name = 'Mode',
+		List = {
+			'Custom',
+			'Lunar'
+		},
+		HoverText = 'Message Mode',
+		Value = 'Custom',
+		Function = function() end
+	})
+	AutoYapMessage = AutoYap.CreateTextList({
+		Name = 'Message',
+		TempText = 'Message to yap',
+		Function = function() end
+	})
+	AutoYapDelay = AutoYap.CreateSlider({
+		Name = 'Delay',
+		Min = 1,
+		Max = 100,
+		HoverText = 'Delay to send the messages',
+		Function = function() end,
+		Default = 10
+	})
+end)
+
+runLunar(function()
+	local LunarLogo = {Enabled = false}
+	local LunarLogoShadows = {Enabled = true}
+	local LunarLogoCorners = {Enabled = true}
+	local LunarLogoWaterMarks = {Enabled = true}
+	local LunarLogoTextSize = {Value = 26}
+	local LunarLogoTransparency = {Value = 2}
+	LunarLogo = GuiLibrary.ObjectsThatCanBeSaved['RenderWindow'].Api.CreateOptionsButton({
+		Name = 'LunarLogo',
+        HoverText = 'Shows the Lunar Logo',
+		Function = function(callback)
+			if callback then
+				task.spawn(function()
+					local PublicLogo = Instance.new("ScreenGui")
+					local Main = Instance.new("Frame")
+					local Text = Instance.new("TextLabel")
+					local UICorner = Instance.new("UICorner")
+					local Shadow = Instance.new("Frame")
+					local DropShadow = Instance.new("ImageLabel")
+					local Logo = Instance.new("Frame")
+					local WatermarkRight = Instance.new("ImageLabel")
+					local WatermarkLeft = Instance.new("ImageLabel")
+					PublicLogo.Name = "PublicLogo"
+					PublicLogo.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+					PublicLogo.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+					Main.Name = "Main"
+					Main.Parent = PublicLogo
+					Main.BackgroundColor3 = Color3.new(0.152941, 0.152941, 0.152941)
+					Main.BackgroundTransparency = LunarLogoTransparency.Value / 10
+					Main.BorderColor3 = Color3.new(0, 0, 0)
+					Main.BorderSizePixel = 0
+					Main.Position = UDim2.new(0.3027969, 0, 0, 0)
+					Main.Size = UDim2.new(0, 544, 0, 73)
+					Text.Name = "Text"
+					Text.Parent = Main
+					Text.BackgroundColor3 = Color3.new(1, 1, 1)
+					Text.BackgroundTransparency = 1
+					Text.BorderColor3 = Color3.new(0, 0, 0)
+					Text.BorderSizePixel = 0
+					Text.Position = UDim2.new(0, 0, 0.0273972601, 0)
+					Text.Size = UDim2.new(1, 0, 0.924050629, 0)
+					Text.Font = Enum.Font.FredokaOne
+					Text.Text = "Lunar | discord.gg/LunarRBX"
+					Text.TextColor3 = Color3.new(1, 1, 1)
+					Text.TextSize = LunarLogoTextSize.Value
+					if LunarLogoCorners.Enabled then
+						UICorner.Parent = Main
+						UICorner.CornerRadius = UDim.new(0, 15)
+					end
+					if LunarLogoShadows.Enabled then
+						Shadow.Name = "Shadow"
+						Shadow.Parent = Main
+						Shadow.BackgroundTransparency = 1
+						Shadow.BorderSizePixel = 0
+						Shadow.Size = UDim2.new(1, 0, 1, 0)
+						Shadow.ZIndex = 0
+						DropShadow.Name = "DropShadow"
+						DropShadow.Parent = Shadow
+						DropShadow.AnchorPoint = Vector2.new(0.5, 0.5)
+						DropShadow.BackgroundTransparency = 1
+						DropShadow.BorderSizePixel = 0
+						DropShadow.Position = UDim2.new(0.5, 0, 0.5, 0)
+						DropShadow.Size = UDim2.new(1, 47, 1, 47)
+						DropShadow.ZIndex = 0
+						DropShadow.Image = "rbxassetid://6014261993"
+						DropShadow.ImageColor3 = Color3.new(0, 0, 0)
+						DropShadow.ImageTransparency = 0.5
+						DropShadow.ScaleType = Enum.ScaleType.Slice
+						DropShadow.SliceCenter = Rect.new(49, 49, 450, 450)
+					end
+					Logo.Name = "Logo"
+					Logo.Parent = PublicLogo
+					Logo.BackgroundColor3 = Color3.new(1, 1, 1)
+					Logo.BackgroundTransparency = 1
+					Logo.BorderColor3 = Color3.new(0, 0, 0)
+					Logo.BorderSizePixel = 0
+					Logo.Position = UDim2.new(0.02892562, 0, 0.0736196339, 0)
+					Logo.Size = UDim2.new(0, 100, 0, 100)
+					if LunarLogoWaterMarks.Enabled then
+						WatermarkRight.Name = "WatermarkRight"
+						WatermarkRight.Parent = Logo
+						WatermarkRight.BackgroundColor3 = Color3.new(1, 1, 1)
+						WatermarkRight.BackgroundTransparency = 1
+						WatermarkRight.BorderColor3 = Color3.new(0, 0, 0)
+						WatermarkRight.BorderSizePixel = 0
+						WatermarkRight.Position = UDim2.new(8.07999992, 0, -0.720000029, 0)
+						WatermarkRight.Size = UDim2.new(0, 179, 0, 100)
+						WatermarkRight.Image = "rbxassetid://15005073745"
+						WatermarkLeft.Name = "WatermarkLeft"
+						WatermarkLeft.Parent = Logo
+						WatermarkLeft.BackgroundColor3 = Color3.new(1, 1, 1)
+						WatermarkLeft.BackgroundTransparency = 1
+						WatermarkLeft.BorderColor3 = Color3.new(0, 0, 0)
+						WatermarkLeft.BorderSizePixel = 0
+						WatermarkLeft.Position = UDim2.new(3.95999932, 0, -0.720000029, 0)
+						WatermarkLeft.Size = UDim2.new(0, 179, 0, 100)
+						WatermarkLeft.Image = "rbxassetid://15005073745"
+					end
+				end)
+			else
+				warningNotification('LunarLogo', 'Disabled Next Game', 5)
+			end
+		end,
+        Default = false
+	})
+	LunarLogoShadows = LunarLogo.CreateToggle({
+		Name = 'Shadows',
+		Default = true,
+		HoverText = 'Adds shadows to the Logo',
+		Function = function() end
+	})
+	LunarLogoCorners = LunarLogo.CreateToggle({
+		Name = 'Corners',
+		Default = true,
+		HoverText = 'Adds Corners to the Logo',
+		Function = function() end
+	})
+	LunarLogoWaterMarks = LunarLogo.CreateToggle({
+		Name = 'WaterMarks',
+		Default = true,
+		HoverText = 'Shows the Lunar WaterMarks',
+		Function = function() end
+	})
+	LunarLogoTextSize = LunarLogo.CreateSlider({
+		Name = 'Text Size',
+		Min = 10,
+		Max = 35,
+		HoverText = 'Size of the Text',
+		Function = function() end,
+		Default = 26
+	})
+	LunarLogoTransparency = LunarLogo.CreateSlider({
+		Name = 'Transparency',
+		Min = 0,
+		Max = 10,
+		HoverText = 'Transparency of the Background',
+		Function = function() end,
+		Default = 2
+	})
+end)
+
+runLunar(function()
+	local AutoLook = {Enabled = false}
+	local AutoLookRotate = {Value = 5}
+	local AutoLookHeight = {Value = 2}
+	local connection1
+	AutoLook = GuiLibrary.ObjectsThatCanBeSaved['BlatantWindow'].Api.CreateOptionsButton({
+		Name = 'AutoLook',
+        HoverText = 'Automatically looks in the\ndirection you are walking',
+		Function = function(callback)
+			if callback then
+				task.spawn(function()
+					repeat task.wait() until entityLunar.isAlive or not AutoLook.Enabled
+					connection1 = runService.Heartbeat:Connect(function()
+						if entityLunar.isAlive then
+							local newmovedir = vec3(lplr.Character.HumanoidRootPart.Velocity.X, 0, lplr.Character.HumanoidRootPart.Velocity.Z)
+							local newplace = lplr.Character.HumanoidRootPart.CFrame.Position + newmovedir
+							if vec2(lplr.Character.HumanoidRootPart.Velocity.X, lplr.Character.HumanoidRootPart.Velocity.Z).magnitude > 1 then
+								if isnetworkowner(lplr.Character.HumanoidRootPart) then
+									lplr.Character.HumanoidRootPart.CFrame = CFrame.lookAt(lplr.Character.HumanoidRootPart.CFrame.Position, newplace, (lplr.Character.HumanoidRootPart.Velocity / lplr.Character.HumanoidRootPart.Velocity.magnitude) * (vec3(0, AutoLookRotate.Value, 0) * (lplr.Character.HumanoidRootPart.Velocity / lplr.Character.HumanoidRootPart.Velocity.magnitude)))
+									lplr.Camera.CFrame = CFrame.new(lplr.Character.HumanoidRootPart.Position + vec3(0, AutoLookHeight.Value, 0))
+								end
+							end
+						end
+					end)
+				end)
+			else
+				if connection1 then
+					connection1:Disconnect()
+				end
+			end
+		end,
+        Default = false
+	})
+	AutoLookRotate = AutoLook.CreateSlider({
+		Name = 'Rotate',
+		Min = 0,
+		Max = 10,
+		HoverText = 'Rotate Amount',
+		Function = function() end,
+		Default = 5,
+		Double = 10
+	})
+	AutoLookHeight = AutoLook.CreateSlider({
+		Name = 'Height',
+		Min = 1,
+		Max = 5,
+		HoverText = 'Camera Height',
+		Function = function() end,
+		Default = 2
+	})
+end)
+
+runLunar(function()
+    local Headless = {Enabled = false}
+    Headless = GuiLibrary.ObjectsThatCanBeSaved['RenderWindow'].Api.CreateOptionsButton({
+        Name = 'Headless',
+        HoverText = 'Makes your head transparent',
+        Function = function(callback)
+            if callback then
+                task.spawn(function()
+                    repeat task.wait()
+						entityLunar.character.Head.Transparency = 1
+						for _, accessory in next, entityLunar.character:GetChildren() do
+							if accessory:IsA'Accessory' then
+								accessory.Handle.Transparency = 0
+							end
+						end
+                    until not Headless.Enabled
+                end)
+            else
+                entityLunar.character.Head.Transparency = 0
+				for _, accessory in next, entityLunar.character:GetChildren() do
+					if accessory:IsA'Accessory' then
+						accessory.Handle.Transparency = 0
+					end
+				end
+            end
+        end,
+        Default = false
+    })
+end)
+
+runLunar(function()
+	local Loader = {Enabled = false}
+	local LoaderDuration = {Value = 10}
+	Loader = GuiLibrary.ObjectsThatCanBeSaved['UtilityWindow'].Api.CreateOptionsButton({
+		Name = 'Loader',
+        HoverText = 'Notifies you on load',
+		Function = function(callback)
+			if callback then
+				task.spawn(function()
+					local timetaken = rounder(tick() - LunarLoad)
+					local timeformat = string.format('%.1f', timetaken)
+					warningNotification2('Render', 'Loaded in '..timeformat..'s. Logged in as '..playersService.Name..'.', LoaderDuration.Value)
+					return
+				end)
+			end
+		end,
+        Default = false
+	})
+	LoaderDuration = Loader.CreateSlider({
+		Name = 'Duration',
+		Min = 1,
+		Max = 20,
+		HoverText = 'Duration of the Notification',
+		Function = function() end,
+		Default = 10
+	})
+end)
+
+runLunar(function()
+	if not (game.Chat:GetChildren()[1]) then
+		local chat = game.CoreGui.ExperienceChat:WaitForChild("appLayout")
+	end
+	local scaleSourceNew = game:GetService("TextChatService").ChatWindowConfiguration
+	local chatResize = {Enabled = false}
+	local chatPosX = {Value = 5}
+	local chatPosY = {Value = 4}
+	local chatScaleX = {Value = 0.85}
+	local chatScaleY = {Value = 1}
+	chatResize = GuiLibrary["ObjectsThatCanBeSaved"]["RenderWindow"]["Api"]["CreateOptionsButton"]({
+		Name = "ChatResize",
+		HoverText = "Resizes the chat",
+		Function = function(callback)
+			if callback then
+				if chat then
+					chat.Position = UDim2.new(chatPosX.Value / 1000,0,chatPosY.Value / 1000,0)
+					scaleSourceNew.WidthScale = chatScaleX.Value / 100
+					scaleSourceNew.HeightScale = chatScaleY.Value / 100
+				end
+			else
+				if chat then
+					chat.Position = UDim2.new(0,8,0,4)
+					scaleSourceNew.WidthScale = 1
+					scaleSourceNew.HeightScale = 0.85
+				end
+			end
+		end
+	})
+	chatPosX = chatResize.CreateSlider({
+		Name = "Position (X)",
+		Min = 0,
+		Max = 1000,
+		Default = 8,
+		Function = function(val) 
+			if chatResize.Enabled then
+				chat.Position = UDim2.new(val / 1000,0,chatPosY.Value / 1000,0)
+			end
+		end
+	})
+	chatPosY = chatResize.CreateSlider({
+		Name = "Position (Y)",
+		Min = 0,
+		Max = 1000,
+		Default = 4,
+		Function = function(val)
+			if chatResize.Enabled then
+				chat.Position = UDim2.new(chatPosX.Value / 1000,0,val / 1000,0)
+			end
+		end
+	})
+	chatScaleX = chatResize.CreateSlider({
+		Name = "Scale (X)",
+		Min = 50,
+		Max = 78,
+		Default = 100,
+		Function = function(val)
+			if chatResize.Enabled then
+				scaleSourceNew.WidthScale = val / 100
+			end
+		end
+	})
+	chatScaleY = chatResize.CreateSlider({
+		Name = "Scale (Y)",
+		Min = 50,
+		Max = 133,
+		Default = 85,
+		Function = function(val)
+			if chatResize.Enabled then
+				scaleSourceNew.HeightScale = val / 100
+			end
+		end
+	})
+end)
+
+runLunar(function()
+	local CustomJump = {Enabled = false}
+	local CustomJumpMode = {Value = "Normal"}
+	local CustomJumpVelocity = {Value = 50}
+	CustomJump = GuiLibrary["ObjectsThatCanBeSaved"]["BlatantWindow"]["Api"]["CreateOptionsButton"]({
+		Name = "CustomJump",
+        HoverText = "Customizes your jumping ability",
+		Function = function(callback)
+			if callback then
+				game:GetService("UserInputService").JumpRequest:Connect(function()
+					if CustomJumpMode.Value == "Normal" then
+						entityLunar.character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+					elseif CustomJumpMode.Value == "Velocity" then
+						entityLunar.character.HumanoidRootPart.Velocity += vec3(0,CustomJumpVelocity.Value,0)
+					end
+				end)
+			end
+		end,
+		ExtraText = function()
+			return CustomJumpMode.Value
+		end
+	})
+	CustomJumpMode = CustomJump.CreateDropdown({
+		Name = "Mode",
+		List = {
+			"Normal",
+			"Velocity"
+		},
+		Function = function() end,
+	})
+	CustomJumpVelocity = CustomJump.CreateSlider({
+		Name = "Velocity",
+		Min = 1,
+		Max = 100,
+		Function = function() end,
+		Default = 50
+	})
+end)
+
+runLunar(function()
+	local LunarBoost = {Enabled = false}
+	local LunarBoostMode = {Value = "Velocity"}
+	local LunarBoostJumps = {Value = 10}
+	local LunarBoostJumpsCooldown = {Value = 1}
+	local LunarBoostVeloSpeed = {Value = 650}
+	local LunarBoostCFSpeed = {Value = 50}
+	local LunarBoostCFSlow = {Value = 1}
+	local LunarBoostTweenSpeed = {Value = 1000}
+	local LunarBoostTweenDur = {Value = 4}
+	local LunarBoostNotification = {Enabled = true}
+	LunarBoost = GuiLibrary["ObjectsThatCanBeSaved"]["BlatantWindow"]["Api"]["CreateOptionsButton"]({
+		Name = "LunarBoost",
+        HoverText = "Let's you jump higher",
+		Function = function(callback)
+			if callback then
+				local JumpedTimes = 0
+				local BoostedCF = 0
+				local Duration = tick()
+				if LunarBoostMode.Value == "Velocity" then
+					task.spawn(function()
+						repeat
+							entityLunar.character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+							JumpedTimes = JumpedTimes + 1
+							task.wait(LunarBoostJumpsCooldown.Value/10)
+						until not LunarBoost.Enabled or LunarBoostMode.Value ~= "Velocity" or JumpedTimes >= LunarBoostJumps.Value
+					end)
+					task.wait(LunarBoostJumpsCooldown.Value/10 * LunarBoostJumps.Value)
+					entityLunar.character.HumanoidRootPart.Velocity += vec3(0,LunarBoostVeloSpeed.Value,0)
+					if LunarBoostNotification.Enabled then
+						local timetaken = rounder(tick() - Duration)
+						local timeformat = string.format("%.1f", timetaken)
+						warningNotification("LunarBoost","Boosted " .. LunarBoostVeloSpeed.Value .. " studs in " .. timeformat .. " seconds",5)
+					end
+					LunarBoost.ToggleButton(false)
+					return
+				elseif LunarBoostMode.Value == "CFrame" then
+					workspace.Gravity = 0
+					task.spawn(function()
+						repeat
+							entityLunar.character.HumanoidRootPart.CFrame += vec3(0,LunarBoostCFSpeed.Value,0)
+							BoostedCF = BoostedCF + LunarBoostCFSpeed.Value
+							task.wait(LunarBoostCFSlow.Value/10)
+						until not LunarBoost.Enabled or LunarBoostMode.Value ~= "CFrame"
+						if LunarBoostNotification.Enabled then
+							local timetaken = rounder(tick() - Duration)
+							local timeformat = string.format("%.1f", timetaken)
+							warningNotification("LunarBoost","Boosted " .. BoostedCF .. " studs in " .. timeformat .. " seconds",5)
+						end
+					end)
+				elseif LunarBoostMode.Value == "TweenService" then
+					tweenService:Create(entityLunar.character.HumanoidRootPart,TweenInfo.new(LunarBoostTweenDur.Value/10),{
+						CFrame = entityLunar.character.HumanoidRootPart.CFrame + vec3(0,LunarBoostTweenSpeed.Value,0)
+					}):Play()
+					if LunarBoostNotification.Enabled then
+						local timetaken = rounder(tick() - Duration)
+						local timeformat = string.format("%.1f", timetaken)
+						warningNotification("LunarBoost","Tweened " .. LunarBoostTweenSpeed.Value .. " studs in " .. timeformat .. " seconds",5)
+					end
+					LunarBoost.ToggleButton(false)
+					return
+				end
+			else
+				workspace.Gravity = 196.2
+			end
+		end,
+		ExtraText = function()
+			return LunarBoostMode.Value
+		end
+	})
+	LunarBoostMode = LunarBoost.CreateDropdown({
+		Name = "Mode",
+		List = {
+			"Velocity",
+			"CFrame",
+			"TweenService"
+		},
+		Function = function() end,
+	})
+	LunarBoostJumps = LunarBoost.CreateSlider({
+		Name = "Jumps",
+		Min = 1,
+		Max = 10,
+		Function = function() end,
+		Default = 10
+	})
+	LunarBoostJumpsCooldown = LunarBoost.CreateSlider({
+		Name = "Jumps Cooldown",
+		Min = 1,
+		Max = 3,
+		Function = function() end,
+		Default = 1
+	})
+	LunarBoostVeloSpeed = LunarBoost.CreateSlider({
+		Name = "Velocity Speed",
+		Min = 1,
+		Max = 650,
+		Function = function() end,
+		Default = 650
+	})
+	LunarBoostCFSpeed = LunarBoost.CreateSlider({
+		Name = "CFrame Speed",
+		Min = 1,
+		Max = 50,
+		Function = function() end,
+		Default = 50
+	})
+	LunarBoostCFSlow = LunarBoost.CreateSlider({
+		Name = "CFrame Slowdown",
+		Min = 1,
+		Max = 3,
+		Function = function() end,
+		Default = 1
+	})
+	LunarBoostTweenSpeed = LunarBoost.CreateSlider({
+		Name = "Tween Speed",
+		Min = 1,
+		Max = 1000,
+		Function = function() end,
+		Default = 1000
+	})
+	LunarBoostTweenDur = LunarBoost.CreateSlider({
+		Name = "Tween Duration",
+		Min = 1,
+		Max = 10,
+		Function = function() end,
+		Default = 4
+	})
+	LunarBoostNotification = LunarBoost.CreateToggle({
+		Name = "Notification",
+		Function = function() end,
+	})
+end)
+
+runLunar(function()
+	local UIS = game:GetService("UserInputService")
+	local mouseMod = {Enabled = false}
+	local mouseDropdown = {Value = "CS:GO Crosshair"}
+	local mouseIcons = {
+		["CS:GO Crosshair"] = "rbxassetid://14789879068",
+		["Old Roblox Mouse"] = "rbxassetid://13546344315",
+		["dx9ware"] = "rbxassetid://12233942144",
+		["BEST CROSSHAIR"] = "rbxassetid://8680062686",
+		["Tri-angled Crosshair"] = "rbxassetid://14790304072",
+		["Arrow Crosshair"] = "rbxassetid://14790316561"
+	}
+	local customMouseIcon = {Enabled = false}
+	local customIcon = {Value = ""}
+	mouseMod = GuiLibrary["ObjectsThatCanBeSaved"]["RenderWindow"]["Api"]["CreateOptionsButton"]({
+		Name = "MouseMod",
+		HoverText = "Modifies your cursor's image",
+		Function = function(callback)
+			if callback then
+				task.spawn(function()
+					repeat task.wait()
+						if customMouseIcon.Enabled then
+							UIS.MouseIcon = "rbxassetid://"..customIcon.Value
+						else
+							UIS.MouseIcon = mouseIcons[mouseDropdown.Value]
+						end
+					until not mouseMod.Enabled
+				end)
+			else
+				UIS.MouseIcon = ""
+				task.wait()
+				UIS.MouseIcon = ""
+			end
+		end
+	})
+	mouseDropdown = mouseMod.CreateDropdown({
+		Name = "Mouse Icon",
+		List = {"CS:GO Crosshair","Old Roblox Mouse","dx9ware","BEST CROSSHAIR","Tri-angled Crosshair", "Arrow Crosshair"},
+		Function = function(val) end
+	})
+	customMouseIcon = mouseMod.CreateToggle({
+		Name = "Custom Icon",
+		Function = function(callback) end
+	})
+	customIcon = mouseMod.CreateTextBox({
+		Name = "Custom Mouse Icon",
+		TempText = "Image ID (not decal)",
+		FocusLost = function(enter) 
+			if mouseMod.Enabled then 
+				mouseMod.ToggleButton(false)
+				mouseMod.ToggleButton(false)
+			end
+		end
+	})
+end)
+
+runLunar(function()
+	local TimeChanger = {Enabled = false}
+	local TimeChangerTime = {Value = 0}
+	local TimeChangerElseEndTime = {Enabled = true}
+	local TimeSettings = {
+		Main = TimeChangerTime.Value,
+		CurrentTime = lightingService.TimeOfDay
+	}
+	TimeChanger = GuiLibrary["ObjectsThatCanBeSaved"]["RenderWindow"]["Api"]["CreateOptionsButton"]({
+		Name = "TimeAdjuster",
+        HoverText = "Changes the time",
+		Function = function(callback)
+			if callback then
+				lightingService.TimeOfDay = TimeSettings.Main
+			else
+				if TimeChangerElseEndTime.Enabled then
+					lightingService.TimeOfDay = 13
+				else
+					lightingService.TimeOfDay = TimeSettings.CurrentTime
+				end
+			end
+		end
+	})
+	TimeChangerTime = TimeChanger.CreateSlider({
+		Name = "Time",
+		Min = 0,
+		Max = 24,
+		Function = function() end,
+		Default = 0
+	})
+	TimeChangerElseEndTime = TimeChanger.CreateToggle({
+		Name = "ElseEndTime",
+		Function = function() end,
+	})
+end)
+
+runLunar(function()
+	local P2CLongJump = {Enabled = false}
+    local P2CLongJumpHigh = {Value = "StateTypeJumping"}
+    local P2CLongJumpLow = {Value = "Velocity"}
+    local P2CLongJumpLowEnable = {Enabled = true}
+    local P2CLongJumpElseEndGrav = {Enabled = true}
+    local CurrentGrav = workspace.Gravity
+    local P2CLongJumpCFHigh = {Value = 8}
+    local P2CLongJumpCFDelayHigh = {Value = 16}
+    local P2CLongJumpCFDelayLow = {Value = 27}
+    local P2CLongJumpVelHigh = {Value = 15}
+    local P2CLongJumpVelDelayHigh = {Value = 15}
+    local P2CLongJumpVelDelayLow = {Value = 24}
+    local P2CLongJumpGravity = {Value = 10}
+    local P2CLongJumpStateJumpLow = {Value = 5}
+    local P2CLongJumpStateJumpDelayHigh = {Value = 13}
+    local P2CLongJumpStateJumpDelayLow = {Value = 8}
+    local function lowModes()
+        if P2CLongJumpLow.Value == "CFrame" then
+            if P2CLongJumpHigh.Value == "CFrame" then
+                task.wait(LongJumpSettings.CFDelayHigh)
+                local vall = LongJumpSettings.CFHigh - 2
+                entityLunar.character.HumanoidRootPart.CFrame += vec3(0,-vall,0)
+                task.wait(LongJumpSettings.CFDelayLow)
+            elseif P2CLongJumpHigh.Value == "Velocity" then
+                task.wait(LongJumpSettings.VelDelayHigh)
+                local vall1 = LongJumpSettings.VelHigh/2
+				entityLunar.character.HumanoidRootPart.CFrame += vec3(0,-vall1,0)
+                task.wait(LongJumpSettings.VelDelayLow)
+            elseif P2CLongJumpHigh.Value == "StateTypeJumping" then
+                task.wait(LongJumpSettings.JumpDelayHigh)
+                entityLunar.character.HumanoidRootPart.CFrame += vec3(0,-LongJumpSettings.JumpLow,0)
+                task.wait(LongJumpSettings.JumpDelayLow)
+            end
+        elseif P2CLongJumpLow.Value == "Velocity" then
+            if P2CLongJumpHigh.Value == "Velocity" then
+                task.wait(LongJumpSettings.VelDelayHigh)
+                local vall1 = LongJumpSettings.VelHigh/2
+                entityLunar.character.HumanoidRootPart.Velocity = Vector3.new(0,-vall1,0)
+                task.wait(LongJumpSettings.VelDelayLow)
+            elseif P2CLongJumpHigh.Value == "CFrame" then
+                task.wait(LongJumpSettings.CFDelayHigh)
+                local vall = LongJumpSettings.CFHigh - 2
+                entityLunar.character.HumanoidRootPart.Velocity = Vector3.new(0,-vall,0)
+                task.wait(LongJumpSettings.CFDelayLow)
+            elseif P2CLongJumpHigh.Value == "StateTypeJumping" then
+                task.wait(LongJumpSettings.JumpDelayHigh)
+                entityLunar.character.HumanoidRootPart.Velocity = Vector3.new(0,-LongJumpSettings.JumpLow,0)
+                task.wait(LongJumpSettings.JumpDelayLow)
+            end
+        end
+    end
+    local LongJumpSettings = {
+        Grav = P2CLongJumpGravity.Value,
+        CFHigh = P2CLongJumpCFHigh.Value,
+        VelHigh = P2CLongJumpVelHigh.Value,
+        CFDelayHigh = P2CLongJumpCFDelayHigh.Value/100,
+        CFDelayLow = P2CLongJumpCFDelayLow.Value/100,
+        VelDelayHigh = P2CLongJumpVelDelayHigh.Value/100,
+        VelDelayLow = P2CLongJumpVelDelayLow.Value/100,
+        JumpDelayHigh = P2CLongJumpStateJumpDelayHigh.Value/100,
+        JumpDelayLow = P2CLongJumpStateJumpDelayLow.Value/100,
+        JumpLow = P2CLongJumpStateJumpLow.Value
+    }
+	P2CLongJump = GuiLibrary["ObjectsThatCanBeSaved"]["BlatantWindow"]["Api"]["CreateOptionsButton"]({
+		Name = "LunarFly",
+        HoverText = "Custom Fly",
+		Function = function(callback)
+			if callback then
+				workspace.Gravity = LongJumpSettings.Grav
+				if P2CLongJumpHigh.Value == "CFrame" then
+					task.spawn(function()
+						repeat task.wait()
+							if entityLibrary.isAlive then
+								workspace.Gravity = LongJumpSettings.Grav
+								entityLunar.character.HumanoidRootPart.CFrame += vec3(0,LongJumpSettings.CFHigh,0)
+								if P2CLongJumpLowEnable.Enabled then
+									lowModes()
+								else
+									task.wait(LongJumpSettings.CFDelayLow)
+								end
+							end
+						until not P2CLongJump.Enabled or P2CLongJumpHigh.Value ~= "CFrame"
+					end)
+				elseif P2CLongJumpHigh.Value == "Velocity" then
+					task.spawn(function()
+						repeat task.wait()
+							if entityLunar.isAlive then
+								workspace.Gravity = LongJumpSettings.Grav
+								entityLunar.character.HumanoidRootPart.Velocity += vec3(0,LongJumpSettings.VelHigh,0)
+								if P2CLongJumpLowEnable.Enabled then
+									lowModes()
+								else
+									task.wait(LongJumpSettings.VelDelayLow)
+								end
+							end
+						until not P2CLongJump.Enabled or P2CLongJumpHigh.Value ~= "Velocity"
+					end)
+				elseif P2CLongJumpHigh.Value == "StateTypeJumping" then
+					task.spawn(function()
+						repeat task.wait()
+							if entityLunar.isAlive then
+								workspace.Gravity = LongJumpSettings.Grav
+								entityLunar.character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+								if P2CLongJumpLowEnable.Enabled then
+									lowModes()
+								else
+									task.wait(LongJumpSettings.JumpDelayLow)
+								end
+							end
+						until not P2CLongJump.Enabled or P2CLongJumpHigh.Value ~= "StateTypeJumping"
+					end)    
+				end
+            else
+                if P2CLongJumpElseEndGrav.Enabled then
+                    workspace.Gravity = CurrentGrav
+                else
+                    workspace.Gravity = 196.2
+                end
+			end
+		end,
+		ExtraText = function()
+			return P2CLongJumpHigh.Value
+		end
+	})
+    P2CLongJumpHigh = P2CLongJump.CreateDropdown({
+        Name = "High",
+        List = {
+			"CFrame",
+			"Velocity",
+			"StateTypeJumping"
+		},
+        Function = function() end,
+    })
+    P2CLongJumpLow = P2CLongJump.CreateDropdown({
+        Name = "Low",
+        List = {
+			"CFrame",
+			"Velocity"
+		},
+        Function = function() end,
+    })
+    P2CLongJumpLowEnable = P2CLongJump.CreateToggle({
+        Name = "LowEnable",
+        Function = function() end,
+    })
+    P2CLongJumpElseEndGrav = P2CLongJump.CreateToggle({
+        Name = "ElseEndGrav",
+        Function = function() end,
+    })
+    P2CLongJumpCFHigh = P2CLongJump.CreateSlider({
+        Name = "CFHigh",
+        Min = 1,
+        Max = 20,
+        Function = function() end,
+        Default = 8
+    })
+    P2CLongJumpCFDelayHigh = P2CLongJump.CreateSlider({
+        Name = "CFDelayHigh",
+        Min = 5,
+        Max = 40,
+        Function = function() end,
+        Default = 16
+    })
+    P2CLongJumpCFDelayLow = P2CLongJump.CreateSlider({
+        Name = "CFDelayLow",
+        Min = 5,
+        Max = 40,
+        Function = function() end,
+        Default = 27
+    })
+    P2CLongJumpVelHigh = P2CLongJump.CreateSlider({
+        Name = "VelHigh",
+        Min = 1,
+        Max = 30,
+        Function = function() end,
+        Default = 15
+    })
+    P2CLongJumpVelDelayHigh = P2CLongJump.CreateSlider({
+        Name = "VelDelayHigh",
+        Min = 10,
+        Max = 20,
+        Function = function() end,
+        Default = 15
+    })
+    P2CLongJumpVelDelayLow = P2CLongJump.CreateSlider({
+        Name = "VelDelayLow",
+        Min = 7,
+        Max = 40,
+        Function = function() end,
+        Default = 24
+    })
+    P2CLongJumpGravity = P2CLongJump.CreateSlider({
+        Name = "Gravity",
+        Min = 0,
+        Max = 192,
+        Function = function() end,
+        Default = 50
+    })
+    P2CLongJumpStateJumpLow = P2CLongJump.CreateSlider({
+        Name = "StateJumpLow",
+        Min = 1,
+        Max = 15,
+        Function = function() end,
+        Default = 5
+    })
+    P2CLongJumpStateJumpDelayHigh = P2CLongJump.CreateSlider({
+        Name = "StateJumpDelayHigh",
+        Min = 8,
+        Max = 25,
+        Function = function() end,
+        Default = 13
+    })
+    P2CLongJumpStateJumpDelayLow = P2CLongJump.CreateSlider({
+        Name = "StateJumpDelayLow",
+        Min = 1,
+        Max = 15,
+        Function = function() end,
+        Default = 8
+    })
+end)
+
+runLunar(function()
+	local GameWeather = {Enabled = false}
+	local GameWeatherMode = {Value = "Snow"}
+	local SnowflakesSpread = {Value = 35}
+	local SnowflakesRate = {Value = 28}
+	local SnowflakesHigh = {Value = 100}
+	GameWeather = GuiLibrary["ObjectsThatCanBeSaved"]["RenderWindow"]["Api"]["CreateOptionsButton"]({
+		Name = 'GameWeather',
+		HoverText = 'Changes the weather',
+		Function = function(callback) 
+			if callback then
+				task.spawn(function()
+					-- vape gametheme code
+					local snowpart = Instance.new("Part")
+					snowpart.Size = Vector3.new(240,0.5,240)
+					snowpart.Name = "SnowParticle"
+					snowpart.Transparency = 1
+					snowpart.CanCollide = false
+					snowpart.Position = Vector3.new(0,120,286)
+					snowpart.Anchored = true
+					snowpart.Parent = workspace
+					local snow = Instance.new("ParticleEmitter")
+					snow.RotSpeed = NumberRange.new(300)
+					snow.VelocitySpread = SnowflakesSpread.Value
+					snow.Rate = SnowflakesRate.Value
+					snow.Texture = "rbxassetid://8158344433"
+					snow.Rotation = NumberRange.new(110)
+					snow.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0.16939899325371,0),NumberSequenceKeypoint.new(0.23365999758244,0.62841498851776,0.37158501148224),NumberSequenceKeypoint.new(0.56209099292755,0.38797798752785,0.2771390080452),NumberSequenceKeypoint.new(0.90577298402786,0.51912599802017,0),NumberSequenceKeypoint.new(1,1,0)})
+					snow.Lifetime = NumberRange.new(8,14)
+					snow.Speed = NumberRange.new(8,18)
+					snow.EmissionDirection = Enum.NormalId.Bottom
+					snow.SpreadAngle = Vector2.new(35,35)
+					snow.Size = NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.039760299026966,1.3114800453186,0.32786899805069),NumberSequenceKeypoint.new(0.7554469704628,0.98360699415207,0.44038599729538),NumberSequenceKeypoint.new(1,0,0)})
+					snow.Parent = snowpart
+					local windsnow = Instance.new("ParticleEmitter")
+					windsnow.Acceleration = Vector3.new(0,0,1)
+					windsnow.RotSpeed = NumberRange.new(100)
+					windsnow.VelocitySpread = SnowflakesSpread.Value
+					windsnow.Rate = SnowflakesRate.Value
+					windsnow.Texture = "rbxassetid://8158344433"
+					windsnow.EmissionDirection = Enum.NormalId.Bottom
+					windsnow.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0.16939899325371,0),NumberSequenceKeypoint.new(0.23365999758244,0.62841498851776,0.37158501148224),NumberSequenceKeypoint.new(0.56209099292755,0.38797798752785,0.2771390080452),NumberSequenceKeypoint.new(0.90577298402786,0.51912599802017,0),NumberSequenceKeypoint.new(1,1,0)})
+					windsnow.Lifetime = NumberRange.new(8,14)
+					windsnow.Speed = NumberRange.new(8,18)
+					windsnow.Rotation = NumberRange.new(110)
+					windsnow.SpreadAngle = Vector2.new(35,35)
+					windsnow.Size = NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.039760299026966,1.3114800453186,0.32786899805069),NumberSequenceKeypoint.new(0.7554469704628,0.98360699415207,0.44038599729538),NumberSequenceKeypoint.new(1,0,0)})
+					windsnow.Parent = snowpart
+					repeat
+						task.wait()
+						if entityLunar.isAlive then 
+							snowpart.Position = entityLunar.character.HumanoidRootPart.Position + vec3(0,SnowflakesHigh.Value,0)
+						end
+					until not vapeInjected
+				end)
+			else
+				for _, v in next, workspace:GetChildren() do
+					if v.Name == "SnowParticle" then
+						v:Remove()
+					end
+				end
+			end
+		end
+	})
+	SnowflakesSpread = GameWeather.CreateSlider({
+		Name = "Snow Spread",
+		Min = 1,
+		Max = 100,
+		Function = function() end,
+		Default = 35
+	})
+	SnowflakesRate = GameWeather.CreateSlider({
+		Name = "Snow Rate",
+		Min = 1,
+		Max = 100,
+		Function = function() end,
+		Default = 28
+	})
+	SnowflakesHigh = GameWeather.CreateSlider({
+		Name = "Snow High",
+		Min = 1,
+		Max = 200,
+		Function = function() end,
+		Default = 100
+	})
+end)
+
+runLunar(function()
+	local FakeLag = {Enabled = false}
+	local FakeLagUsage = {Value = "Blatant"}
+	local FakeLagSpeed = {Enabled = false}
+	local FakeLagDelay1 = {Value = 2}
+	local FakeLagDelay2 = {Value = 7}
+	local FakeLagDelayLegit = {Value = 3}
+	local FakeLagSpeed1 = {Value = 22}
+	local FakeLagSpeed2 = {Value = 18}
+	local FakeLagSpeed3 = {Value = 20}
+	local FakeLagSpeed4 = {Value = 2.7}
+	local FakeLagSpeed5 = {Value = 1.5}
+	local function ChangeSpeeds()
+		entityLunar.character.Humanoid.WalkSpeed = FakeLagSpeed1.Value
+		task.wait(FakeLagSpeed4.Value/10)
+		entityLunar.character.Humanoid.WalkSpeed = FakeLagSpeed2.Value
+		task.wait(FakeLagSpeed5.Value/10)
+		entityLunar.character.Humanoid.WalkSpeed = FakeLagSpeed3.Value
+	end
+	FakeLag = GuiLibrary["ObjectsThatCanBeSaved"]["BlatantWindow"]["Api"]["CreateOptionsButton"]({
+		Name = "FakeLag",
+        HoverText = "Makes people think you're laggy",
+		Function = function(callback)
+			if callback then
+				task.spawn(function()
+					repeat task.wait()
+						if FakeLagUsage.Value == "Blatant" then
+							entityLunar.character.HumanoidRootPart.Anchored = true
+							task.wait(FakeLagDelay1.Value/10)
+							entityLunar.character.HumanoidRootPart.Anchored = false
+							ChangeSpeeds()
+							task.wait(FakeLagDelay2.Value/10)
+						elseif FakeLagUsage.Value == "Legit" then
+							entityLunar.character.HumanoidRootPart.Anchored = true
+							task.wait(FakeLagDelay1.Value/10 + FakeLagDelayLegit.Value)
+							entityLunar.character.HumanoidRootPart.Anchored = false
+							ChangeSpeeds()
+							task.wait(FakeLagDelay2.Value/10 + FakeLagDelayLegit.Value)
+						end
+					until not FakeLag.Enabled
+				end)
+			else
+				if entityLunar.character.HumanoidRootPart.Anchored then
+					entityLunar.character.HumanoidRootPart.Anchored = false
+				end
+			end
+		end,
+		ExtraText = function()
+			return FakeLagUsage.Value
+		end
+	})
+	FakeLagUsage = FakeLag.CreateDropdown({
+		Name = "Mode",
+		List = {
+			"Blatant",
+			"Legit"
+		},
+		HoverText = "FakeLag Mode",
+		Function = function() end,
+	})
+	FakeLagSpeed = FakeLag.CreateToggle({
+		Name = "Speed",
+		Default = false,
+		HoverText = "Changes speed",
+		Function = function() end,
+	})
+	FakeLagDelay1 = FakeLag.CreateSlider({
+		Name = "Anchored Delay",
+		Min = 0,
+		Max = 20,
+		HoverText = "Anchored Delay Value",
+		Function = function() end,
+		Default = 2
+	})
+	FakeLagDelay2 = FakeLag.CreateSlider({
+		Name = "Unanchored Delay",
+		Min = 0,
+		Max = 20,
+		HoverText = "Not Anchored Delay Value",
+		Function = function() end,
+		Default = 7
+	})
+	FakeLagDelayLegit = FakeLag.CreateSlider({
+		Name = "Legit",
+		Min = 1,
+		Max = 10,
+		HoverText = "Legit Time",
+		Function = function() end,
+		Default = 3
+	})
+	FakeLagSpeed1 = FakeLag.CreateSlider({
+		Name = "Speed 1",
+		Min = 1,
+		Max = 22,
+		HoverText = "Speed 1 Value",
+		Function = function() end,
+		Default = 22
+	})
+	FakeLagSpeed2 = FakeLag.CreateSlider({
+		Name = "Speed 2",
+		Min = 1,
+		Max = 20,
+		HoverText = "Speed 2 Value",
+		Function = function() end,
+		Default = 18
+	})
+	FakeLagSpeed3 = FakeLag.CreateSlider({
+		Name = "Speed 3",
+		Min = 1,
+		Max = 20,
+		HoverText = "Speed 3 Value",
+		Function = function() end,
+		Default = 20
+	})
+	FakeLagSpeed4 = FakeLag.CreateSlider({
+		Name = "Speed Delay 1",
+		Min = 1,
+		Max = 3,
+		HoverText = "Speed Delay 1 Value",
+		Function = function() end,
+		Default = 2.7
+	})
+	FakeLagSpeed5 = FakeLag.CreateSlider({
+		Name = "Speed Delay 2",
+		Min = 1,
+		Max = 3,
+		HoverText = "Speed Delay 2 Value",
+		Function = function() end,
+		Default = 1.5
+	})
+end)
+
+runLunar(function()
+	local chatDisable = {Enabled = false}
+	local chatVersion = function()
+		if game.Chat:GetChildren()[1] then return true else return false end
+	end
+	chatDisable = GuiLibrary["ObjectsThatCanBeSaved"]["RenderWindow"]["Api"]["CreateOptionsButton"]({
+		Name = "ChatDisable",
+		HoverText = "Disables the chat",
+		Function = function(callback)
+			if callback then
+				if chatVersion() then
+					game:GetService("Players").LocalPlayer.PlayerGui.Chat.Enabled = false
+					game:GetService("CoreGui").TopBarApp.TopBarFrame.LeftFrame.ChatIcon.Visible = false
+				elseif (not chatVersion()) then
+					game.CoreGui.ExperienceChat.Enabled = false
+					game:GetService("CoreGui").TopBarApp.TopBarFrame.LeftFrame.ChatIcon.Visible = false
+					game:GetService("TextChatService").ChatInputBarConfiguration.Enabled = false
+					game:GetService("TextChatService").BubbleChatConfiguration.Enabled = false
+				end
+			else
+				if chatVersion() then
+					game:GetService("Players").LocalPlayer.PlayerGui.Chat.Enabled = true
+					game:GetService("CoreGui").TopBarApp.TopBarFrame.LeftFrame.ChatIcon.Visible = true
+				elseif (not chatVersion()) then
+					game.CoreGui.ExperienceChat.Enabled = true
+					game:GetService("CoreGui").TopBarApp.TopBarFrame.LeftFrame.ChatIcon.Visible = true
+					game:GetService("TextChatService").ChatInputBarConfiguration.Enabled = true
+					game:GetService("TextChatService").BubbleChatConfiguration.Enabled = true
+				end
+			end
+		end
+	})
+end)
+
+runLunar(function()
+	local ScriptsHub = {Enabled = false}
+	local ScriptsHubScript = {Value = "Custom"}
+	local ScriptsHubScript2 = {Value = "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"}
+	local ExecutedScript
+	ScriptsHub = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"]["CreateOptionsButton"]({
+		Name = "ScriptHub",
+        HoverText = "Executable Scripts which you can use",
+		Function = function(callback)
+			if callback then
+				ExecutedScript = false
+				task.spawn(function()
+					if not ExecutedScript then
+						if ScriptsHubScript.Value == "Custom" then
+							loadstring(game:HttpGet(ScriptsHubScript2.Value))()
+						elseif ScriptsHubScript.Value == "Infinite Yield" then
+							loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+						elseif ScriptsHubScript.Value == "Simple Spy" then
+							loadstring(game:HttpGet("https://raw.githubusercontent.com/78n/SimpleSpy/main/SimpleSpySource.lua"))()
+						elseif ScriptsHubScript.Value == "Owl Hub" then
+							loadstring(game:HttpGet("https://raw.githubusercontent.com/CriShoux/OwlHub/master/OwlHub.txt"))()
+						elseif ScriptsHubScript.Value == "Apolo Hub" then
+							loadstring(game:HttpGet("https://raw.githubusercontent.com/ASkca12/ScriptApoloHub/main/Main.lua"))()
+						elseif ScriptsHubScript.Value == "Thunder Client" then
+							loadstring(game:HttpGet("https://raw.githubusercontent.com/DuhwahScripts/ArsenalBoltsHub/main/source"))()
+						elseif ScriptsHubScript.Value == "RayX" then
+							loadstring(game:HttpGet("https://raw.githubusercontent.com/SpaceYes/Lua/Main/DaHood.Lua"))()
+						elseif ScriptsHubScript.Value == "DexV5" then
+							loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/dex.lua"))()
+						end
+						ExecutedScript = true
+					end
+				end)
+			else
+				ExecutedScript = false
+			end
+		end
+	})
+	ScriptsHubScript = ScriptsHub.CreateDropdown({
+		Name = "Script",
+		List = {
+			"Custom",
+			"Infinite Yield",
+			"Simple Spy",
+			"Owl Hub",
+			"Apolo Hub",
+			"Thunder Client",
+			"RayX",
+			"DexV5"
+		},
+		HoverText = "Scripts to execute",
+		Function = function() end,
+	})
+	ScriptsHubScript2 = ScriptsHub.CreateTextBox({
+		Name = "Script",
+		TempText = "Script Github/Link",
+		HoverText = "Insert the script link here",
+		FocusLost = function(enter) 
+			if ScriptsHub.Enabled then 
+				ScriptsHub.ToggleButton(false)
+				ScriptsHub.ToggleButton(false)
+			end
+		end
+	})
+end)
+
+runLunar(function()
+	if replicatedStorageService:FindFirstChild("Themes") then
+		replicatedStorageService:FindFirstChild("Themes"):Destroy()
+	end
+
+	local themeProps = {
+		["The Milky Way A"] = {
+			Ambient = Color3.fromRGB(107, 107, 107),
+			OutdoorAmbient = Color3.fromRGB(115, 93, 137),
+			ColorShift_Bottom = Color3.fromRGB(219, 3, 246),
+			ColorShift_Top = Color3.fromRGB(144, 6, 177),
+			Enviroment = 0.4,
+			Brightness = 0.05,
+			Exposure = 0.8,
+			Lat = 60,
+			Time = 10,
+			Shadows = true
+		},
+		["The Milky Way B"] = {
+			Ambient = Color3.fromRGB(58, 58, 58),
+			OutdoorAmbient = Color3.fromRGB(127, 116, 79),
+			ColorShift_Bottom = Color3.fromRGB(219, 3, 246),
+			ColorShift_Top = Color3.fromRGB(144, 6, 177),
+			Enviroment = 0.5,
+			Brightness = 0.2,
+			Exposure = 0.6,
+			Lat = 310,
+			Time = 13,
+			Shadows = true
+		},
+		["The Milky Way C"] = {
+			Ambient = Color3.fromRGB(101, 101, 101),
+			OutdoorAmbient = Color3.fromRGB(131, 77, 122),
+			ColorShift_Bottom = Color3.fromRGB(219, 3, 246),
+			ColorShift_Top = Color3.fromRGB(144, 6, 177),
+			Enviroment = 0.5,
+			Brightness = 0.2,
+			Exposure = 0.7,
+			Lat = 0,
+			Time = 15.25,
+			Shadows = true
+		},
+		["Lunar Vape Old"] = {
+			Ambient = Color3.fromRGB(93, 59, 88),
+			OutdoorAmbient = Color3.fromRGB(128, 94, 100),
+			ColorShift_Bottom = Color3.fromRGB(213, 173, 117),
+			ColorShift_Top = Color3.fromRGB(255, 255, 255),
+			Enviroment = 0.5,
+			Brightness = 0.2,
+			Exposure = 0.8,
+			Lat = 325,
+			Time = 11,
+			Shadows = true
+		},
+		["Lunar Vape New"] = {
+			Ambient = Color3.fromRGB(101, 72, 51),
+			OutdoorAmbient = Color3.fromRGB(175, 132, 119),
+			ColorShift_Bottom = Color3.fromRGB(213, 161, 134),
+			ColorShift_Top = Color3.fromRGB(203, 167, 102),
+			Enviroment = 0.3,
+			Brightness = 1,
+			Exposure = 0.7,
+			Lat = 326,
+			Time = 16 + (1/3),
+			Shadows = true
+		},
+		["Antarctic Evening"] = {
+			Ambient = Color3.fromRGB(79, 54, 101),
+			OutdoorAmbient = Color3.fromRGB(162, 118, 175),
+			ColorShift_Bottom = Color3.fromRGB(213, 10, 180),
+			ColorShift_Top = Color3.fromRGB(103, 68, 203),
+			Enviroment = 0.4,
+			Brightness = 0.2,
+			Exposure = 1,
+			Lat = 306,
+			Time = 10,
+			Shadows = true
+		}
+	}
+
+	local GameThemes = Instance.new("Folder",replicatedStorageService)
+	GameThemes.Name = "Themes"
+
+	local TheMilkyWaySkyA = Instance.new("Sky",GameThemes)
+	TheMilkyWaySkyA.Name = "The Milky Way A"
+	TheMilkyWaySkyA.CelestialBodiesShown = false
+	TheMilkyWaySkyA.StarCount = 3000
+	TheMilkyWaySkyA.SkyboxUp = "rbxassetid://5559302033"
+	TheMilkyWaySkyA.SkyboxLf = "rbxassetid://5559292825"
+	TheMilkyWaySkyA.SkyboxFt = "rbxassetid://5559300879"
+	TheMilkyWaySkyA.SkyboxBk = "rbxassetid://5559289158"
+	TheMilkyWaySkyA.SkyboxDn = "rbxassetid://5559290893"
+	TheMilkyWaySkyA.SkyboxRt = "rbxassetid://5559302989"
+	TheMilkyWaySkyA.SunTextureId = "rbxasset://sky/sun.jpg"
+	TheMilkyWaySkyA.SunAngularSize = 1.44
+	TheMilkyWaySkyA.MoonTextureId = "rbxasset://sky/moon.jpg"
+	TheMilkyWaySkyA.MoonAngularSize = 0.57
+	local TheMilkyWaySkyADOF = Instance.new("DepthOfFieldEffect",TheMilkyWaySkyA)
+	TheMilkyWaySkyADOF.FarIntensity = 0.12
+	TheMilkyWaySkyADOF.NearIntensity = 0.3
+	TheMilkyWaySkyADOF.FocusDistance = 20
+	TheMilkyWaySkyADOF.InFocusRadius = 17
+	local TheMilkyWaySkyACC = Instance.new("ColorCorrectionEffect",TheMilkyWaySkyA)
+	TheMilkyWaySkyACC.TintColor = Color3.fromRGB(245, 200, 245)
+	TheMilkyWaySkyACC.Brightness = 0
+	TheMilkyWaySkyACC.Contrast = 0.2
+	TheMilkyWaySkyACC.Saturation = -0.1
+	local TheMilkyWaySkyABloom = Instance.new("BloomEffect",TheMilkyWaySkyA)
+	TheMilkyWaySkyABloom.Intensity = 0.4
+	TheMilkyWaySkyABloom.Size = 12
+	TheMilkyWaySkyABloom.Threshold = 0.2
+
+	local TheMilkyWaySkyB = Instance.new("Sky",GameThemes)
+	TheMilkyWaySkyB.Name = "The Milky Way B"
+	TheMilkyWaySkyB.CelestialBodiesShown = false
+	TheMilkyWaySkyB.StarCount = 3000
+	TheMilkyWaySkyB.SkyboxUp = "http://www.roblox.com/asset?id=232707707"
+	TheMilkyWaySkyB.SkyboxLf = "http://www.roblox.com/asset?id=232708001"
+	TheMilkyWaySkyB.SkyboxFt = "http://www.roblox.com/asset?id=232707879"
+	TheMilkyWaySkyB.SkyboxBk = "http://www.roblox.com/asset?id=232707959"
+	TheMilkyWaySkyB.SkyboxDn = "http://www.roblox.com/asset?id=232707790"
+	TheMilkyWaySkyB.SkyboxRt = "http://www.roblox.com/asset?id=232707983"
+	local TheMilkyWaySkyBCC = Instance.new("ColorCorrectionEffect",TheMilkyWaySkyB)
+	TheMilkyWaySkyBCC.TintColor = Color3.fromRGB(255, 255, 255)
+	TheMilkyWaySkyBCC.Brightness = 0
+	TheMilkyWaySkyBCC.Contrast = 0.3
+	TheMilkyWaySkyBCC.Saturation = 0.2
+	local TheMilkyWaySkyBDOF = Instance.new("DepthOfFieldEffect",TheMilkyWaySkyB)
+	TheMilkyWaySkyBDOF.FarIntensity = 0.12
+	TheMilkyWaySkyBDOF.NearIntensity = 0.3
+	TheMilkyWaySkyBDOF.FocusDistance = 20
+	TheMilkyWaySkyBDOF.InFocusRadius = 17
+	local TheMilkyWaySkyBBloom = Instance.new("BloomEffect",TheMilkyWaySkyB)
+	TheMilkyWaySkyBBloom.Intensity = 0.6
+	TheMilkyWaySkyBBloom.Size = 12
+	TheMilkyWaySkyBBloom.Threshold = 0.2
+	local TheMilkyWaySkyBSunRay = Instance.new("SunRaysEffect",TheMilkyWaySkyB)
+	TheMilkyWaySkyBSunRay.Enabled = true
+	TheMilkyWaySkyBSunRay.Intensity = 0.003
+	TheMilkyWaySkyBSunRay.Spread = 1
+
+	local TheMilkyWaySkyC = Instance.new("Sky",GameThemes)
+	TheMilkyWaySkyC.Name = "The Milky Way C"
+	TheMilkyWaySkyC.CelestialBodiesShown = false
+	TheMilkyWaySkyC.StarCount = 3000
+	TheMilkyWaySkyC.SkyboxUp = "rbxassetid://1903391299"
+	TheMilkyWaySkyC.SkyboxLf = "rbxassetid://1903388369"
+	TheMilkyWaySkyC.SkyboxFt = "rbxassetid://1903389258"
+	TheMilkyWaySkyC.SkyboxBk = "rbxassetid://1903390348"
+	TheMilkyWaySkyC.SkyboxDn = "rbxassetid://1903391981"
+	TheMilkyWaySkyC.SkyboxRt = "rbxassetid://1903387293"
+	TheMilkyWaySkyC.SunTextureId = "rbxasset://sky/sun.jpg"
+	TheMilkyWaySkyC.SunAngularSize = 21
+	TheMilkyWaySkyC.MoonTextureId = "rbxasset://sky/moon.jpg"
+	TheMilkyWaySkyC.MoonAngularSize = 11
+	local TheMilkyWaySkyCDOF = Instance.new("DepthOfFieldEffect",TheMilkyWaySkyC)
+	TheMilkyWaySkyCDOF.FarIntensity = 0.12
+	TheMilkyWaySkyCDOF.NearIntensity = 0.3
+	TheMilkyWaySkyCDOF.FocusDistance = 20
+	TheMilkyWaySkyCDOF.InFocusRadius = 17
+	local TheMilkyWaySkyCBloom = Instance.new("BloomEffect",TheMilkyWaySkyC)
+	TheMilkyWaySkyCBloom.Intensity = 0.6
+	TheMilkyWaySkyCBloom.Size = 12
+	TheMilkyWaySkyCBloom.Threshold = 0.2
+	local TheMilkyWaySkyCSunRay = Instance.new("SunRaysEffect",TheMilkyWaySkyC)
+	TheMilkyWaySkyCSunRay.Enabled = true
+	TheMilkyWaySkyCSunRay.Intensity = 0.003
+	TheMilkyWaySkyCSunRay.Spread = 1
+	local TheMilkyWaySkyCCC = Instance.new("ColorCorrectionEffect",TheMilkyWaySkyC)
+	TheMilkyWaySkyCCC.TintColor = Color3.fromRGB(245, 240, 255)
+	TheMilkyWaySkyCCC.Brightness = -0.04
+	TheMilkyWaySkyCCC.Contrast = 0.2
+	TheMilkyWaySkyCCC.Saturation = 0.2
+
+	local LunarVapeOld = Instance.new("Sky",GameThemes)
+	LunarVapeOld.Name = "Lunar Vape Old"
+	LunarVapeOld.CelestialBodiesShown = false
+	LunarVapeOld.StarCount = 3000
+	LunarVapeOld.SkyboxUp = "rbxassetid://2670644331"
+	LunarVapeOld.SkyboxLf = "rbxassetid://2670643070"
+	LunarVapeOld.SkyboxFt = "rbxassetid://2670643214"
+	LunarVapeOld.SkyboxBk = "rbxassetid://2670643994"
+	LunarVapeOld.SkyboxDn = "rbxassetid://2670643365"
+	LunarVapeOld.SkyboxRt = "rbxassetid://2670644173"
+	LunarVapeOld.SunTextureId = "rbxasset://sky/sun.jpg"
+	LunarVapeOld.SunAngularSize = 21
+	LunarVapeOld.MoonTextureId = "rbxassetid://1075087760"
+	LunarVapeOld.MoonAngularSize = 11
+	local LunarVapeOldCC = Instance.new("ColorCorrectionEffect",LunarVapeOld)
+	LunarVapeOldCC.Enabled = true
+	LunarVapeOldCC.Brightness = 0.13
+	LunarVapeOldCC.Contrast = 0.4
+	LunarVapeOldCC.Saturation = 0.06
+	LunarVapeOldCC.TintColor = Color3.fromRGB(255,230,245)
+	local LunarVapeOldDOF = Instance.new("DepthOfFieldEffect",LunarVapeOld)
+	LunarVapeOldDOF.FarIntensity = 0.12
+	LunarVapeOldDOF.NearIntensity = 0.3
+	LunarVapeOldDOF.FocusDistance = 20
+	LunarVapeOldDOF.InFocusRadius = 17
+	local LunarVapeOldBloom = Instance.new("BloomEffect",LunarVapeOld)
+	LunarVapeOldBloom.Intensity = 0.8
+	LunarVapeOldBloom.Threshold = 0.4
+	LunarVapeOldBloom.Size = 12
+
+	local LunarVapeNew = Instance.new("Sky",GameThemes)
+	LunarVapeNew.Name = "Lunar Vape New"
+	LunarVapeNew.CelestialBodiesShown = false
+	LunarVapeNew.StarCount = 0
+	LunarVapeNew.SkyboxUp = "http://www.roblox.com/asset/?id=458016792"
+	LunarVapeNew.SkyboxLf = "http://www.roblox.com/asset/?id=458016655"
+	LunarVapeNew.SkyboxFt = "http://www.roblox.com/asset/?id=458016532"
+	LunarVapeNew.SkyboxBk = "http://www.roblox.com/asset/?id=458016711"
+	LunarVapeNew.SkyboxDn = "http://www.roblox.com/asset/?id=458016826"
+	LunarVapeNew.SkyboxRt = "http://www.roblox.com/asset/?id=458016782"
+	LunarVapeNew.SunTextureId = "rbxasset://sky/sun.jpg"
+	LunarVapeNew.SunAngularSize = 21
+	LunarVapeNew.MoonTextureId = "rbxasset://sky/moon.jpg"
+	LunarVapeNew.MoonAngularSize = 11
+	local LunarVapeNewBloom = Instance.new("BloomEffect",LunarVapeNew)
+	LunarVapeNewBloom.Enabled = true
+	LunarVapeNewBloom.Threshold = 0.24
+	LunarVapeNewBloom.Size = 8
+	LunarVapeNewBloom.Intensity = 0.5
+	local LunarVapeNewSunRay = Instance.new("SunRaysEffect",LunarVapeNew)
+	LunarVapeNewSunRay.Enabled = true
+	LunarVapeNewSunRay.Intensity = 0.05
+	LunarVapeNewSunRay.Spread = 0.4
+	local LunarVapeNewCC = Instance.new("ColorCorrectionEffect",LunarVapeNew)
+	LunarVapeNewCC.Saturation = 0.14
+	LunarVapeNewCC.Brightness = -0.1
+	LunarVapeNewCC.Contrast = 0.14
+	local LunarVapeNewDOF = Instance.new("DepthOfFieldEffect",LunarVapeNew)
+	LunarVapeNewDOF.FarIntensity = 0.2
+	LunarVapeNewDOF.InFocusRadius = 17
+	LunarVapeNewDOF.FocusDistance = 20
+	LunarVapeNewDOF.NearIntensity = 0.3
+
+	local AntarcticEvening = Instance.new("Sky",GameThemes)
+	AntarcticEvening.Name = "Antarctic Evening"
+	AntarcticEvening.CelestialBodiesShown = false
+	AntarcticEvening.StarCount = 3000
+	AntarcticEvening.SkyboxUp = "http://www.roblox.com/asset/?id=5260824661"
+	AntarcticEvening.SkyboxLf = "http://www.roblox.com/asset/?id=5260800833"
+	AntarcticEvening.SkyboxFt = "http://www.roblox.com/asset/?id=5260817288"
+	AntarcticEvening.SkyboxBk = "http://www.roblox.com/asset/?id=5260808177"
+	AntarcticEvening.SkyboxDn = "http://www.roblox.com/asset/?id=5260653793"
+	AntarcticEvening.SkyboxRt = "http://www.roblox.com/asset/?id=5260811073"
+	AntarcticEvening.SunTextureId = "rbxasset://sky/sun.jpg"
+	AntarcticEvening.SunAngularSize = 21
+	AntarcticEvening.MoonTextureId = "rbxasset://sky/moon.jpg"
+	AntarcticEvening.MoonAngularSize = 11
+	local AntarcticEveningBloom = Instance.new("BloomEffect",AntarcticEvening)
+	AntarcticEveningBloom.Enabled = true
+	AntarcticEveningBloom.Threshold = 0.4
+	AntarcticEveningBloom.Size = 12
+	AntarcticEveningBloom.Intensity = 0.5
+	local AntarcticEveningCC = Instance.new("ColorCorrectionEffect",AntarcticEvening)
+	AntarcticEveningCC.Brightness = -0.03	
+	AntarcticEveningCC.Contrast = 0.16
+	AntarcticEveningCC.Saturation = 0.06
+	AntarcticEveningCC.TintColor = Color3.fromRGB(220, 175, 255)
+	local AntarcticEveningDOF = Instance.new("DepthOfFieldEffect",AntarcticEvening)
+	AntarcticEveningDOF.FarIntensity = 0.12
+	AntarcticEveningDOF.InFocusRadius = 17
+	AntarcticEveningDOF.FocusDistance = 20
+	AntarcticEveningDOF.NearIntensity = 0.3
+	
+	local timeConnection
+	local ThemesModule = {Enabled = false}
+	local ThemesDropdown = {Value = "Lunar Vape New"}
+	ThemesModule = GuiLibrary["ObjectsThatCanBeSaved"]["RenderWindow"]["Api"]["CreateOptionsButton"]({
+		Name = "Themes",
+		HoverText = 'Changes the theme',
+		ExtraText = function(val) return ThemesDropdown.Value end,
+		Function = function(callback)
+			if callback then
+				for _,v in pairs(lightingService:GetChildren()) do v:Destroy() end
+				local newSky = GameThemes[ThemesDropdown.Value]:Clone()
+				newSky.Parent = lightingService
+				for _,v in pairs(newSky:GetChildren()) do v.Parent = lightingService end
+				lightingService.Brightness = themeProps[ThemesDropdown.Value].Brightness
+				lightingService.ExposureCompensation = themeProps[ThemesDropdown.Value].Exposure
+				lightingService.EnvironmentDiffuseScale = themeProps[ThemesDropdown.Value].Enviroment
+				lightingService.EnvironmentSpecularScale = themeProps[ThemesDropdown.Value].Enviroment
+				lightingService.Ambient = themeProps[ThemesDropdown.Value].Ambient
+				lightingService.OutdoorAmbient = themeProps[ThemesDropdown.Value].OutdoorAmbient
+				lightingService.GeographicLatitude = themeProps[ThemesDropdown.Value].Lat
+				lightingService.ClockTime = themeProps[ThemesDropdown.Value].Time		
+				timeConnection = lightingService:GetPropertyChangedSignal("ClockTime"):Connect(function() lightingService.ClockTime = themeProps[ThemesDropdown.Value].Time end)
+				lightingService.GlobalShadows = themeProps[ThemesDropdown.Value].Shadows
+				lightingService.ShadowSoftness = 0.08
+				sethiddenproperty(lightingService, "Technology", "Future")
+			else
+				lightingService.Brightness = 2
+				lightingService.EnvironmentDiffuseScale = 1
+				lightingService.EnvironmentSpecularScale = 1
+				lightingService.Ambient = Color3.fromRGB(89, 60, 86)
+				lightingService.OutdoorAmbient = Color3.fromRGB(216, 191, 161)
+				lightingService.GeographicLatitude = 0
+				lightingService.ClockTime = 14
+				if timeConnection then timeConnection:Disconnect() end
+				lightingService.ShadowSoftness = 0.2
+				lightingService.ExposureCompensation = 0.1
+				lightingService.GlobalShadows = true
+				sethiddenproperty(lightingService, "Technology", "ShadowMap")
+				for i,v in pairs(lightingService:GetChildren()) do v:Destroy() end
+			end
+		end
+	})
+	ThemesDropdown = ThemesModule.CreateDropdown({
+		Name = "Theme",
+		List = {"The Milky Way A", "The Milky Way B", "The Milky Way C", "Lunar Vape Old","Lunar Vape New","Antarctic Evening"},
+		Function = function(val)
+			if ThemesModule.Enabled then
+				for _,v in pairs(lightingService:GetChildren()) do v:Destroy() end
+				local newSky = GameThemes[val]:Clone()
+				newSky.Parent = lightingService
+				for _,v in pairs(newSky:GetChildren()) do v.Parent = lightingService end
+				lightingService.Brightness = themeProps[ThemesDropdown.Value].Brightness
+				lightingService.ExposureCompensation = themeProps[ThemesDropdown.Value].Exposure
+				lightingService.EnvironmentDiffuseScale = themeProps[ThemesDropdown.Value].Enviroment
+				lightingService.EnvironmentSpecularScale = themeProps[ThemesDropdown.Value].Enviroment
+				lightingService.Ambient = themeProps[ThemesDropdown.Value].Ambient
+				lightingService.OutdoorAmbient = themeProps[ThemesDropdown.Value].OutdoorAmbient
+				lightingService.GeographicLatitude = themeProps[ThemesDropdown.Value].Lat
+				lightingService.ClockTime = themeProps[ThemesDropdown.Value].Time
+				lightingService.GlobalShadows = themeProps[ThemesDropdown.Value].Shadows
+				lightingService.ShadowSoftness = 0.5
+				sethiddenproperty(lightingService, "Technology", "Future")
+			end
+		end
+	})
 end)
