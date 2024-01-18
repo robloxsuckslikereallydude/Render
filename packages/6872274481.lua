@@ -1,3 +1,10 @@
+--[[
+
+    Render Intents | Bedwars
+    The #1 vape mod you'll ever see.
+	
+]]
+
 local GuiLibrary = shared.GuiLibrary
 local httpService = game:GetService('HttpService')
 local teleportService = game:GetService('TeleportService')
@@ -23,7 +30,8 @@ local vapeEvents = setmetatable({}, {
 })
 local vapeTargetInfo = shared.VapeTargetInfo
 local vapeInjected = true
-
+local vec3 = Vector3.new
+local vec2 = Vector2.new
 local bedwars = {}
 local bedwarsStore = {
 	attackReach = 0,
@@ -208,6 +216,7 @@ GetEnumItems = function(enum)
 end
 
 local function runFunction(func) func() end
+local function runLunar(func) func() end
 
 local function isFriend(plr, recolor)
 	if GuiLibrary.ObjectsThatCanBeSaved['Use FriendsToggle'].Api.Enabled then
@@ -297,6 +306,7 @@ local function predictGravity(playerPosition, vel, bulletTime, targetPart, Gravi
 end
 
 local entityLibrary = shared.vapeentity
+local entityLunar = entityLibrary
 local WhitelistFunctions = shared.vapewhitelist
 local RunLoops = {RenderStepTable = {}, StepTable = {}, HeartTable = {}}
 do
@@ -11667,69 +11677,35 @@ runFunction(function()
 	local DamageIndicatorFontToggle = {}
 	local DamageIndicatorFont = {Value = 'GothamBlack'}
 	local DamageIndicatorTextObjects = {}
-	DamageIndicator = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
-		Name = 'DamageIndicator',
-		Function = function(calling)
-			if calling then
-				task.spawn(function()
-					table.insert(DamageIndicator.Connections, game.DescendantAdded:Connect(function(v)
-						pcall(function()
-						if v.Name ~= 'DamageIndicatorPart' then return end
-							local indicatorobj = v:FindFirstChildWhichIsA('BillboardGui'):FindFirstChildWhichIsA('Frame'):FindFirstChildWhichIsA('TextLabel')
-							if indicatorobj then
-								pcall(function()
-									indicatorobj.TextColor3 = DamageIndicatorColorToggle.Enabled and Color3.fromHSV(DamageIndicatorColor.Hue, DamageIndicatorColor.Sat, DamageIndicatorColor.Value) or indicator.TextColor3
-									indicatorobj.Text = DamageIndicatorTextToggle.Enabled and getrandomvalue(DamageIndicatorText.ObjectList) ~= '' and getrandomvalue(DamageIndicatorText.ObjectList) or indicatorobject.Text
-									indicatorobj.Font = DamageIndicatorFontToggle.Enabled and Enum.Font[DamageIndicatorFont.Value] or indicatorobject.Font
-								end)
-							end
-						end)
-					end))
-				end)
-			end
-		end
-	})
-	DamageIndicatorColorToggle = DamageIndicator.CreateToggle({
-		Name = 'Custom Color',
-		Function = function(calling) pcall(function() DamageIndicatorColor.Object.Visible = calling end) end
-	})
-	DamageIndicatorColor = DamageIndicator.CreateColorSlider({
-		Name = 'Text Color',
-		Function = function() end
-	})
-	DamageIndicatorTextToggle = DamageIndicator.CreateToggle({
-		Name = 'Custom Text',
-		HoverText = 'random messages for the indicator',
-		Function = function(calling) pcall(function() DamageIndicatorText.Object.Visible = calling end) end
-	})
-	DamageIndicatorText = DamageIndicator.CreateTextList({
-		Name = 'Text',
-		TempText = 'Indicator Text',
-		AddFunction = function() end
-	})
-	DamageIndicatorFontToggle = DamageIndicator.CreateToggle({
-		Name = 'Custom Font',
-		Function = function(calling) pcall(function() DamageIndicatorFont.Object.Visible = calling end) end
-	})
-	DamageIndicatorFont = DamageIndicator.CreateDropdown({
-		Name = 'Font',
-		List = GetEnumItems('Font'),
-		Function = function() end
-	})
-	DamageIndicatorColor.Object.Visible = DamageIndicatorColorToggle.Enabled
-	DamageIndicatorText.Object.Visible = DamageIndicatorTextToggle.Enabled
-	DamageIndicatorFont.Object.Visible = DamageIndicatorFontToggle.Enabled
-end)
-
-runFunction(function()
-	local DamageIndicator = {}
-	local DamageIndicatorColorToggle = {}
-	local DamageIndicatorColor = {Hue = 0, Sat = 0, Value = 0}
-	local DamageIndicatorTextToggle = {}
-	local DamageIndicatorText = {ObjectList = {}}
-	local DamageIndicatorFontToggle = {}
-	local DamageIndicatorFont = {Value = 'GothamBlack'}
-	local DamageIndicatorTextObjects = {}
+    local DamageMessages, OrigIndicator, OrgInd = {
+		'Pow!',
+		'Pop!',
+		'Hit!',
+		'Smack!',
+		'Bang!',
+		'Boom!',
+		'Whoop!',
+		'Damage!',
+		'-9e9!',
+		'Whack!',
+		'Crash!',
+		'Slam!',
+		'Zap!',
+		'Snap!',
+		'Thump!'
+	}, nil, OrigIndicator
+	local RGBColors = {
+		Color3.fromRGB(255, 0, 0),
+		Color3.fromRGB(255, 127, 0),
+		Color3.fromRGB(255, 255, 0),
+		Color3.fromRGB(0, 255, 0),
+		Color3.fromRGB(0, 0, 255),
+		Color3.fromRGB(75, 0, 130),
+		Color3.fromRGB(148, 0, 211)
+	}
+	local orgI, mz, vz = 1, 5, 10
+    local DamageIndicatorMode = {Value = 'Rainbow'}
+	local DamageIndicatorMode2 = {Value = 'Gradient'}
 	DamageIndicator = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
 		Name = 'DamageIndicator',
 		Function = function(calling)
@@ -11737,11 +11713,39 @@ runFunction(function()
 				task.spawn(function()
 					table.insert(DamageIndicator.Connections, workspace.DescendantAdded:Connect(function(v)
 						pcall(function()
-						if v.Name ~= 'DamageIndicatorPart' then return end
+                            if v.Name ~= 'DamageIndicatorPart' then return end
 							local indicatorobj = v:FindFirstChildWhichIsA('BillboardGui'):FindFirstChildWhichIsA('Frame'):FindFirstChildWhichIsA('TextLabel')
 							if indicatorobj then
-								indicatorobj.TextColor3 = DamageIndicatorColorToggle.Enabled and Color3.fromHSV(DamageIndicatorColor.Hue, DamageIndicatorColor.Sat, DamageIndicatorColor.Value) or indicator.TextColor3
-								indicatorobj.Text = DamageIndicatorTextToggle.Enabled and getrandomvalue(DamageIndicatorText.ObjectList) ~= '' and getrandomvalue(DamageIndicatorText.ObjectList) or indicatorobject.Text
+                                if DamageIndicatorColorToggle.Enabled then
+                                    -- indicatorobj.TextColor3 = Color3.fromHSV(DamageIndicatorColor.Hue, DamageIndicatorColor.Sat, DamageIndicatorColor.Value)
+                                    if DamageIndicatorMode.Value == 'Rainbow' then
+                                        if DamageIndicatorMode2.Value == 'Gradient' then
+                                            indicatorobj.TextColor3 = Color3.fromHSV(tick() % mz / mz, orgI, orgI)
+                                        else
+                                            runService.Stepped:Connect(function()
+                                                orgI = (orgI % #RGBColors) + 1
+                                                indicatorobj.TextColor3 = RGBColors[orgI]
+                                            end)
+                                        end
+                                    elseif DamageIndicatorMode.Value == 'Custom' then
+                                        indicatorobj.TextColor3 = Color3.fromHSV(
+                                            DamageIndicatorColor.Hue, 
+                                            DamageIndicatorColor.Sat, 
+                                            DamageIndicatorColor.Value
+                                        )
+                                    else
+                                        indicatorobj.TextColor3 = Color3.fromRGB(127, 0, 255)
+                                    end
+                                end
+                                if DamageIndicatorTextToggle.Enabled then
+                                    if DamageIndicatorMode1.Value == 'Custom' then
+                                        indicatorobj.Text = getrandomvalue(DamageIndicatorText.ObjectList) ~= '' and getrandomvalue(DamageIndicatorText.ObjectList) or indicatorobject.Text
+									elseif DamageIndicatorMode1.Value == 'Multiple' then
+										indicatorobj.Text = DamageMessages[math.random(orgI, #DamageMessages)]
+									else
+										indicatorobj.Text = DamageIndicatorCustom.Value or 'Render Intents on top!'
+									end
+								end
 								indicatorobj.Font = DamageIndicatorFontToggle.Enabled and Enum.Font[DamageIndicatorFont.Value] or indicatorobject.Font
 							end
 						end)
@@ -11749,6 +11753,38 @@ runFunction(function()
 				end)
 			end
 		end
+	})
+    DamageIndicatorMode = DamageIndicator.CreateDropdown({
+		Name = 'Color Mode',
+		List = {
+			'Rainbow',
+			'Custom',
+			'Lunar'
+		},
+		HoverText = 'Mode to color the Damage Indicator',
+		Value = 'Rainbow',
+		Function = function() end
+	})
+	DamageIndicatorMode2 = DamageIndicator.CreateDropdown({
+		Name = 'Rainbow Mode',
+		List = {
+			'Gradient',
+			'Paint'
+		},
+		HoverText = 'Mode to color the Damage Indicator\nwith Rainbow Color Mode',
+		Value = 'Gradient',
+		Function = function() end
+	})
+    DamageIndicatorMode1 = DamageIndicator.CreateDropdown({
+		Name = 'Text Mode',
+		List = {
+            'Custom',
+			'Multiple',
+			'Lunar'
+		},
+		HoverText = 'Mode to change the Damage Indicator Text',
+		Value = 'Custom',
+		Function = function() end
 	})
 	DamageIndicatorColorToggle = DamageIndicator.CreateToggle({
 		Name = 'Custom Color',
@@ -11837,7 +11873,7 @@ runFunction(function()
 		end
 	end
 	ViewmodelMods = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
-		Name = 'ViewmodelMods',
+		Name = 'ViewModelMods',
 		HoverText = 'Customize the first person\nviewmodel experience.',
 		Function = function(calling)
 			if calling then 
@@ -12197,7 +12233,7 @@ runFunction(function()
 	})
 end)
 
-runFunction(function()
+--[[runFunction(function()
 	local ConfettiExploit = {}
 	local ConfettiDelay = {Value = 10}
 	local confettiTick = tick()
@@ -12225,9 +12261,9 @@ runFunction(function()
 			confettiTick = tick()
 		end
 	})
-end)
+end)]]
 
-runFunction(function()
+--[[runFunction(function()
 	local DragonExploit = {}
 	local DragonBreatheDelay = {Value = 10}
 	local breatheTick = tick()
@@ -12255,9 +12291,9 @@ runFunction(function()
 			breatheTick = tick()
 		end
 	})
-end)
+end)]]
 
-runFunction(function()
+--[[runFunction(function()
 	local TerraExploit = {}
 	local TerraDelay = {Value = 10}
 	local TerraTick = tick()
@@ -12285,7 +12321,7 @@ runFunction(function()
 			TerraTick = tick()
 		end
 	})
-end)
+end)]]
 
 runFunction(function()
 	local AutoTouch = {}
@@ -12534,4 +12570,1234 @@ runFunction(function()
 			end
 		end
 	}) 
+end)
+
+runLunar(function()
+	local RemotesConnect = {Enabled = false}
+	local RemotesConnectDelay = {Value = 10}
+	local RemotesConnectParty = {Enabled = true}
+	local RemotesConnectYuzi = {Enabled = true}
+	local RemotesConnectDragon = {Enabled = true}
+    local RemotesConnectTerra = {Enabled = true}
+	local RemotesConnectParty1 = {Enabled = true}
+	local RemotesConnectDragon1 = {Enabled = true}
+	local PartyConnection, DragonConnection
+	RemotesConnect = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
+		Name = 'RemotesConnect',
+        HoverText = 'Spams bedwars remotes',
+		Function = function(callback)
+			if callback then
+				task.spawn(function()
+					pcall(function()
+						repeat task.wait()
+                            if RenderStore.ping < 800 and not isEnabled('BedTP') then
+                                if RemotesConnectParty.Enabled then
+                                    if RemotesConnectParty1.Enabled then
+                                        PartyConnection = workspace.ChildAdded:Connect(function(x)
+                                            if x:IsA'Part' and x.Name == 'NewYearsConfetti' then	
+                                                x:Destroy()
+                                            end
+                                        end)
+                                    end
+                                    replicatedStorageService['events-@easy-games/game-core:shared/game-core-networking@getEvents.Events'].useAbility:FireServer'PARTY_POPPER'
+                                end
+                                if RemotesConnectYuzi.Enabled then
+                                    replicatedStorageService['events-@easy-games/game-core:shared/game-core-networking@getEvents.Events'].useAbility:FireServer'dash'
+                                end
+                                if RemotesConnectDragon.Enabled then
+                                    if RemotesConnectDragon1.Enabled then
+                                        DragonConnection = workspace.ChildAdded:Connect(function(x)
+                                            if (x:IsA'Model' and x.Name == 'DragonBreath') or (x:IsA'Part' and x.Name == 'DragonBreath') then
+                                                x:Destroy()
+                                            end
+                                        end)
+                                    end
+                                    replicatedStorageService.rbxts_include.node_modules['@rbxts'].net.out._NetManaged.DragonBreath:FireServer''
+                                end
+                                if bedwars.AbilityController:canUseAbility('BLOCK_KICK') and RemotesConnectTerra.Enabled then 
+                                    bedwars.AbilityController:useAbility('BLOCK_KICK')
+                                end
+                                task.wait(RemotesConnectDelay.Value / 10)
+                            end
+						until not RemotesConnect.Enabled
+					end)
+				end)
+			else
+				if PartyConnection then
+					PartyConnection:Disconnect()
+				end
+			end
+		end,
+        Default = false
+	})
+	RemotesConnectDelay = RemotesConnect.CreateSlider({
+		Name = 'Delay',
+		Min = 0,
+		Max = 50,
+		HoverText = 'Delay to Spam the Remotes',
+		Function = function() end,
+		Default = 10
+	})
+	RemotesConnectParty = RemotesConnect.CreateToggle({
+		Name = 'Party Popper',
+		Default = true,
+		HoverText = 'Spams the Party Popper Remote',
+		Function = function() end
+	})
+	RemotesConnectYuzi = RemotesConnect.CreateToggle({
+		Name = 'Yuzi',
+		Default = true,
+		HoverText = 'Spams the Yuzi Sound Remote',
+		Function = function() end
+	})
+	RemotesConnectDragon = RemotesConnect.CreateToggle({
+		Name = 'Dragon',
+		Default = true,
+		HoverText = 'Spams the Dragon Breath Remote',
+		Function = function() end
+	})
+    RemotesConnectTerra = RemotesConnect.CreateToggle({
+		Name = 'Terra',
+		Default = true,
+		HoverText = 'Spams the Terra Block Kick Remote',
+		Function = function() end
+	})
+	RemotesConnectParty1 = RemotesConnect.CreateToggle({
+		Name = 'Hide Popper',
+		Default = true,
+		HoverText = 'Hides the Party Popper Effect (CS)',
+		Function = function() end
+	})
+	RemotesConnectDragon1 = RemotesConnect.CreateToggle({
+		Name = 'Hide Dragon',
+		Default = true,
+		HoverText = 'Hides the Dragon Breath Effect (CS)',
+		Function = function() end
+	})
+end)
+
+runLunar(function()
+	local NoKillFeed = {Enabled = false}
+	NoKillFeed = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
+		Name = 'NoKillFeed',
+        HoverText = 'Removes the Kill Feed',
+		Function = function(callback)
+			if callback then
+				pcall(function()
+					lplr.PlayerGui.KillFeedGui.Parent = workspace
+				end)
+			else
+				workspace.KillFeedGui.Parent = lplr.PlayerGui
+			end
+		end,
+        Default = false
+	})
+end)
+
+runLunar(function()
+	local Clipper = {Enabled = false}
+	local ClipperMode = {Value = 'Low'}
+	local ClipperCF = {Value = 10}
+	local ClipperNotify1 = {Value = 2}
+	local ClipperNotify = {Enabled = true}
+	local ClipperTP = {Enabled = false}
+	local function ClipperOff()
+		Clipper.ToggleButton(false)
+		return
+	end
+	local function ClipTP()
+		if ClipperMode.Value == 'Low' then
+			entityLunar.character.HumanoidRootPart.CFrame -= vec3(0, ClipperCF.Value, 0)
+		else
+			entityLunar.character.HumanoidRootPart.CFrame += vec3(0, ClipperCF.Value, 0)
+		end
+		if ClipperNotify.Enabled then
+			warningNotification2('Clipper', 'Teleported '..ClipperCF.Value..' studs', ClipperNotify1.Value)
+		end
+		ClipperOff()
+	end
+	Clipper = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
+		Name = 'Clipper',
+        HoverText = 'Teleports your CFrame',
+		Function = function(callback)
+			if callback then
+				task.spawn(function()
+					if entityLunar.isAlive then
+						local TPPos
+						if ClipperMode.Value == 'Low' then
+							TPPos = entityLunar.character.HumanoidRootPart.Position - vec3(0, ClipperCF.Value, 0)
+						else
+							TPPos = entityLunar.character.HumanoidRootPart.Position + vec3(0, ClipperCF.Value, 0)
+						end
+						if ClipperTP.Enabled then
+							ClipTP()
+						else
+							if getPlacedBlock(TPPos) == nil then
+								ClipTP()
+							else
+								if ClipperNotify.Enabled then
+									warningNotification2('Clipper', 'Disabled to prevent suffocation', ClipperNotify1.Value)
+								end
+								ClipperOff()
+							end
+						end
+					end
+				end)
+			end
+		end,
+        Default = false,
+        ExtraText = function()
+            return ClipperMode.Value
+        end
+	})
+	ClipperMode = Clipper.CreateDropdown({
+		Name = 'Mode',
+		List = {
+			'Low',
+			'High'
+		},
+		HoverText = 'Mode to TP',
+		Value = 'Low',
+		Function = function() end
+	})
+	ClipperCF = Clipper.CreateSlider({
+		Name = 'CFrame',
+		Min = 1,
+		Max = 100,
+		HoverText = 'CFrame TP Amount',
+		Function = function() end,
+		Default = 10
+	})
+	ClipperNotify1 = Clipper.CreateSlider({
+		Name = 'Notification Duration',
+		Min = 1,
+		Max = 10,
+		HoverText = 'Duration of the Notification',
+		Function = function() end,
+		Default = 2
+	})
+	ClipperNotify = Clipper.CreateToggle({
+		Name = 'Notification',
+		Default = true,
+		HoverText = 'Notifies you when certain actions happen',
+		Function = function() end
+	})
+	ClipperTP = Clipper.CreateToggle({
+		Name = 'Teleport Anyways',
+		Default = false,
+		HoverText = 'Teleports anyways even if you have\na change of getting suffocated',
+		Function = function() end
+	})
+end)
+
+runLunar(function()
+	local AntiDeath = {Enabled = false}
+	local AntiDeathMode = {Value = 'Velocity'}
+	local AntiDeathHealth = {Value = 50}
+	local AntiDeathVelo = {Value = 650}
+	local AntiDeathAuto = {Enabled = false}
+	local AntiDeathNot = {Enabled = true}
+	local function gethealth()
+		return entityLunar.character.Humanoid.Health
+	end
+	local boosted1, infon, sentmsg = false, false, false
+	AntiDeath = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
+		Name = 'AntiDeath',
+        HoverText = 'Prevents you from dying',
+		Function = function(callback)
+			if callback then
+				task.spawn(function()
+					repeat task.wait()
+						if entityLunar.isAlive then
+							if gethealth() < AntiDeathHealth.Value and gethealth() > 0 then
+								if not boosted1 then
+									if AntiDeathMode.Value == 'Velocity' then
+										entityLunar.character.HumanoidRootPart.Velocity += vec3(0, AntiDeathVelo.Value, 0)
+									else
+										if not GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api.Enabled then
+											GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api.ToggleButton(true)
+											infon = true
+										end
+									end
+								end
+								boosted1 = true
+								if not sentmsg then
+									warningNotification2('AntiDeath | '..AntiDeathMode.Value, 'Succesfully performed action', 3)
+								end
+								sentmsg = true
+							elseif gethealth() >= AntiDeathHealth.Value then
+								if infon and AntiDeathAuto.Enabled then
+									GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api.ToggleButton(false)
+								end
+								boosted1, infon, sentmsg = false, false, false
+							end
+						end
+					until not AntiDeath.Enabled
+				end)
+			else
+				boosted1, infon, sentmsg = false, false, false
+			end
+		end,
+        Default = false,
+        ExtraText = function()
+            return AntiDeathMode.Value
+        end
+	})
+	AntiDeathMode = AntiDeath.CreateDropdown({
+		Name = 'Mode',
+		List = {
+			'Velocity',
+			'Infinite'
+		},
+		HoverText = 'Mode to prevent death',
+		Value = 'Velocity',
+		Function = function(val)
+			if val == 'Velocity' then
+				AntiDeathVelo.Object.Visible = true
+			elseif val == 'Infinite' then
+				AntiDeathVelo.Object.Visible = false
+			end
+		end
+	})
+	AntiDeathHealth = AntiDeath.CreateSlider({
+		Name = 'Health',
+		Min = 10,
+		Max = 99,
+		HoverText = 'Health at which AntiDeath will perform its actions',
+		Function = function() end,
+		Default = 50
+	})
+	AntiDeathVelo = AntiDeath.CreateSlider({
+		Name = 'Velocity',
+		Min = 100,
+		Max = 650,
+		HoverText = 'Velocity Boost',
+		Function = function() end,
+		Default = 650
+	})
+	AntiDeathAuto = AntiDeath.CreateToggle({
+		Name = 'Auto Disable',
+		Default = false,
+		HoverText = 'Automatically disables InfinteFly after healing',
+		Function = function() end
+	})
+	AntiDeathNot = AntiDeath.CreateToggle({
+		Name = 'Notification',
+		Default = true,
+		HoverText = 'Notifies you when AntiDeath actioned',
+		Function = function() end
+	})
+end)
+
+runLunar(function()
+	local function modulescheck()
+		-- xylex says kys if u use gravity https://cdn.discordapp.com/attachments/1014867158297231430/1139567513311645798/image.png
+		if GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api.Enabled or GuiLibrary.ObjectsThatCanBeSaved.FlyOptionsButton.Api.Enabled or GuiLibrary.ObjectsThatCanBeSaved.LunarFlyOptionsButton.Api.Enabled or GuiLibrary.ObjectsThatCanBeSaved.LunarBoostOptionsButton.Api.Enabled then
+			return true
+		else
+			return false
+		end
+	end
+	local GravityModule = {Enabled = false}
+	local GravityValue = {Value = 100}
+	GravityModule = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
+		Name = "Gravity",
+		HoverText = "Modifies the Gravity",
+		Function = function(callback)
+			if callback then
+				task.spawn(function()
+					repeat task.wait()
+						if not modulescheck() then
+							workspace.Gravity = GravityValue.Value
+						end
+					until not GravityModule.Enabled
+				end)
+			else
+				workspace.Gravity = 196.2
+			end
+		end
+	})
+	GravityValue = GravityModule.CreateSlider({
+		Name = "Gravity",
+		Min = 0,
+		Max = 196,
+		Default = 100,
+		Function = function(val) end
+	})
+end)
+
+runLunar(function()
+	local ItemNotifier = {Enabled = false}
+	local ItemNotifierItem = {Value = ''}
+	local ItemNotifierDur = {Value = 3}
+	ItemNotifier = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"]["CreateOptionsButton"]({
+		Name = 'ItemNotifier',
+        HoverText = 'Notifies you when an item has been\nfound in your inventory',
+		Function = function(callback)
+			if callback then
+				task.spawn(function()
+					repeat task.wait() until (getItemNear(ItemNotifierItem.Value) and entityLunar.isAlive) or (not ItemNotifier.Enabled)
+					if getItemNear(ItemNotifierItem.Value) and entityLunar.isAlive then
+						warningNotification2('ItemNotifier', 'You have a '..ItemNotifierItem.Value, ItemNotifierDur.Value)
+					end
+					return
+				end)
+			end
+		end,
+        Default = false,
+        ExtraText = function()
+            return ItemNotifierItem.Value
+        end
+	})
+	ItemNotifierItem = ItemNotifier.CreateTextBox({
+		Name = 'Item',
+		TempText = 'Item Name',
+		HoverText = 'Item name to search for',
+		FocusLost = function(enter)
+			if ItemNotifier.Enabled then
+				ItemNotifier.ToggleButton(false)
+				ItemNotifier.ToggleButton(false)
+			end
+		end
+	})
+	ItemNotifierDur = ItemNotifier.CreateSlider({
+		Name = 'Duration',
+		Min = 1,
+		Max = 10,
+		HoverText = 'Duration of the notification',
+		Function = function() end,
+		Default = 3
+	})
+end)
+
+runLunar(function()	
+	local TagEraser = {Enabled = false}
+	local archy = {}
+	function archy:DescendantAdded(v)
+		if v.Name == 'Nametag' and self.Head and v.Parent == self.Head then
+			v:Destroy()
+		end
+	end
+	function archycreate()
+		return setmetatable(
+			{Head = nil},
+			{__index = archy}
+		)
+	end
+	local nametag = {Name = 'Nametag', Parent = archycreate().Head}
+	TagEraser = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"]["CreateOptionsButton"]({
+		Name = 'TagEraser',
+        HoverText = 'Removes your nametag',
+		Function = function(callback)
+			if callback then
+				task.spawn(function()
+					repeat task.wait()
+						archycreate():DescendantAdded(nametag)
+						entityLunar.character.Head.Nametag:Destroy()
+					until not TagEraser.Enabled
+				end)
+			end
+		end,
+        Default = false
+	})
+end)
+
+runLunar(function()
+	local VerticalClip = {Enabled = false}
+	VerticalClip = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"]["CreateOptionsButton"]({
+		Name = "VerticalClip",
+		HoverText = "Prevents you from noclipping into the ground when landing from\nInfiniteFly etc. (Prevents lagbacks when landing)",
+		Function = function(callback)
+			if callback then
+				task.spawn(function()
+					repeat task.wait()
+						if entityLunar.isAlive and entityLunar.character and entityLunar.character:FindFirstChild("Humanoid") and entityLunar.character.Humanoid.Health > 0 then
+							if entityLunar.character.Humanoid.FloorMaterial ~= Enum.Material.Air then
+								local block, pos = getPlacedBlock(entityLunar.character.HumanoidRootPart.Position + vec3(0, -3, 0))
+								pos = pos * 3
+								if block and pos then
+									if (pos.Y + 8) >= entityLunar.character.PrimaryPart.Position.Y then
+										local velocity = entityLunar.character.PrimaryPart.Velocity
+										velocity = vec2(velocity.X, velocity.Z)
+										entityLunar.character.PrimaryPart.Velocity = vec3(velocity.X, 0, velocity.Y)
+									end
+								end
+							end
+						end	
+					until not VerticalClip.Enabled
+				end)
+			end
+		end
+	})
+end)
+
+runLunar(function()
+    local texturepack = {Enabled = false}
+	local packDropdown = {Value = "Melo Pack"}
+
+	local ogpackloader = game:GetObjects("rbxassetid://14027120450")
+	local ogtxtpack = ogpackloader[1]
+	ogtxtpack.Name = "OG Pack"
+	ogtxtpack.Parent = replicatedStorageService
+	task.wait()
+	local melopackloader = game:GetObjects("rbxassetid://14774202839")
+	local melotxtpack = melopackloader[1]
+	melotxtpack.Name = "Melo's Pack"
+	melotxtpack.Parent = replicatedStorageService
+	task.wait()
+	local azzapackloader = game:GetObjects("rbxassetid://14803122185")
+	local azzatxtpack = azzapackloader[1]
+	azzatxtpack.Name = "4zze's Pack"
+	azzatxtpack.Parent = replicatedStorageService
+	local viewmodelCon
+	local textures = {
+		["OG Pack"] = ogtxtpack,
+		["Melo's Pack"] = melotxtpack,
+		["4zze's Pack"] = azzatxtpack
+	}
+
+	local function refreshViewmodel(child)
+		for i,v in pairs(textures[packDropdown.Value]:GetChildren()) do
+			if string.lower(v.Name) == child.Name and child.Parent.Name ~= child.Name then
+				-- first person viewmodel check
+				for i1,v1 in pairs(child:GetDescendants()) do
+					if v1:IsA("Part") or v1:IsA("MeshPart") then
+						v1.Transparency = 1
+					end
+				end
+				-- third person viewmodel check
+				for i1,v1 in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
+					if v1.Name == string.lower(v.Name) then
+						for i2,v2 in pairs(v1:GetDescendants()) do
+							if v2.Name ~= child.Name then
+								if v2:IsA("Part") or v2:IsA("MeshPart") then
+									v2.Transparency = 1
+									v2:GetPropertyChangedSignal("Transparency"):Connect(function()
+										v2.Transparency = 1
+									end)
+								end
+							end
+						end
+					end
+				end
+				-- first person txtpack renderer
+				local vmmodel = v:Clone()
+				vmmodel.CFrame = child.Handle.CFrame 
+				vmmodel.CFrame = vmmodel.CFrame * (packDropdown.Value == "OG Pack" and CFrame.new(0, -0.2, 0) or packDropdown.Value == "Melo's Pack" and CFrame.new(0.2, -0.2, 0) or packDropdown.Value == "4zze's Pack" and CFrame.new(0.8,0.1,0.7)) * CFrame.Angles(math.rad(90),math.rad(-130),math.rad(0))
+				if string.lower(child.Name) == "rageblade" then vmmodel.CFrame = vmmodel.CFrame * CFrame.Angles(math.rad(-180),math.rad(100),math.rad(0)) end
+				if string.lower(child.Name):find("pickaxe") then vmmodel.CFrame = vmmodel.CFrame * CFrame.Angles(math.rad(-55),math.rad(-30),math.rad(50)) end
+				if string.lower(child.Name):find("scythe") then vmmodel.CFrame = vmmodel.CFrame * CFrame.Angles(math.rad(-65),math.rad(-80),math.rad(100)) * CFrame.new(-2.8,0.4,-0.8) end
+				if (string.lower(child.Name):find("axe")) and not (string.lower(child.Name):find("pickaxe")) then vmmodel.CFrame = vmmodel.CFrame * CFrame.Angles(math.rad(-55),math.rad(-30),math.rad(50)) * (packDropdown.Value == "Melo's Pack" and CFrame.new(-0.2,0,0.2) or packDropdown.Value == "4zze's Pack" and CFrame.new(-1.5,0,-0.8)) end
+				vmmodel.Parent = child
+				local vmmodelweld = Instance.new("WeldConstraint",vmmodel)
+				vmmodelweld.Part0 = vmmodelweld.Parent
+				vmmodelweld.Part1 = child.Handle
+				-- third person txtpack renderer
+				local charmodel = v:Clone()
+				charmodel.CFrame = game.Players.LocalPlayer.Character[child.Name]:FindFirstChild("Handle").CFrame
+				charmodel.CFrame = charmodel.CFrame * (packDropdown.Value == "OG Pack" and CFrame.new(0, -0.5, 0) or packDropdown.Value == "Melo's Pack" and CFrame.new(0.2, -0.9, 0) or packDropdown.Value == "4zze's Pack" and CFrame.new(0.1,-1.2,0)) * CFrame.Angles(math.rad(90),math.rad(-130),math.rad(0))
+				if string.lower(child.Name) == "rageblade" then charmodel.CFrame = charmodel.CFrame * CFrame.Angles(math.rad(-180),math.rad(100),math.rad(0)) * CFrame.new(0.8,0,-1.1) end
+				if string.lower(child.Name):find("pickaxe") then charmodel.CFrame = charmodel.CFrame * CFrame.Angles(math.rad(-55),math.rad(-30),math.rad(50)) * CFrame.new(-0.8,-0.2,1.1) end
+				if string.lower(child.Name):find("scythe") then charmodel.CFrame = charmodel.CFrame * CFrame.Angles(math.rad(-65),math.rad(-80),math.rad(100)) * CFrame.new(-1.8,-0.5,0) end
+				if (string.lower(child.Name):find("axe")) and not (string.lower(child.Name):find("pickaxe")) then charmodel.CFrame = charmodel.CFrame * CFrame.Angles(math.rad(-55),math.rad(-30),math.rad(50)) * CFrame.new(-1.4,-0.2,0.6) end
+				charmodel.Anchored = false
+				charmodel.CanCollide = false
+				charmodel.Parent = game.Players.LocalPlayer.Character[child.Name]
+				local charmodelweld = Instance.new("WeldConstraint",charmodel)
+				charmodelweld.Part0 = charmodelweld.Parent
+				charmodelweld.Part1 = game.Players.LocalPlayer.Character[child.Name].Handle
+			end
+		end
+	end
+
+	texturepack = GuiLibrary["ObjectsThatCanBeSaved"]["RenderWindow"]["Api"]["CreateOptionsButton"]({
+        Name = "TexturePack",
+        HoverText = "Modifies your renderer",
+        Function = function(callback)
+            if callback then
+				if gameCamera.Viewmodel:FindFirstChildWhichIsA("Accessory") then refreshViewmodel(gameCamera.Viewmodel:FindFirstChildWhichIsA("Accessory")) end
+				viewmodelCon = workspace.Camera.Viewmodel.ChildAdded:Connect(function(child)
+					refreshViewmodel(child)
+				end)
+            else
+                if viewmodelCon then pcall(function() viewmodelCon:Disconnect() end) end
+            end
+        end,
+		ExtraText = function()
+            return packDropdown.Value
+        end
+    })
+	packDropdown = texturepack.CreateDropdown({
+		Name = "Texture",
+		List = {"OG Pack","Melo's Pack","4zze's Pack"},
+		Function = function(val) end
+	})
+end)
+
+runLunar(function()
+	local CustomClouds = {Enabled = false}
+	local CustomCloudsColor = {
+		Hue = 1,
+		Sat = 0,
+		Value = 1
+	}
+	local CloudTransparency = {Value = 0}
+	local CustomCloudsNeon = {Enabled = true}
+	local Clouds = game:GetService("Workspace"):FindFirstChild("Clouds"):GetChildren()
+	CustomClouds = GuiLibrary.ObjectsThatCanBeSaved["RenderWindow"].Api.CreateOptionsButton({
+		Name = "CustomClouds",
+        HoverText = "Customizes the clouds",
+		Function = function(callback)
+			if callback then
+				task.spawn(function()
+					for i,v in pairs(Clouds) do
+						if v:IsA("Part") then
+							v.Transparency = CloudTransparency.Value / 100
+							v.Color = Color3.fromHSV(CustomCloudsColor.Hue,CustomCloudsColor.Sat,CustomCloudsColor.Value)
+							if CustomCloudsNeon.Enabled then 
+								v.Material = Enum.Material.Neon
+							else
+								v.Material = Enum.Material.SmoothPlastic
+							end
+						end
+					end
+				end)
+			else
+				task.spawn(function()
+					for i,v in pairs(Clouds) do
+						if v:IsA("Part") then
+							v.Transparency = 0
+							v.Color = Color3.fromRGB(255,255,255)
+							v.Material = Enum.Material.SmoothPlastic
+						end
+					end
+				end)
+			end
+		end
+	})
+	CustomCloudsColor = CustomClouds.CreateColorSlider({
+		Name = "Color",
+		Function = function(h,s,v)
+			if CustomClouds.Enabled then
+				task.spawn(function()
+					for i,v in pairs(Clouds) do
+						if v:IsA("Part") then
+							v.Transparency = CloudTransparency.Value / 100
+							v.Color = Color3.fromHSV(CustomCloudsColor.Hue,CustomCloudsColor.Sat,CustomCloudsColor.Value)
+							if CustomCloudsNeon.Enabled then 
+								v.Material = Enum.Material.Neon
+							else
+								v.Material = Enum.Material.SmoothPlastic
+							end
+						end
+					end
+				end)
+			end
+		end,
+	})
+	CloudTransparency = CustomClouds.CreateSlider({
+		Name = "Cloud Transparency",
+		Min = 0,
+		Max = 100,
+		Double = 100,
+		Function = function(val)
+			if CustomClouds.Enabled then
+				task.spawn(function()
+					for i,v in pairs(Clouds) do
+						if v:IsA("Part") then
+							v.Transparency = val / 100
+							v.Color = Color3.fromHSV(CustomCloudsColor.Hue,CustomCloudsColor.Sat,CustomCloudsColor.Value)
+							if CustomCloudsNeon.Enabled then 
+								v.Material = Enum.Material.Neon
+							else
+								v.Material = Enum.Material.SmoothPlastic
+							end
+						end
+					end
+				end)
+			end
+		end
+	})
+	CustomCloudsNeon = CustomClouds.CreateToggle({
+		Name = "Neon",
+		Function = function(callback)
+			if CustomClouds.Enabled then
+				task.spawn(function()
+					for i,v in pairs(Clouds) do
+						if v:IsA("Part") then
+							v.Transparency = CloudTransparency.Value / 100
+							v.Color = Color3.fromHSV(CustomCloudsColor.Hue,CustomCloudsColor.Sat,CustomCloudsColor.Value)
+							if callback then 
+								v.Material = Enum.Material.Neon
+							else
+								v.Material = Enum.Material.SmoothPlastic
+							end
+						end
+					end
+				end)
+			end
+		end,
+	})
+end)
+
+runLunar(function()
+	local LagbackSelf = {Enabled = false}
+	local LagbackSelfMode = {Value = "Velocity"}
+	local LagbackSelfPart = {Value = "Root"}
+	local LagbackSelfLoop = {Enabled = false}
+	local LagbackSelfNotification = {Enabled = true}
+	local LagbackSelfVelocity = {Value = 9e9}
+	local LagbackSelfCFrame = {Value = 9e9}
+	local LagbackSelfDel = {Value = 0}
+	local LagbackSelfLoopDel = {Value = 0}
+	local LagbackSelfNotify = {Value = 3}
+	LagbackSelf = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"]["CreateOptionsButton"]({
+		Name = "LagbackSelf",
+        HoverText = "Lagbacks you",
+		Function = function(callback)
+			if callback then
+				if LagbackSelfMode.Value == "Velocity" then
+					if LagbackSelfPart.Value == "Root" then
+						if not LagbackSelfLoop.Enabled then
+							task.wait(LagbackSelfDel.Value)
+							entityLunar.character.HumanoidRootPart.Velocity += vec3(0,LagbackSelfVelocity.Value,0)
+							if LagbackSelfNotification.Enabled then
+								warningNotification("LagbackSelf","Lagbacked",LagbackSelfNotify.Value)
+							end
+							LagbackSelf.ToggleButton(false)
+						else
+							task.spawn(function()
+								repeat task.wait(LagbackSelfLoopDel.Value/10)
+									entityLunar.character.HumanoidRootPart.Velocity += vec3(0,LagbackSelfVelocity.Value,0)
+									if LagbackSelfNotification.Enabled then
+										warningNotification("LagbackSelf","Lagbacked",LagbackSelfNotify.Value)
+									end
+								until not LagbackSelf.Enabled or not LagbackSelfLoop.Enabled
+							end)
+						end
+					elseif LagbackSelfPart.Value == "Primary" then
+						if not LagbackSelfLoop.Enabled then
+							task.wait(LagbackSelfDel.Value)
+							lplr.Character.PrimaryPart.Velocity += vec3(0,LagbackSelfVelocity.Value,0)
+							if LagbackSelfNotification.Enabled then
+								warningNotification("LagbackSelf","Lagbacked",LagbackSelfNotify.Value)
+							end
+							LagbackSelf.ToggleButton(false)
+						else
+							task.spawn(function()
+								repeat task.wait(LagbackSelfLoopDel.Value/10)
+									lplr.Character.PrimaryPart.Velocity += vec3(0,LagbackSelfVelocity.Value,0)
+									if LagbackSelfNotification.Enabled then
+										warningNotification("LagbackSelf","Lagbacked",LagbackSelfNotify.Value)
+									end
+								until not LagbackSelf.Enabled or not LagbackSelfLoop.Enabled
+							end)
+						end
+					end
+				elseif LagbackSelfMode.Value == "CFrame" then
+					if LagbackSelfPart.Value == "Root" then
+						if not LagbackSelfLoop.Enabled then
+							task.wait(LagbackSelfDel.Value)
+							entityLunar.character.HumanoidRootPart.CFrame += vec3(0,LagbackSelfCFrame.Value,0)
+							if LagbackSelfNotification.Enabled then
+								warningNotification("LagbackSelf","Lagbacked",LagbackSelfNotify.Value)
+							end
+							LagbackSelf.ToggleButton(false)
+						else
+							task.spawn(function()
+								repeat task.wait(LagbackSelfLoopDel.Value/10)
+									entityLunar.character.HumanoidRootPart.CFrame += vec3(0,LagbackSelfCFrame.Value,0)
+									if LagbackSelfNotification.Enabled then
+										warningNotification("LagbackSelf","Lagbacked",LagbackSelfNotify.Value)
+									end
+								until not LagbackSelf.Enabled or not LagbackSelfLoop.Enabled
+							end)
+						end
+					elseif LagbackSelfPart.Value == "Primary" then
+						if not LagbackSelfLoop.Enabled then
+							task.wait(LagbackSelfDel.Value)
+							lplr.Character.PrimaryPart.CFrame += vec3(0,LagbackSelfCFrame.Value,0)
+							if LagbackSelfNotification.Enabled then
+								warningNotification("LagbackSelf","Lagbacked",LagbackSelfNotify.Value)
+							end
+							LagbackSelf.ToggleButton(false)
+						else
+							task.spawn(function()
+								repeat task.wait(LagbackSelfLoopDel.Value/10)
+									lplr.Character.PrimaryPart.CFrame += vec3(0,LagbackSelfCFrame.Value,0)
+									if LagbackSelfNotification.Enabled then
+										warningNotification("LagbackSelf","Lagbacked",LagbackSelfNotify.Value)
+									end
+								until not LagbackSelf.Enabled or not LagbackSelfLoop.Enabled
+							end)
+						end
+					end
+				end
+			end
+		end,
+		ExtraText = function()
+			return LagbackSelfMode.Value
+		end
+	})
+	LagbackSelfMode = LagbackSelf.CreateDropdown({
+		Name = "Mode",
+		List = {
+			"Velocity",
+			"CFrame"
+		},
+		HoverText = "LagbackSelf Mode",
+		Function = function() end,
+	})
+	LagbackSelfPart = LagbackSelf.CreateDropdown({
+		Name = "Part",
+		List = {
+			"Root",
+			"Primary"
+		},
+		HoverText = "Lagback Part",
+		Function = function() end,
+	})
+	LagbackSelfLoop = LagbackSelf.CreateToggle({
+		Name = "Loop",
+		Default = false,
+		HoverText = "Lagbacks you in a loop",
+		Function = function() end,
+	})
+	LagbackSelfNotification = LagbackSelf.CreateToggle({
+		Name = "Notification",
+		Default = true,
+		HoverText = "Notifies that you lagbacked",
+		Function = function() end,
+	})
+	LagbackSelfVelocity = LagbackSelf.CreateSlider({
+		Name = "Velocity",
+		Min = 1000,
+		Max = 9e9,
+		HoverText = "Velocity Boost",
+		Function = function() end,
+		Default = 9e9
+	})
+	LagbackSelfCFrame = LagbackSelf.CreateSlider({
+		Name = "CFrame",
+		Min = 1000,
+		Max = 9e9,
+		HoverText = "CFrame Boost",
+		Function = function() end,
+		Default = 9e9
+	})
+	LagbackSelfDel = LagbackSelf.CreateSlider({
+		Name = "Delay",
+		Min = 0,
+		Max = 50,
+		HoverText = "Lagback Delay",
+		Function = function() end,
+		Default = 0
+	})
+	LagbackSelfLoopDel = LagbackSelf.CreateSlider({
+		Name = "Loop Delay",
+		Min = 0,
+		Max = 50,
+		HoverText = "Loop Lagback Delay",
+		Function = function() end,
+		Default = 0
+	})
+	LagbackSelfNotify = LagbackSelf.CreateSlider({
+		Name = "Notify Duration",
+		Min = 1,
+		Max = 10,
+		HoverText = "Notification Duration",
+		Function = function() end,
+		Default = 3
+	})
+end)
+
+runLunar(function()
+	local ForceReset = {Enabled = false}
+	local ForceResetMode = {Value = "Remote"}
+	local ForceResetNotification = {Enabled = true}
+	ForceReset = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"]["CreateOptionsButton"]({
+		Name = "ForceReset",
+        HoverText = "Resets you",
+		Function = function(callback)
+			if callback then
+				if ForceResetMode.Value == "Health" then
+					entityLunar.character.Humanoid.Health = 0
+					task.wait(0.2)
+					if ForceResetNotification.Enabled and entityLunar.character.Humanoid.Health == 0 then
+						warningNotification("ForceReset","Killed you",2)
+					elseif ForceResetNotification.Enabled and entityLunar.character.Humanoid.Health > 0 then
+						warningNotification('ForceReset','Failed to kill',2)
+					end
+					ForceReset.ToggleButton(false)
+					return
+				elseif ForceResetMode.Value == "Remote" then
+					bedwars.ClientHandler:Get(bedwars.ResetRemote):SendToServer()
+					task.wait(0.2)
+					if ForceResetNotification.Enabled and entityLunar.character.Humanoid.Health == 0 then
+						warningNotification("ForceReset","Killed you",2)
+					elseif ForceResetNotification.Enabled and entityLunar.character.Humanoid.Health > 0 then
+						warningNotification('ForceReset','Failed to kill',2)
+					end
+					ForceReset.ToggleButton(false)
+					return
+				end
+			end
+		end,
+		ExtraText = function()
+			return ForceResetMode.Value
+		end
+	})
+	ForceResetMode = ForceReset.CreateDropdown({
+		Name = "Mode",
+		List = {
+			"Health",
+			"Remote"
+		},
+		Function = function() end,
+	})
+	ForceResetNotification = ForceReset.CreateToggle({
+		Name = "Notification",
+		Function = function() end,
+	})
+end)
+
+runLunar(function()
+	local LunarAntiVoid = {Enabled = false}
+	local LunarAntiVoidMode = {Value = "Velocity"}
+	local LunarAntiVoidColor = {
+		Hue = 1,
+		Sat = 1,
+		Value = 0.50
+	}
+	local LunarAntiVoidTrans = {Value = 40}
+	local LunarAntiVoidVeloSpeed = {Value = 70}
+	local LunarAntiVoidVeloRepeat = {Value = 5}
+	local LunarAntiVoidCFSpeed = {Value = 10}
+	local LunarAntiVoidCFRepeat = {Value = 3}
+	local LunarAntiVoidJumpRepeat = {Value = 7}
+	local LunarAntiVoidNotification = {Enabled = true}
+	local antivoidypos = 0
+	LunarAntiVoid = GuiLibrary["ObjectsThatCanBeSaved"]["WorldWindow"]["Api"]["CreateOptionsButton"]({
+		Name = "LunarAntiVoid",
+		HoverText = "Protects you from the void",
+		Function = function(callback)
+			if callback then
+				local voidpart = Instance.new('Part',workspace)
+                -- vape classic av mode
+				task.spawn(function()
+					repeat task.wait() until bedwarsStore.matchState ~= 0 or not vapeInjected
+					if vapeInjected and antivoidypos == 0 then
+						local lowestypos = 99999
+						for i,v in pairs(bedwarsStore.blocks) do 
+							local newray = workspace:Raycast(v.Position + Vector3.new(0, 800, 0), Vector3.new(0, -1000, 0), bedwarsStore.blockRaycast)
+							if i % 200 == 0 then 
+								task.wait(0.06)
+							end
+							if newray and newray.Position.Y <= lowestypos then
+								lowestypos = newray.Position.Y
+							end
+						end
+						antivoidypos = lowestypos - 8
+					end
+					if voidpart then 
+						voidpart.Position = Vector3.new(0, antivoidypos, 0)
+						voidpart.Parent = workspace
+					end
+				end)
+                -- vape code stops here
+				voidpart.Name = "LunarAntiVoid"
+				voidpart.Size = vec3(2.1e3,0.5,2e3)
+				voidpart.Color = Color3.fromHSV(LunarAntiVoidColor.Hue,LunarAntiVoidColor.Sat,LunarAntiVoidColor.Value)
+				voidpart.Anchored = true
+				voidpart.Transparency = 1 - LunarAntiVoidTrans.Value/100
+				voidpart.Position = vec3(160.5,antivoidypos,247.5)
+				voidpart.Material = Enum.Material.Neon
+				if antivoidypos == 0 then 
+					voidpart.Parent = nil
+				end
+				voidpart.Touched:connect(function(z)
+					if z.Parent:WaitForChild("Humanoid") and z.Parent.Name == lplr.Name then
+						if LunarAntiVoidMode.Value == "Velocity" then
+							for i = 1,LunarAntiVoidVeloRepeat.Value do
+								task.wait(0.04)
+								entityLunar.character.HumanoidRootPart.Velocity = vec3(0,LunarAntiVoidVeloSpeed.Value,0)
+							end
+							if (not GuiLibrary.ObjectsThatCanBeSaved.FlyOptionsButton.Api.Enabled) and (not GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api.Enabled) and (not GuiLibrary.ObjectsThatCanBeSaved.LunarFlyOptionsButton.Api.Enabled) then
+								if LunarAntiVoidNotification.Enabled then
+									warningNotification("LunarAntiVoid","Boosted " .. LunarAntiVoidVeloSpeed.Value .. ".",5)
+								end
+							end
+						elseif LunarAntiVoidMode.Value == "CFrame" then
+							workspace.Gravity = 0
+							entityLunar.character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+							for i = 1,LunarAntiVoidCFRepeat.Value do
+								entityLunar.character.HumanoidRootPart.CFrame += vec3(0,LunarAntiVoidCFSpeed.Value,0)
+								task.wait(0.15)
+							end
+							workspace.Gravity = 196.2
+							if (not GuiLibrary.ObjectsThatCanBeSaved.FlyOptionsButton.Api.Enabled) and (not GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api.Enabled) and (not GuiLibrary.ObjectsThatCanBeSaved.LunarFlyOptionsButton.Api.Enabled) then
+								if LunarAntiVoidNotification.Enabled then
+									warningNotification("LunarAntiVoid","Boosted " .. LunarAntiVoidCFSpeed.Value .. ".",5)
+								end
+							end
+						elseif LunarAntiVoidMode.Value == "AutoJump" then
+							for i = 1,LunarAntiVoidJumpRepeat.Value do
+								entityLunar.character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+								task.wait(0.1)
+							end
+							if (not GuiLibrary.ObjectsThatCanBeSaved.FlyOptionsButton.Api.Enabled) and (not GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api.Enabled) and (not GuiLibrary.ObjectsThatCanBeSaved.LunarFlyOptionsButton.Api.Enabled) then
+								if LunarAntiVoidNotification.Enabled then
+									warningNotification("LunarAntiVoid","Boosted " .. LunarAntiVoidJumpRepeat.Value .. ".",5)
+								end
+							end
+						end
+					end
+				end)
+			else               
+				workspace.LunarAntiVoid:Destroy()
+			end
+		end,
+		ExtraText = function()
+			return LunarAntiVoidMode.Value
+		end
+	})
+	LunarAntiVoidMode = LunarAntiVoid.CreateDropdown({
+		Name = "Mode",
+		List = {
+			"Velocity",
+			"CFrame",
+			"AutoJump"
+		},
+		Function = function() end,
+	})
+	LunarAntiVoidColor = LunarAntiVoid.CreateColorSlider({
+		Name = "Color",
+		Function = function() end,
+	})
+	LunarAntiVoidTrans = LunarAntiVoid.CreateSlider({
+		Name = "Transparecy",
+		Min = 0,
+		Max = 100,
+		Function = function() end,
+		Default = 40
+	})
+	LunarAntiVoidVeloSpeed = LunarAntiVoid.CreateSlider({
+		Name = "Velocity Speed",
+		Min = 1,
+		Max = 150,
+		Function = function() end,
+		Default = 70
+	})
+	LunarAntiVoidVeloRepeat = LunarAntiVoid.CreateSlider({
+		Name = "Velocity Repeat",
+		Min = 1,
+		Max = 8,
+		Function = function() end,
+		Default = 5
+	})
+	LunarAntiVoidCFSpeed = LunarAntiVoid.CreateSlider({
+		Name = "CFrame Speed",
+		Min = 1,
+		Max = 20,
+		Function = function() end,
+		Default = 10
+	})
+	LunarAntiVoidCFRepeat = LunarAntiVoid.CreateSlider({
+		Name = "CFrame Repeat",
+		Min = 1,
+		Max = 8,
+		Function = function() end,
+		Default = 3
+	})
+	LunarAntiVoidJumpRepeat = LunarAntiVoid.CreateSlider({
+		Name = "Jump Repeat",
+		Min = 1,
+		Max = 20,
+		Function = function() end,
+		Default = 7
+	})
+	LunarAntiVoidNotification = LunarAntiVoid.CreateToggle({
+		Name = "Notification",
+		Function = function() end,
+	})
+end)
+
+runLunar(function()
+	local lunarVapeAnticheat = {Enabled = false}
+	local frame = 0
+	local players = {}
+	local lplrname = lplr.Name
+	local refreshFrequency = {Value = 0}
+	local notifyduration = {Value = 15}
+	local speedACheckToggle = {Enabled = false}
+	local speedBCheckToggle = {Enabled = false}
+	local flyACheckToggle = {Enabled = false}
+	local flyBCheckToggle = {Enabled = false}
+	local function highSpeedCheck(plrname)
+		local alreadyDetected = false
+		local pos
+		local newPos
+		local looped = 0
+		local flagged = 0
+		local mag
+		repeat
+			mag = nil
+			pos = nil
+			newPos = nil
+			if not players[plrname].isAlive then return end
+			pos = players[plrname].pos
+			newPos = Vector2.new(pos.X,pos.Z)
+			task.wait(0.1)
+			mag = (((Vector2.new(players[plrname].pos.X,players[plrname].pos.Z) - newPos).magnitude) * 8.94)
+			if mag >= 35 then
+				flagged = flagged + 1
+			end
+			looped = looped + 1
+		until looped >= 25
+		if flagged >= 22 then
+			if (detected[plrname] ~= true) and players[plrname].isAlive then
+				warningNotification("LunarVapeAnticheat | SpeedA",plrname.." is cheating using Disabler. (Speed: "..tostring((math.round(mag * 10) / 10))..")",notifyduration.Value)
+				detected[plrname] = true
+			end
+		end
+	end
+
+	local function verticalPosCheck(plrname)
+		if players[plrname].pos.Y > 500 then
+			if (detected[plrname] ~= true) and players[plrname].isAlive then
+				warningNotification("LunarVapeAnticheat | FlyB",plrname.." is cheating with InfFly. (YPos: "..tostring(math.round(players[plrname].pos.Y))..")",notifyduration.Value)
+				detected[plrname] = true
+			end
+		end
+	end
+
+	local function flyCheck(plrname)
+		local waited = 0
+		local alreadyDetected = false
+		local oldPlayerPosition = players[plrname].pos.Y
+		local oldXZ = Vector2.new(players[plrname].pos.X,players[plrname].pos.Z)
+		local newplayerposition = nil
+		if bedwarsStore.matchState == 1 then
+			repeat
+				task.wait()
+				if players[plrname].isAlive == false then return end 
+				if (players[plrname].floor ~= Enum.Material.Air) and (waited < 1.22) then return end
+				waited = waited + frame
+				if (waited >= 1.3) and (players[plrname].pos.Y > (oldPlayerPosition - 60)) and (players[plrname].pos.Y < (oldPlayerPosition + 50)) and ((Vector2.new(players[plrname].pos.X,players[plrname].pos.Z) - oldXZ).magnitude > 10) then
+					if (detected[plrname] ~= true) and players[plrname].isAlive then
+						warningNotification("LunarVapeAnticheat | FlyA",plrname.." is cheating by flying. (Time flew: "..tostring(math.round(waited * 100) / 100).."  YDisplacement: "..tostring(math.round(players[plrname].pos.Y - oldPlayerPosition))..")",notifyduration.Value)
+						detected[plrname] = true
+					end
+				end
+			until (waited > 1.5)
+		end
+	end
+
+	local connection
+	local deathTPCheck = {}
+	lunarVapeAnticheat = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"]["CreateOptionsButton"]({
+		Name = 'LunarAntiCheat',
+		HoverText = 'Detects blatant cheaters',
+		Function = function(callback)
+			if callback then
+				task.spawn(function()
+					repeat task.wait((refreshFrequency.Value / 100))
+						for _,plr in (playersService:GetChildren()) do
+							if (bedwarsStore.matchState == 1) and (plr.Name ~= lplrname) and (plr.TeamColor ~= lplr.TeamColor) and plr.Character and plr.Character.PrimaryPart and plr.Character:FindFirstChild("Humanoid") and plr.Character.Humanoid.Health > 0 then
+								players[plr.Name] = {
+									isAlive = true,
+									pos = plr.Character.PrimaryPart.Position,
+									floor = plr.Character.Humanoid.FloorMaterial
+								}
+								task.spawn(function()
+									if speedACheckToggle.Enabled then highSpeedCheck(plr.Name) end
+								end)
+								task.spawn(function()
+									if flyBCheckToggle.Enabled then verticalPosCheck(plr.Name) end
+								end)
+								task.spawn(function()
+									if flyACheckToggle.Enabled then flyCheck(plr.Name) end
+								end)
+							else
+								players[plr.Name] = {
+									isAlive = false,
+									pos = nil,
+									floor = nil
+								}
+							end
+						end
+					until not lunarVapeAnticheat.Enabled
+				end)
+				task.spawn(function()
+					for _,plr in pairs(playersService:GetPlayers()) do
+						if plr.Name ~= lplr.Name then
+							if speedBCheckToggle.Enabled then
+								local con = plr.CharacterAdded:Connect(function() 
+									repeat task.wait() until plr.Character and plr.Character:FindFirstChild("Humanoid") and plr.Character.PrimaryPart
+									task.wait()
+									local suc, pos = pcall(function() return plr.Character.PrimaryPart.Position end)
+									local newpos = Vector2.new(pos.X,pos.Z)
+									task.wait(1.8)
+									local suc, pos2 = pcall(function() return plr.Character.PrimaryPart.Position end)
+									local newpos2 = Vector2.new(pos2.X,pos2.Z)
+									local mag = (newpos2 - newpos).magnitude
+									if mag >= 80 then
+										if (detected[plr.Name] ~= true) then
+											warningNotification("LunarVapeAnticheat | SpeedB",plr.Name.." is cheating using DeathTP. (Speed: "..tostring((math.round(mag * 10) / 10))..")",notifyduration.Value)
+											detected[plr.Name] = true
+										end
+									end
+								end)
+								table.insert(deathTPCheck,con)
+							end
+						end
+					end
+				end)
+			else
+				for i, v in pairs(deathTPCheck) do 
+					if v.Disconnect then pcall(function() v:Disconnect() end) continue end
+					if v.disconnect then pcall(function() v:disconnect() end) continue end
+				end
+				table.clear(deathTPCheck)
+				if connection then connection:Disconnect() end
+			end
+		end
+	})
+	refreshFrequency = lunarVapeAnticheat.CreateSlider({
+		Name = "Check Cooldown (sec)",
+		HoverText = "Sets how often the checks run (except DeathTP)",
+		Min = 0,
+		Max = 100,
+		Double = 100,
+		Default = 0,
+		Function = function() end
+	})
+	notifyduration = lunarVapeAnticheat.CreateSlider({
+		Name = "Duration",
+		HoverText = "Duration of the notification",
+		Min = 0,
+		Max = 60,
+		Default = 15,
+		Function = function() end
+	})
+	local speedACheckToggle = lunarVapeAnticheat.CreateToggle({
+		Name = "SpeedA (Disabler)",
+		Default = true,
+		Function = function(callback) end
+	})
+	local speedBCheckToggle = lunarVapeAnticheat.CreateToggle({
+		Name = "SpeedB (DeathTP)",
+		Default = true,
+		Function = function(callback) end
+	})
+	local flyACheckToggle = lunarVapeAnticheat.CreateToggle({
+		Name = "FlyA (1.5s fly detection)",
+		Default = true,
+		Function = function(callback) end
+	})
+	local flyBCheckToggle = lunarVapeAnticheat.CreateToggle({
+		Name = "FlyB (InfFly YPos Check)",
+		Default = true,
+		Function = function(callback) end
+	})
 end)
