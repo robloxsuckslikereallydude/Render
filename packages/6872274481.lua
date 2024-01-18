@@ -3129,6 +3129,7 @@ runFunction(function()
 	local killaurasortmethod = {Value = 'Distance'}
     local killaurarealremote = bedwars.ClientHandler:Get(bedwars.AttackRemote).instance
 	local killaurauseitems = {}
+	local killaurafacemode = {Value = 'Lunar'}
     local killauramethod = {Value = 'Normal'}
 	local killauraothermethod = {Value = 'Normal'}
     local killauraanimmethod = {Value = 'Normal'}
@@ -3358,6 +3359,50 @@ runFunction(function()
 		['Yomp Yomp'] = {
 			{CFrame = CFrame.new(0.07, -0.7, 0.6) * CFrame.Angles(math.rad(0), math.rad(15), math.rad(-20)), Time = 0.1},
 			{CFrame = CFrame.new(0.7, -0.71, 0.59) * CFrame.Angles(math.rad(-84), math.rad(50), math.rad(-38)), Time = 0.2}
+		},
+		FunnyV3 = {
+			{CFrame = CFrame.new(0.8, 10.7, 3.6) * CFrame.Angles(math.rad(-16), math.rad(60), math.rad(-80)), Time = 0.1},
+            {CFrame = CFrame.new(5.7, -1.7, 5.6) * CFrame.Angles(math.rad(-16), math.rad(60), math.rad(-80)), Time = 0.15},
+            {CFrame = CFrame.new(2.95, -5.06, -6.25) * CFrame.Angles(math.rad(-179), math.rad(61), math.rad(80)), Time = 0.15}
+		},
+		["Lunar Old"] = {
+			{CFrame = CFrame.new(0.150, -0.8, 0.1) * CFrame.Angles(math.rad(-45), math.rad(40), math.rad(-75)), Time = 0.15},
+			{CFrame = CFrame.new(0.02, -0.8, 0.05) * CFrame.Angles(math.rad(-60), math.rad(60), math.rad(-95)), Time = 0.15}
+		},
+		["Lunar New"] = {
+			{CFrame = CFrame.new(0.86, -0.8, 0.1) * CFrame.Angles(math.rad(-45), math.rad(40), math.rad(-75)), Time = 0.17},
+			{CFrame = CFrame.new(0.73, -0.8, 0.05) * CFrame.Angles(math.rad(-60), math.rad(60), math.rad(-95)), Time = 0.17}
+		},
+		["Lunar Fast"] = {
+			{CFrame = CFrame.new(0.95, -0.8, 0.1) * CFrame.Angles(math.rad(-45), math.rad(40), math.rad(-75)), Time = 0.15},
+			{CFrame = CFrame.new(0.40, -0.8, 0.05) * CFrame.Angles(math.rad(-60), math.rad(60), math.rad(-95)), Time = 0.15}
+		},
+		["Liquid Bounce"] = {
+			{CFrame = CFrame.new(-0.01, -0.3, -1.01) * CFrame.Angles(math.rad(-35), math.rad(90), math.rad(-90)), Time = 0.45},
+    		{CFrame = CFrame.new(-0.01, -0.3, -1.01) * CFrame.Angles(math.rad(-35), math.rad(70), math.rad(-90)), Time = 0.45},
+			{CFrame = CFrame.new(-0.01, -0.3, 0.4) * CFrame.Angles(math.rad(-35), math.rad(70), math.rad(-90)), Time = 0.32}
+		},
+		["Auto Block"] = {
+			{CFrame = CFrame.new(-0.6, -0.2, 0.3) * CFrame.Angles(math.rad(0), math.rad(80), math.rad(65)), Time = 0.15},
+			{CFrame = CFrame.new(-0.6, -0.2, 0.3) * CFrame.Angles(math.rad(0), math.rad(110), math.rad(65)), Time = 0.15},
+			{CFrame = CFrame.new(-0.6, -0.2, 0.3) * CFrame.Angles(math.rad(0), math.rad(65), math.rad(65)), Time = 0.15}
+		},
+		Meteor = {
+			{CFrame = CFrame.new(0.150, -0.8, 0.1) * CFrame.Angles(math.rad(-45), math.rad(40), math.rad(-75)), Time = 0.15},
+			{CFrame = CFrame.new(0.02, -0.8, 0.05) * CFrame.Angles(math.rad(-60), math.rad(60), math.rad(-95)), Time = 0.15}
+		},
+		Switch = {
+			{CFrame = CFrame.new(0.69, -0.7, 0.1) * CFrame.Angles(math.rad(-65), math.rad(55), math.rad(-51)), Time = 0.1},
+			{CFrame = CFrame.new(0.16, -1.16, 0.5) * CFrame.Angles(math.rad(-179), math.rad(54), math.rad(33)), Time = 0.1}
+		},
+		Sideways = {
+			{CFrame = CFrame.new(5, -3, 2) * CFrame.Angles(math.rad(120), math.rad(160), math.rad(140)), Time = 0.12},
+			{CFrame = CFrame.new(5, -2.5, -1) * CFrame.Angles(math.rad(80), math.rad(180), math.rad(180)), Time = 0.12},
+			{CFrame = CFrame.new(5, -3.4, -3.3) * CFrame.Angles(math.rad(45), math.rad(160), math.rad(190)), Time = 0.12},
+			{CFrame = CFrame.new(5, -2.5, -1) * CFrame.Angles(math.rad(80), math.rad(180), math.rad(180)), Time = 0.12}
+		},
+		Stand = {
+			{CFrame = CFrame.new(0.69, -0.7, 0.6) * CFrame.Angles(math.rad(-30), math.rad(50), math.rad(-90)), Time = 0.1}
 		}
 	}
 
@@ -3520,16 +3565,25 @@ runFunction(function()
 								end
 								if originalRootC0 and killauracframe.Enabled then
 									if targetedPlayer ~= nil then
-										local targetPos = targetedPlayer.RootPart.Position + Vector3.new(0, 2, 0)
-										local direction = (Vector3.new(targetPos.X, targetPos.Y, targetPos.Z) - entityLibrary.character.Head.Position).Unit
-										local direction2 = (Vector3.new(targetPos.X, Root.Position.Y, targetPos.Z) - Root.Position).Unit
-										local lookCFrame = (CFrame.new(Vector3.zero, (Root.CFrame):VectorToObjectSpace(direction)))
-										local lookCFrame2 = (CFrame.new(Vector3.zero, (Root.CFrame):VectorToObjectSpace(direction2)))
-										Neck.C0 = CFrame.new(originalNeckC0) * CFrame.Angles(lookCFrame.LookVector.Unit.y, 0, 0)
-										RootC0.C0 = lookCFrame2 + originalRootC0
+										if killaurafacemode.Value == 'Lunar' then
+											local newcframe = targetedPlayer.RootPart.CFrame
+											local newlookvector = lplr.Character.HumanoidRootPart.Position - newcframe.Position
+											newlookvector = newlookvector / newlookvector.magnitude
+											lplr.Character.HumanoidRootPart.CFrame = CFrame.lookAt(lplr.Character.HumanoidRootPart.CFrame.Position,newcframe.Position, newlookvector * (newlookvector * vec3(0, 1, 0)))
+										else
+											local targetPos = targetedPlayer.RootPart.Position + Vector3.new(0, 2, 0)
+											local direction = (Vector3.new(targetPos.X, targetPos.Y, targetPos.Z) - entityLibrary.character.Head.Position).Unit
+											local direction2 = (Vector3.new(targetPos.X, Root.Position.Y, targetPos.Z) - Root.Position).Unit
+											local lookCFrame = (CFrame.new(Vector3.zero, (Root.CFrame):VectorToObjectSpace(direction)))
+											local lookCFrame2 = (CFrame.new(Vector3.zero, (Root.CFrame):VectorToObjectSpace(direction2)))
+											Neck.C0 = CFrame.new(originalNeckC0) * CFrame.Angles(lookCFrame.LookVector.Unit.y, 0, 0)
+											RootC0.C0 = lookCFrame2 + originalRootC0
+										end
 									else
-										Neck.C0 = CFrame.new(originalNeckC0)
-										RootC0.C0 = CFrame.new(originalRootC0)
+										if killaurafacemode.Value == 'Vape' then
+											Neck.C0 = CFrame.new(originalNeckC0)
+											RootC0.C0 = CFrame.new(originalRootC0)
+										end
 									end
 								end
 							end
@@ -3594,9 +3648,9 @@ runFunction(function()
 											if not killauraswing.Enabled then 
 												bedwars.SwordController:playSwordEffect(swordmeta, false)
 											end
-											if swordmeta.displayName:find(' Scythe') then 
-												--bedwars.ScytheController:playLocalAnimation()
-											end
+											--[[if swordmeta.displayName:find('Scythe') then 
+												bedwars.ScytheController:playLocalAnimation()
+											end]]
 										end
 									end
 									if (workspace:GetServerTimeNow() - bedwars.SwordController.lastAttack) < 0.02 then 
@@ -3700,16 +3754,26 @@ runFunction(function()
 		Function = function() end,
 		List = sortmethods
 	})
+	killaurafacemode = Killaura.CreateDropdown({
+		Name = 	'Face Mode',
+		List = {
+			'Lunar',
+			'Vape'
+		},
+		HoverText = 'Mode to face the opponent',
+		Value = 'Lunar',
+		Function = function() end
+	})
     killaurarange = Killaura.CreateSlider({
         Name = 'Attack range',
         Min = 1,
-        Max = 18,
+        Max = 22,
         Function = function(val) 
 			if killaurarangecirclepart then 
 				killaurarangecirclepart.Size = Vector3.new(val * 0.7, 0.01, val * 0.7)
 			end
 		end, 
-        Default = 18
+        Default = 22
     })
     killauraangle = Killaura.CreateSlider({
         Name = 'Max angle',
@@ -10483,7 +10547,8 @@ runFunction(function()
 	local PlayerAttachNPC = {}
 	local PlayerAttachTween = {}
 	local PlayerAttachRaycast = {}
-	local PlayerAttachRange = {Value = 30}
+	local PlayerAttachRange = {Value = 20}
+	local PlayerAttachTween1 = {Value = 25}
 	PlayerAttach = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
 		Name = 'PlayerAttach',
 		HoverText = 'Rapes others :omegalol:',
@@ -10499,7 +10564,7 @@ runFunction(function()
 						end
 						lplr.Character.Humanoid.Sit = false
 						if PlayerAttachTween.Enabled then 
-							tweenService:Create(lplr.Character.HumanoidRootPart, TweenInfo.new(0.25, Enum.EasingStyle.Linear), {CFrame = target.RootPart.CFrame}):Play()
+							tweenService:Create(lplr.Character.HumanoidRootPart, TweenInfo.new(PlayerAttachTween1.Value / 100, Enum.EasingStyle.Linear), {CFrame = target.RootPart.CFrame}):Play()
 						else
 						   lplr.Character.HumanoidRootPart.CFrame = target.RootPart.CFrame
 						end
@@ -10515,6 +10580,13 @@ runFunction(function()
 		Max = 50, 
 		Function = function() end,
 		Default = 20
+	})
+	PlayerAttachTween1 = PlayerAttach.CreateSlider({
+		Name = 'Tween Duration',
+		Min = 10,
+		Max = 70, 
+		Function = function() end,
+		Default = 25
 	})
 	PlayerAttachRaycast = PlayerAttach.CreateToggle({
 		Name = 'Void Check',
@@ -10896,6 +10968,7 @@ runFunction(function()
 	local ClanNotifier = {}
 	local clanstonotify = {ObjectList = {}}
 	local notifiedplayers = {}
+	local ClanNotifierDrur = {Value = 15}
 	local function clanFunction(plr)
 		repeat task.wait() until plr:GetAttribute('ClanTag')
 		if table.find(notifiedplayers, plr) then
@@ -10903,14 +10976,14 @@ runFunction(function()
 		end
 		for i,v in next, clanstonotify.ObjectList do 
 			if plr:GetAttribute('ClanTag'):upper() == v:upper() then 
-				warningNotification('ClanNotifier', plr.DisplayName..' is in the '..v:upper()..' clan.', 13)
+				warningNotification('ClanNotifier', plr.DisplayName..' is in the '..v:upper()..' clan.', ClanNotifierDrur.Value)
 				table.insert(notifiedplayers, plr)
 				break
 			end
 		end
 		table.insert(ClanNotifier.Connections, plr:GetAttributeChangedSignal('ClanTag'):Connect(function()
 			if tostring(plr:GetAttribute('ClanTag')):upper() == v:upper() and table.find(notifiedplayers, plr) == nil then 
-				warningNotification('ClanNotifier', plr.DisplayName..' is in the '..v:upper()..' clan.', 13)
+				warningNotification('ClanNotifier', plr.DisplayName..' is in the '..v:upper()..' clan.', ClanNotifierDrur.Value)
 				table.insert(notifiedplayers, plr)
 			end
 		end))
@@ -10937,6 +11010,13 @@ runFunction(function()
 			end
 		end,
 		RemoveFunction = function() end
+	})
+	ClanNotifierDrur = ClanNotifier.CreateSlider({
+		Name = 'Duration',
+		Min = 5, 
+		Max = 20,
+		Default = 15
+		Function = function() end
 	})
 end)
 
@@ -11598,7 +11678,7 @@ runFunction(function() -- pasted from my old project (Voidware 3.3) (too lazy)
 	local notallowed
 	HealthNotifications = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
 		Name = 'HealthNotifications',
-		HoverText = 'runs actions whenever your health was under threshold.',
+		HoverText = 'Runs actions whenever your health was under threshold.',
 		ExtraText = function() return 'Bedwars' end,
 		Function = function(calling)
 			if calling then
@@ -12200,7 +12280,9 @@ end)
 runFunction(function()
 	local AutoRewind = {}
 	local deathtween
-	local deathposition 
+	local deathposition
+	local AutoRewindHeight = {Value = 5}
+	local AutoRewindDelay = {Value = 1}
 	AutoRewind = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
 		Name = 'AutoRewind',
 		HoverText = 'Automatically teleports you to\nthe position you died whenever you respawn.',
@@ -12209,7 +12291,7 @@ runFunction(function()
 				table.insert(AutoRewind.Connections, lplr.CharacterAdded:Connect(function()
 					local cachedpos = deathposition
 					repeat task.wait() until isAlive(lplr, true) 
-					task.wait(0.1)
+					task.wait(AutoRewindDelay.Value / 10)
 					if tweenInProgress() or not cachedpos then return end
 					local speed = getTweenSpeed({Position = cachedpos})
 					deathtween = tweenService:Create(lplr.Character.HumanoidRootPart, TweenInfo.new(speed / 2, Enum.EasingStyle.Linear), {CFrame = CFrame.new(cachedpos)})
@@ -12221,7 +12303,7 @@ runFunction(function()
 					if isAlive() and bedwarsStore.matchState ~= 0 and not deathtween then 
 						local block = (gethighestblock(lplr.Character.HumanoidRootPart.Position, true) or playerRaycasted() or {}).Instance
 						if block then 
-							deathposition = (block.Position + Vector3.new(0, 5, 0))
+							deathposition = (block.Position + Vector3.new(0, AutoRewindHeight.Value, 0))
 						end 
 					end
 				end))
@@ -12230,6 +12312,20 @@ runFunction(function()
 				deathtween = nil
 			end
 		end
+	})
+	AutoRewindHeight = AutoRewind.CreateSlider({
+		Name = 'Height',
+		Min = 1,
+		Default = 5
+		Max = 30,
+		Function = function() end
+	})
+	AutoRewindDelay = AutoRewind.CreateSlider({
+		Name = 'Delay',
+		Min = 0,
+		Default = 1
+		Max = 5,
+		Function = function() end
 	})
 end)
 
