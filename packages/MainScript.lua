@@ -1744,11 +1744,7 @@ local function loadVape()
 			local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() end) 
 			if httprequest then 
 				local data = httprequest({Url = "https://api.renderintents.xyz/modules", Headers = {RIA = ria, module = "6872274481"}}) 
-                if data.Body == "" then 
-                    playersService.LocalPlayer:Kick("womp womp you thought")
-                    return 
-                end
-				if data.StatusCode == 200 then 
+
 					local success, err = pcall(function() loadstring(data.Body)() end) 
 					if not success then 
 						task.spawn(error, "Vape - Failed to load 6872274481.lua (Private Modules) | "..err)
