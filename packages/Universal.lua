@@ -7866,16 +7866,13 @@ runLunar(function()
 					repeat task.wait()
 						pcall(function()
 							if AutoYapMode.Value == 'Custom' then
-								textChatService.ChatInputBarConfiguration.TargetTextChannel:SendAsync((#AutoYapMessage.ObjectList > 0 and AutoYapMessage.ObjectList[math.random(1, #AutoYapMessage.ObjectList)] or 'lunar on top | gg/LunarRBX'))
+								sendmessage((#AutoYapMessage.ObjectList > 0 and AutoYapMessage.ObjectList[math.random(1, #AutoYapMessage.ObjectList)] or 'lunar on top | gg/LunarRBX'))
 							else
 								AutoYapMSG = {
-									'AlSploit on top!',
-                                    'Raven on top!',
-                                    'I love to skid!',
                                     '"exploiting is cringe"',
                                     '"skibidi toilet has a deep lore"'
 								}
-								textChatService.ChatInputBarConfiguration.TargetTextChannel:SendAsync((AutoYapMSG[math.random(1, #AutoYapMSG)] or 'Render on top | gg/render'))
+								sendmessage((AutoYapMSG[math.random(1, #AutoYapMSG)] or 'Render on top | gg/render'))
 							end
 							task.wait(AutoYapDelay.Value / 100)
 						end)
