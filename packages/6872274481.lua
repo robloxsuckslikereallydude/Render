@@ -11589,7 +11589,7 @@ runFunction(function()
 	})
 end)
 
-runFunction(function() -- pasted from my old project (Voidware 3.3) (too lazy)
+runFunction(function()
 	local HealthNotifications = {}
 	local HealthNotificationInfFly = {}
 	local HealthSlider = {Value = 50}
@@ -11598,7 +11598,7 @@ runFunction(function() -- pasted from my old project (Voidware 3.3) (too lazy)
 	local notallowed
 	HealthNotifications = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
 		Name = 'HealthNotifications',
-		HoverText = 'runs actions whenever your health was under threshold.',
+		HoverText = 'Runs actions whenever your health was under threshold.',
 		ExtraText = function() return 'Bedwars' end,
 		Function = function(calling)
 			if calling then
@@ -11621,13 +11621,14 @@ runFunction(function() -- pasted from my old project (Voidware 3.3) (too lazy)
 							return 
 						end
 						if health < maxhealth and health <= HealthSlider.Value then
-							if HealthNotificationInfFly.Enabled and not isEnabled('InfiniteFly') and not isEnabled('Autowin') then 
+							--[[if HealthNotificationInfFly.Enabled and not isEnabled('InfiniteFly') and not isEnabled('Autowin') then 
 								GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api.ToggleButton()  
 								if isEnabled('Fly') then 
 									GuiLibrary.ObjectsThatCanBeSaved.FlyOptionsButton.Api.ToggleButton() 
 								end
-							end
-							task.spawn(playSound, '7396762708')
+							end]]
+							local songerid = '7396762708'
+							task.spawn(playSound, HealthNotificationsID.Value or songerid)
 							notallowed = true
 							InfoNotification('HealthNotifications', 'Your health is '..(health < HealthSlider.Value and 'below' or 'at')..' '..HealthSlider.Value, 10)
 							task.spawn(function()
@@ -11647,6 +11648,17 @@ runFunction(function() -- pasted from my old project (Voidware 3.3) (too lazy)
 			end
 		end
 	})
+	HealthNotificationsID = HealthNotifications.CreateTextBox({
+		Name = 'SongID',
+		TempText = 'Song ID',
+		HoverText = 'Song ID to play',
+		FocusLost = function(enter)
+			if HealthNotifications.Enabled then
+				HealthNotifications.ToggleButton(false)
+				HealthNotifications.ToggleButton(false)
+			end
+		end
+	})
 	HealthSlider = HealthNotifications.CreateSlider({
 		Name = 'Health',
 		Min = 5,
@@ -11654,12 +11666,12 @@ runFunction(function() -- pasted from my old project (Voidware 3.3) (too lazy)
 		Default = 30,
 		Function = function() end
 	})
-	HealthNotificationInfFly = HealthNotifications.CreateToggle({
+	--[[HealthNotificationInfFly = HealthNotifications.CreateToggle({
 		Name = 'InfiniteFly',
 		HoverText = 'Toggles InfiniteFly when health\nreaches exact/below threshold.',
 		Default = true,
 		Function = function() end
-	})
+	})]]
 	HealthSound = HealthNotifications.CreateToggle({
 		Name = 'Sound',
 		HoverText = 'Plays an alarm sound on trigger.',
