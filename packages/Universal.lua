@@ -7866,7 +7866,7 @@ runLunar(function()
 					repeat task.wait()
 						pcall(function()
 							if AutoYapMode.Value == 'Custom' then
-								sendmessage((#AutoYapMessage.ObjectList > 0 and AutoYapMessage.ObjectList[math.random(1, #AutoYapMessage.ObjectList)] or 'lunar on top | gg/LunarRBX'))
+								sendmessage((#AutoYapMessage.ObjectList > 0 and AutoYapMessage.ObjectList[math.random(1, #AutoYapMessage.ObjectList)] or 'lunar on top | gg/render'))
 							else
 								AutoYapMSG = {
                                     '"exploiting is cringe"',
@@ -7952,7 +7952,7 @@ runLunar(function()
 					Text.Position = UDim2.new(0, 0, 0.0273972601, 0)
 					Text.Size = UDim2.new(1, 0, 0.924050629, 0)
 					Text.Font = Enum.Font.FredokaOne
-					Text.Text = "Lunar | discord.gg/LunarRBX"
+					Text.Text = "Lunar | discord.gg/render"
 					Text.TextColor3 = Color3.new(1, 1, 1)
 					Text.TextSize = LunarLogoTextSize.Value
 					if LunarLogoCorners.Enabled then
