@@ -5265,7 +5265,7 @@ runFunction(function()
 	})
 end)
 
---[[runFunction(function()
+runFunction(function()
 	local ChestESPList = {ObjectList = {}, RefreshList = function() end}
 	local function nearchestitem(item)
 		for i,v in next, (ChestESPList.ObjectList) do 
@@ -5383,7 +5383,7 @@ end)
 		end,
 		Default = true
 	})
-end)]]
+end)
 
 runFunction(function()
 	local FieldOfViewValue = {Value = 70}
