@@ -3122,7 +3122,7 @@ runFunction(function()
 end)
 
 local killauraNearPlayer
-runFunction(function()
+--[[runFunction(function()
 	pcall(GuiLibrary.RemoveObject, 'KillauraOptionsButton')
 	local killauraboxes = {}
     local killauratargetframe = {Players = {}}
@@ -4029,7 +4029,7 @@ runFunction(function()
 		repeat task.wait() until RenderFunctions.WhitelistLoaded
 		killauranorender.Object.Visible = RenderFunctions:GetPlayerType(3, plr.Player) > 1.5
 	end)
-end)
+end)]]
 
 local LongJump = {}
 runFunction(function()
