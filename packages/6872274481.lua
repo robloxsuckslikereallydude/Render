@@ -13998,7 +13998,7 @@ runLunar(function()
 	})
 end)
 
-runLunar(function()
+--[[runLunar(function()
 	local AntiHit = {Enabled = false}
 	local AntiHitMode = {Value = 'Teleport'}
 	local AntiHitRange = {Value = 22}
@@ -14446,4 +14446,4 @@ runFunction(function()
         Function = function() end,
         Default = 0
     })
-end)
+end)]]
