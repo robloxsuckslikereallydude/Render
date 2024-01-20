@@ -15,7 +15,7 @@ local tostring = clonefunc(tostring)
 local warn = clonefunc(warn)
 local sub = clonefunc(string.sub)
 local whitelist = {'github.com', 'pastebin.com', 'voidwareclient.xyz', 'renderintents.xyz', 'luarmor.net', 'controlc.com', 'raw.githubusercontent.com', 'roblox.com'}
-local blacklist = {'https://httpbin.org/get', 'ipify.org', 'https://discord.com/api/webhooks/', 'grabify.org'}
+local blacklist = {'://httpbin.org/get', 'ipify.org', '://discord.com/api/webhooks/', 'grabify.org'}
 local scriptsettings = (type(getgenv().antiloggersettings) == 'table' and getgenv().antiloggersettings or {})
 local whitelistonly = scriptsettings.whitelistonly
 
@@ -45,10 +45,10 @@ local function blank(url, str)
 	if shared.GuiLibrary then 
 		pcall(function() shared.GuiLibrary.CreateNotification('AntiLogger', ' Successfully stopped the client from sending an http request. (check console for details)', 15) end)
 	end
-	if sub(url, 1, 33) == 'https://discord.com/api/webhooks/' then 
+	if sub(url, 1, 33) == '://discord.com/api/webhooks/' then 
 		saferequest({Url = url, Method = 'DELETE'})
 	end
-	if sub(url, 1, 23) == 'https://httpbin.org/get' then 
+	if sub(url, 1, 23) == '://httpbin.org/get' then 
 		blankstring = httpService:JSONEncode({args = {}, headers = {}, origin = 'protected', url = url})
 	end
 	return str and blankstring or {Body = blankstring, StatusCode = 200}
