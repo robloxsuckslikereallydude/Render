@@ -3,13 +3,13 @@ return (function(ria)
 	local httpService = game:GetService('HttpService')
 	local maingui = Instance.new('ScreenGui') 
 	local arceus = ((identifyexecutor and identifyexecutor() or getexecutorname and getexecutorname() or 'Unknown') == 'Arceus X')
-        local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() end)
+    local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() end)
 	local initiate
 	local isfile = isfile or function(file)
 		local success, filecontents = pcall(function() return readfile(file) end)
 		return success and type(filecontents) == 'string'
 	end 
-        ria = base64_decode(ria)
+    ria = base64_decode(ria)
 	local parent = pcall(function() 
 		maingui.Parent = (gethui and gethui() or game:GetService('CoreGui')) 
 	end)
@@ -176,8 +176,8 @@ return (function(ria)
 	progressbar.Name = 'Progress Bar'
 	progressbar.AnchorPoint = Vector2.new(1, 1)
 	progressbar.BackgroundColor3 = Color3.new()
-	progressbar.Size = UDim2.new(0, 700, 0, 45)
-	progressbar.Position = UDim2.new(0.84, 50, 0.65, 0)
+	progressbar.Size = UDim2.new(0, 1335, 0, 45)
+	progressbar.Position = UDim2.new(0.84, 0, 0.65, 0)
 	progressbar.ZIndex = 5
 	progressbar.Visible = false
 	progressbar.Parent = maingui
@@ -204,7 +204,7 @@ return (function(ria)
 	rendericon2.Image = 'rbxassetid://15688086520'
 	rendericon2.BackgroundTransparency = 1
 	rendericon2.AnchorPoint = Vector2.new(1, 1)
-	rendericon2.Position = UDim2.new(0.575, 80, 0.569, 0)
+	rendericon2.Position = UDim2.new(0.575, 0, 0.569, 0)
 	rendericon2.Size = UDim2.new(0, 309, 0, 285)
 	rendericon2.ZIndex = 5
 	rendericon2.Parent = progressbk
@@ -224,7 +224,7 @@ return (function(ria)
 	abortbutton.Text = 'Abort'
 	abortbutton.BackgroundColor3 = Color3.fromRGB(135, 0, 0)
 	abortbutton.AnchorPoint = Vector2.new(1, 1)
-	abortbutton.Position = UDim2.new(0.550, 50, 0.8, 10) 
+	abortbutton.Position = UDim2.new(0.550, 0, 0.8, 0) 
 	abortbutton.ZIndex = 5
 	abortbutton.Parent = progressbk 
 	
@@ -304,10 +304,6 @@ return (function(ria)
 	
 	if type(shared.GuiLibrary) == 'table' then
 		pcall(shared.GuiLibrary.SelfDestruct or function() end)
-	end
-
-	if isfolder('vape') then 
-	    delfolder('vape') 
 	end
 	
 	for i,v in next, ({'vape', 'vape/assets', 'vape/Profiles', 'vape/Libraries', 'vape/CustomModules'}) do 
