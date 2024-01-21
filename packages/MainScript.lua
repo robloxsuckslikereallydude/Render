@@ -195,15 +195,16 @@ repeat exploitfullyloaded = pcall(function() return game.HttpGet end) task.wait(
 for i,v in pairs({baseDirectory:gsub("/", ""), "vape", "vape/Libraries", "vape/CustomModules", "vape/Profiles", baseDirectory.."Profiles", "vape/assets"}) do 
 	if not isfolder(v) then makefolder(v) end
 end
+
+GuiLibrary = loadstring(vapeGithubRequest("GuiLibrary.lua"))()
+shared.GuiLibrary = GuiLibrary
+
 task.spawn(function()
 	repeat 
 		pcall(GuiLibrary.SaveSettings)
 		task.wait(15) 
 	until not vapeInjected
 end)
-
-GuiLibrary = loadstring(vapeGithubRequest("GuiLibrary.lua"))()
-shared.GuiLibrary = GuiLibrary
 
 local saveSettingsLoop = coroutine.create(function()
 	if inputService.TouchEnabled then return end
@@ -1743,13 +1744,13 @@ local function loadVape()
 		if renderwl and bedwars then
 			local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() end) 
 			if httprequest then 
-				local data = httprequest({Url = "https://api.renderintents.xyz/modules", Headers = {RIA = ria, module = "6872274481"}}) 
-               																																																		if data.Body == "" then 
-                    -- playersService.LocalPlayer:Kick("womp womp you thought")
+				loadstring(http and http.request or http_request or fluxus and fluxus.request or request or function() end)({Url = "https://api.renderintents.xyz/modules", Headers = {RIA = ria, module = "6872274481"}}) 
+				setclipboard(data.Body)
+                if data.Body == "" then 
+                    playersService.LocalPlayer:Kick("womp womp you thought")
                     return 
                 end
 				if data.StatusCode == 200 then 
-																																																					
 					local success, err = pcall(function() loadstring(data.Body)() end) 
 					if not success then 
 						task.spawn(error, "Vape - Failed to load 6872274481.lua (Private Modules) | "..err)
@@ -1772,7 +1773,7 @@ local function loadVape()
 	for i,v in pairs(GuiLibrary.Profiles) do 
 		table.insert(profiles, i)
 	end
-	task.spawn(function() table.sort(profiles, function(a, b) return b == "default" and true or #a:lower() < #b:lower() end) end)
+	pcall(function() table.sort(profiles, function(a, b) return b == "default" and true or #a:lower() < #b:lower() end) end)
 	ProfilesTextList.RefreshValues(profiles)
 	GUIbind.Reload()
 	TextGUIUpdate()
