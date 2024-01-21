@@ -14103,8 +14103,7 @@ runFunction(function()
     local ChatUsage = {Message = 'âŸâŸâŸâŸâŸâŸâŸâŸâŸâŸ'}
 	local Shield = getItem('infernal_shield')
 	local function crasherfunc()
-		switchItem(Shield.tool)
-		local ShieldRemote = replicatedStorageService.rbxts_include.node_modules:FindFirstChild('@rbxts').net.out._NetManaged
+		--[[local ShieldRemote = replicatedStorageService.rbxts_include.node_modules:FindFirstChild('@rbxts').net.out._NetManaged
 		for _, shieldName in next, Shields do
 			local Shielder = ShieldRemote:FindFirstChild(shieldName)
 			if Shielder then
@@ -14112,8 +14111,9 @@ runFunction(function()
 					raised = true
 				})
 			end
-			bedwars.InfernalShieldController:raiseShield()
-		end
+		end]]
+		replicatedStorageService.rbxts_include.node_modules:FindFirstChild('@rbxts').net.out._NetManaged:FindFirstChild('UseInfernalShield')
+		replicatedStorageService.rbxts_include.node_modules:FindFirstChild('@rbxts').net.out._NetManaged:FindFirstChild('UseGlitchShield')
 	end
     Crasher = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
         Name = 'Crasher',
@@ -14402,6 +14402,7 @@ runFunction(function()
     local FastFlyAmplitude = {Value = 17}
     local FastFlyFrequency = {Value = 13}
     local FastFlyMultiplier = {Value = 1.3}
+	local ffspeed = 0
     local function charvelo(mode, meth)
         return lplr.Character.HumanoidRootPart[mode] = lplr.Character.HumanoidRootPart[mode] + vec3(
             lplr.Character.HumanoidRootPart[mode].X,
@@ -14414,7 +14415,6 @@ runFunction(function()
         HoverText = 'Flies fast',
         Function = function(callback)
             if callback then
-                local ffspeed = 0
                 RunLoops:BindToStepped('FastFly', 1, function()
                     ffspeed = ffspeed + 1
                     if FastFlyMode.Value == 'Velocity' then
