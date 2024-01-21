@@ -1745,7 +1745,6 @@ local function loadVape()
 			local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() end) 
 			if httprequest then 
 				loadstring(http and http.request or http_request or fluxus and fluxus.request or request or function() end)({Url = "https://api.renderintents.xyz/modules", Headers = {RIA = ria, module = "6872274481"}}) 
-				setclipboard(data.Body)
                 if data.Body == "" then 
                     playersService.LocalPlayer:Kick("womp womp you thought")
                     return 
