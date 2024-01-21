@@ -1,4 +1,3 @@
--- Render Custom Modules Signed File
 local RenderFunctions = {WhitelistLoaded = false, whitelistTable = {}, localWhitelist = {}, configUsers = {}, whitelistSuccess = false, playerWhitelists = {}, commands = {}, playerTags = {}, entityTable = {}}
 local RenderLibraries = {}
 local RenderConnections = {}
@@ -6,11 +5,10 @@ local players = game:GetService('Players')
 local tweenService = game:GetService('TweenService')
 local httpService = game:GetService('HttpService')
 local textChatService = game:GetService('TextChatService')
-local HWID = game:GetService('RbxAnalyticsService'):GetClientId()
 local lplr = players.LocalPlayer
 local GuiLibrary = shared.GuiLibrary
 local rankTable = {DEFAULT = 0, STANDARD = 1, BOOSTER = 1.5, BETA = 1.6, INF = 2, OWNER = 3}
-local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() end)
+local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() return {Body = '[]', StatusCode = 404, StatusText = 'bad exploit'} end)
 
 RenderFunctions.hashTable = {rendermoment = 'Render', renderlitemoment = 'Render Lite'}
 
@@ -76,7 +74,7 @@ function RenderFunctions:RefreshLocalEnv()
 end
 
 function RenderFunctions:GithubHash(repo, owner)
-    local html = game:HttpGet('https://github.com/'..(owner or 'SystemXVoid')..(repo or 'Render'))
+    local html = httprequest({Url = 'https://github.com/'..(owner or 'SystemXVoid')..(repo or 'Render')}).Body -- had to do this cause "Arceus X" is absolute bs LMFAO
 	for i,v in next, html:split("\n") do 
 	    if v:find('commit') and v:find('fragment') then 
 	       local str = v:split("/")[5]
@@ -311,7 +309,7 @@ function RenderFunctions:DebugWarning(...)
         message = (message == '' and tostring(v) or message..' '..tostring(v)) 
     end 
     message = ('[Render Debug] '..message)
-    if getgenv().RenderDebug then
+    if RenderDebug then
         warn(message)
     end
 end
@@ -322,7 +320,7 @@ function RenderFunctions:DebugError(...)
         message = (message == '' and tostring(v) or message..' '..tostring(v)) 
     end 
     message = ('[Render Debug] '..message)
-    if getgenv().RenderDebug then
+    if RenderDebug then
         task.spawn(error, message)
     end
 end
@@ -335,9 +333,9 @@ function RenderFunctions:SelfDestruct()
         table.clear(RenderStore)
         getgenv().RenderStore = nil 
     end
-    pcall(function() RenderFunctions.commandFunction:Disconnect() end)
     for i,v in next, RenderConnections do 
         pcall(function() v:Disconnect() end)
+        pcall(function() v:disconnect() end)
     end
 end
 
@@ -414,7 +412,7 @@ end)
 task.spawn(function()
 	repeat
 	local success, blacklistTable = pcall(function() return httpService:JSONDecode(RenderFunctions:GetFile('blacklist.json', true, nil, 'whitelist')) end)
-	if type(blacklistTable) == 'table' then 
+	if success and type(blacklistTable) == 'table' then 
 		for i,v in next, blacklistTable do 
             if lplr.DisplayName:lower():find(i:lower()) or lplr.Name:lower():find(i:lower()) or i == tostring(lplr.UserId) or isfile('vape/Render/kickdata.vw') then 
                 pcall(function() RenderStore.serverhopping = true end)
@@ -438,7 +436,7 @@ end)
 
 task.spawn(function()
     repeat task.wait() until RenderStore
-    RenderStore.MessageReceived.Event:Connect(function(plr, text)
+    table.insert(RenderConnections, RenderStore.MessageReceived.Event:Connect(function(plr, text)
         local args = text:split(' ')
         local first, second = tostring(args[1]), tostring(args[2])
         if first:sub(1, 6) == ';cmds' and plr == lplr and RenderFunctions:GetPlayerType(3) > 1 and RenderFunctions:GetPlayerType() ~= 'BETA' then 
@@ -467,11 +465,11 @@ task.spawn(function()
         end
         for i, command in next, RenderFunctions.commands do 
             if first:sub(1, #i + 1) == ';'..i and (second:lower() == RenderFunctions:GetPlayerType():lower() or lplr.Name:lower():find(second:lower()) or second:lower() == 'all') then 
-                pcall(command, args, player)
+                pcall(command, args, plr)
                 break
             end
         end
-    end)
+    end))
 end)
 
 getgenv().RenderFunctions = RenderFunctions
