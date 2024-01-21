@@ -111,14 +111,14 @@ local isfile = isfile or function(file)
 	return suc and res ~= nil
 end
 local networkownerswitch = tick()
-local isnetworkowner = isnetworkowner or function(part)
+local isnetworkowner = (executor ~= 'Arceus X' and isnetworkowner or function(part)
 	local suc, res = pcall(function() return gethiddenproperty(part, 'NetworkOwnershipRule') end)
 	if suc and res == Enum.NetworkOwnership.Manual then 
 		sethiddenproperty(part, 'NetworkOwnershipRule', Enum.NetworkOwnership.Automatic)
 		networkownerswitch = tick() + 8
 	end
 	return networkownerswitch <= tick()
-end
+end)
 
 local getcustomasset = getsynasset or getcustomasset or function(location) return 'rbxasset://'..location end
 local queueonteleport = syn and syn.queue_on_teleport or queue_on_teleport or function() end
