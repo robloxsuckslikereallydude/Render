@@ -2,6 +2,9 @@
 
     Render Intents | Bedwars
     The #1 vape mod you'll ever see.
+
+	Version: 1.4
+	discord.gg/render
 	
 ]]
 
@@ -22,7 +25,6 @@ local gameCamera = workspace.CurrentCamera
 local lplr = playersService.LocalPlayer
 local vapeConnections = {}
 local vapeCachedAssets = {}
-local executor = (identifyexecutor and identifyexecutor() or getexecutorname and getexecutorname() or 'Unknown')
 local vapeEvents = setmetatable({}, {
 	__index = function(self, index)
 		self[index] = Instance.new('BindableEvent')
@@ -112,14 +114,14 @@ local isfile = isfile or function(file)
 	return suc and res ~= nil
 end
 local networkownerswitch = tick()
-local isnetworkowner = (executor ~= 'Arceus X' and isnetworkowner or function(part)
+local isnetworkowner = isnetworkowner or function(part)
 	local suc, res = pcall(function() return gethiddenproperty(part, 'NetworkOwnershipRule') end)
 	if suc and res == Enum.NetworkOwnership.Manual then 
 		sethiddenproperty(part, 'NetworkOwnershipRule', Enum.NetworkOwnership.Automatic)
 		networkownerswitch = tick() + 8
 	end
 	return networkownerswitch <= tick()
-end)
+end
 
 local getcustomasset = getsynasset or getcustomasset or function(location) return 'rbxasset://'..location end
 local queueonteleport = syn and syn.queue_on_teleport or queue_on_teleport or function() end
@@ -475,7 +477,7 @@ local function getSpeed()
 			speed = speed + 20
 		end
 		if lplr.Character:FindFirstChild('elk') then  
-			speed = speed + 19
+			speed = speed + 12.8
 		end
 		local armor = bedwarsStore.localInventory.inventory.armor[3]
 		if type(armor) ~= 'table' then armor = {itemType = ''} end
@@ -13817,7 +13819,7 @@ end)
 
 runLunar(function()
 	local AntiHit = {Enabled = false}
-	local AntiHitMode = {Value = 'Teleport'}
+	local AntiHitMode = {Value = 'Back'}
 	local AntiHitRange = {Value = 22}
 	local AntiHitKD = {Value = 5}
 	local AntiHitTS = {Value = 25}
@@ -13856,10 +13858,11 @@ runLunar(function()
 				task.spawn(function()
 					repeat task.wait()
 						local target = GetTarget(AntiHitRange.Value, nil, AntiHitRaycast.Enabled, AntiHitNPC.Enabled)
-						if target.RootPart == nil or not isAlive() then
+						--[[if target.RootPart == nil or not isAlive() then
 							AntiHit.ToggleButton(false)
 							return
-						end
+						end]]
+						repeat task.wait() until target
 						if GuiLibrary.ObjectsThatCanBeSaved.PlayerAttachOptionsButton.Api.Enabled then
 							GuiLibrary.ObjectsThatCanBeSaved.PlayerAttachOptionsButton.Api.ToggleButton(false)
 						end
@@ -13972,10 +13975,11 @@ runLunar(function()
 				task.spawn(function()
 					repeat task.wait()
 						local target = GetTarget(CustomAttackRange.Value, nil, true, true)
-						if target.RootPart == nil or not isAlive() then
+						--[[if target.RootPart == nil or not isAlive() then
 							CustomAttack.ToggleButton(false)
 							return
-						end
+						end]]
+						repeat task.wait() until target
 						if not CustomAttackMode1.Value == 'Seat' then
 							lplr.Character.Humanoid.Sit = false
 						end
@@ -14253,10 +14257,11 @@ runFunction(function()
                             repeat task.wait(CrasherSlow.Value)
 								if CrasherRO.Enabled then
 									local target = GetTarget(CrasherRange.Value, nil, true, true)
-									if target.RootPart == nil or not isAlive() then
+									--[[if target.RootPart == nil or not isAlive() then
 										Crasher.ToggleButton(false)
 										return
-									end
+									end]]
+									repeat task.wait() until target
 									if target then
 										crasherfunc()
 									end
@@ -14275,10 +14280,11 @@ runFunction(function()
                         repeat task.wait(CrasherSlow.Value)
 							if CrasherRO.Enabled then
 								local target = GetTarget(AntiHitRange.Value, nil, true, true)
-								if target.RootPart == nil or not isAlive() then
+								--[[if target.RootPart == nil or not isAlive() then
 									Crasher.ToggleButton(false)
 									return
-								end
+								end]]
+								repeat task.wait() until target
 								if target then
 									sendmessage(ChatUsage.Message)
 								end
@@ -14292,10 +14298,11 @@ runFunction(function()
 						repeat task.wait(CrasherSlow.Value)
 							if CrasherRO.Enabled then
 								local target = GetTarget(CrasherRange.Value, nil, true, true)
-								if target.RootPart == nil or not isAlive() then
+								--[[if target.RootPart == nil or not isAlive() then
 									Crasher.ToggleButton(false)
 									return
-								end
+								end]]
+								repeat task.wait() until target
 								if target then
 									crasherfunc()
 									sendmessage(ChatUsage.Message)
@@ -14505,5 +14512,380 @@ runFunction(function()
         Max = 20,
         Function = function() end,
         Default = 5
+    })
+end)
+
+runFunction(function()
+    local CustomFall = {Enabled = false}
+	local CustomFallMode = {Value = 'Velocity'}
+	local CustomFallVelocity = {Value = 100}
+	local CustomFallGravity = {Value = 500}
+	local CustomFallRaycast = {Value = 2}
+	local function groundcheck()
+		local rayst = lplr.Character.HumanoidRootPart.Position
+		local rayed = rayst - vec(0, lplr.Character.HumanoidRootPart.Size.Y / 2 + CustomFallRaycast.Value, 0)
+		local hitpt = workspace:FindPartOnRay(rayst, rayed, lplr.Character)
+		return hitpt and hitpt:IsA('Part')
+	end
+    CustomFall = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
+        Name = 'CustomFall',
+		HoverText = 'Customizes your fall',
+        Function = function(callback)
+            if callback then
+                task.spawn(function()
+					repeat task.wait()
+						if CustomFallMode.Value == 'Velocity' then
+							local bvelo = Instance.new('BodyVelocity')
+							bvelo.Velocity = vec(0, -CustomFallVelocity.Value, 0)
+							bvelo.MaxForce = vec(0, math.huge, 0)
+							bvelo.Parent = lplr.Character.HumanoidRootPart
+							if groundcheck() then
+								bvelo.Velocity = vec(0, 0, 0)
+							else
+								bvelo.Velocity = vec(0, -CustomFallVelocity.Value, 0)
+							end
+						else
+							workspace.Gravity = -CustomFallGravity.Value
+						end
+					until not CustomFall.Enabled
+				end)
+			else
+				bvelo.Velocity = vec(0, 0, 0)
+				workspace.Gravity = 192.6
+            end
+        end,
+		ExtraText = function()
+			return CustomFallMode.Value
+		end
+    })
+	CustomFallMode = CustomFall.CreateDropdown({
+        Name = 'Mode',
+        List = {
+            'Velocity',
+            'Gravity'
+        },
+		Value = 'Velocity',
+        Function = function() end
+    })
+	CustomFallVelocity = CustomFall.CreateSlider({
+        Name = 'Velocity',
+        Min = 1,
+        Max = 200,
+        Function = function() end,
+        Default = 100
+    })
+	CustomFallGravity = CustomFall.CreateSlider({
+        Name = 'Gravity',
+        Min = 1,
+        Max = 1000,
+        Function = function() end,
+        Default = 500
+    })
+	CustomFallRaycast = CustomFall.CreateSlider({
+        Name = 'Raycast',
+        Min = 1,
+        Max = 5,
+        Function = function() end,
+        Default = 2
+    })
+end)
+
+runFunction(function()
+    local MovementDisabler = {Enabled = false}
+	local MovementDisablerR = {Enabled = true}
+	local MovementDisablerA = {Enabled = true}
+    MovementDisabler = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
+        Name = 'MovementDisabler',
+		HoverText = 'Disables your movement actions',
+        Function = function(callback)
+            if callback then
+                task.spawn(function()
+					local movedir = Vector3.new()
+					repeat task.wait()
+						if MovementDisablerR.Enabled then
+							lplr.Character.Humanoid.AutoRotate = false
+							runService.RenderStepped:Connect(function()
+								movedir += lplr.Character.Humanoid.MoveDirection
+								lplr.Character.Humanoid:Move(movedir, true)
+								movedir = Vector3.new()
+							end)
+						end
+						if MovementDisablerA.Enabled then
+							lplr.Character.Animate.Disabled = true
+						end
+					until not MovementDisabler.Enabled
+				end)
+			else
+				lplr.Character.Humanoid.AutoRotate = true
+				lplr.Character.Animate.Disabled = false
+            end
+        end
+    })
+	MovementDisablerR = MovementDisabler.CreateToggle({
+		Name = 'Rotate',
+		Default = true,
+		Function = function() end
+	})
+	MovementDisablerA = MovementDisabler.CreateToggle({
+		Name = 'Animation',
+		Default = true,
+		Function = function() end
+	})
+end)
+
+runFunction(function()
+    local AutoSkywars = {Enabled = false}
+	local AutoSkywarsDepth = {Value = 7}
+	local AutoSkywarsNotify = {Enabled = false}
+    AutoSkywars = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
+        Name = 'AutoSkywars',
+		HoverText = 'Automatically phases out of\nthe skywars cage',
+        Function = function(callback)
+            if callback then
+                task.spawn(function()
+					repeat task.wait() until workspace:FindFirstChild('spawn_cage')
+					if workspace:FindFirstChild('spawn_cage') then
+						lplr.Character.HumanoidRootPart.CFrame *= CFrame.new(0, -AutoSkywarsDepth.Value, 0)
+					end
+					if AutoSkywarsNotify.Enabled then
+						warningNotification('AutoSkywars', 'Clipped ' .. AutoSkywarsDepth.Value .. ' studs out of the cage', 5)
+					end
+					return
+				end)
+            end
+        end
+    })
+	AutoSkywarsDepth = AutoSkywars.CreateSlider({
+        Name = 'Depth',
+        Min = 1,
+        Max = 10,
+        Function = function() end,
+        Default = 7
+    })
+	AutoSkywarsNotify = AutoSkywars.CreateToggle({
+		Name = 'Notification',
+		Default = false,
+		Function = function() end
+	})
+end)
+
+runFunction(function()
+    local Step = {Enabled = false}
+	local StepHeight = {Value = 80}
+	local StepRaycast = {Value = 25}
+    Step = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
+        Name = 'Step',
+		HoverText = 'Automatically steps up',
+        Function = function(callback)
+            if callback then
+                task.spawn(function()
+					local plrs = {}
+					for i, v in next, playersService:GetPlayers() do
+						table.insert(plrs, v.Character)
+					end
+					local raypr = RaycastParams.new()
+					raypr.FilterType = Enum.RaycastFilterType.Blacklist
+					raypr.FilterDescendantsInstances = {
+						black,
+						gameCamera
+					}
+					local step = false
+					repeat task.wait()
+						local ray = workspace:Raycast(
+							lplr.Character.HumanoidRootPart.Position,
+							(lplr.Character.Humanoid.MoveDirection.Unit * 2) + vec3(0, -StepRaycast.Value / 10, 0),
+							raypr
+						)
+						if step and not ray then
+							lplr.Character.HumanoidRootPart.Velocity += vec3(0, 0, 0)
+						end
+						if ray and not ray.Instance:IsDescendantOf(lplr.Character) then
+							step = true
+							lplr.Character.HumanoidRootPart.Velocity += vec3(0, StepHeight.Value, 0)
+						elseif not ray then
+							step = false
+						end
+					until not Step.Enabled
+				end)
+            end
+        end
+    })
+	StepHeight = Step.CreateSlider({
+        Name = 'Height',
+        Min = 1,
+        Max = 150,
+        Function = function() end,
+        Default = 80
+    })
+	StepRaycast = Step.CreateSlider({
+        Name = 'Raycast',
+        Min = 20,
+        Max = 30,
+        Function = function() end,
+        Default = 25
+    })
+end)
+
+runFunction(function()
+    local FastFly = {Enabled = false}
+    local FastFlyMode = {Value = 'Velocity'}
+	local FastFlyMode2 = {Value = 'CFrame'}
+    local FastFlyMode1 = {Value = 'Sin'}
+    local FastFlySpeed = {Value = 8}
+    local FastFlyAmplitude = {Value = 17}
+    local FastFlyFrequency = {Value = 13}
+    local FastFlyMultiplier = {Value = 1.3}
+    local function charvelo(mode, meth)
+        return lplr.Character.HumanoidRootPart[mode] = lplr.Character.HumanoidRootPart[mode] + vec3(
+            lplr.Character.HumanoidRootPart[mode].X,
+            2 + math[meth](ffspeed / FastFlySpeed.Value) * FastFlyAmplitude.Value,
+            lplr.Character.HumanoidRootPart[mode].Z
+        )
+    end
+    FastFly = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
+        Name = 'FastFly',
+        HoverText = 'Flies fast',
+        Function = function(callback)
+            if callback then
+                local ffspeed = 0
+                RunLoops:BindToStepped('FastFly', 1, function()
+                    ffspeed = ffspeed + 1
+                    if FastFlyMode.Value == 'Velocity' then
+                        if FastFlyMode1.Value == 'Sin' then
+                            charvelo('Velocity', 'sin')
+                        else
+                            charvelo('Velocity', 'cos')
+                        end
+                    else
+                        if FastFlyMode1.Value == 'Sin' then
+                            charvelo('CFrame', 'sin')
+                        else
+                            charvelo('CFrame', 'cos')
+                        end
+                    end
+                    if ffspeed % FastFlyFrequency.Value == 0 then
+						if FastFlyMode2.Value == 'CFrame' then
+                        	lplr.Character.HumanoidRootPart.CFrame += lplr.Character.Humanoid.MoveDirection * (FastFlyMultiplier.Value / 10)
+						else
+							lplr.Character.HumanoidRootPart.Velocity += lplr.Character.Humanoid.MoveDirection * (FastFlyMultiplier.Value / 10)
+						end
+                    end
+                end)
+            else
+                RunLoops:UnbindFromStepped('FastFly')
+            end
+        end,
+        ExtraText = function()
+            return FastFlyMode.Value
+        end
+    })
+    FastFlyMode = FastFly.CreateDropdown({
+        Name = 'Bounce Mode',
+        List = {
+            'Velocity',
+            'CFrame'
+        },
+        Value = 'Velocity',
+        Function = function() end
+    })
+	FastFlyMode2 = FastFly.CreateDropdown({
+        Name = 'Speed Mode',
+        List = {
+			'CFrame',
+            'Velocity'
+        },
+        Value = 'CFrame',
+        Function = function() end
+    })
+    FastFlyMode1 = FastFly.CreateDropdown({
+        Name = 'Math',
+        List = {
+            'Sin',
+            'Cos'
+        },
+        Value = 'Sin',
+        Function = function() end
+    })
+    FastFlySpeed = FastFly.CreateSlider({
+        Name = 'Speed',
+        Min = 1,
+        Max = 20,
+        Value = 8,
+        Function = function() end
+    })
+    FastFlyAmplitude = FastFly.CreateSlider({
+        Name = 'Amplitude',
+        Min = 1,
+        Max = 30,
+        Value = 18,
+        Function = function() end
+    })
+    FastFlyFrequency = FastFly.CreateSlider({
+        Name = 'Frequency',
+        Min = 1,
+        Max = 20,
+        Value = 12,
+        Function = function() end
+    })
+    FastFlyMultiplier = FastFly.CreateSlider({
+        Name = 'Multiplier',
+        Min = 5,
+        Max = 20,
+        Value = 13,
+        Function = function() end
+    })
+end)
+
+runFunction(function()
+    local AutoGrind = {Enabled = false}
+	local AutoGrindMode = {Value = 'Infinite'}
+	local AutoGrindHeight = {Value = 1000}
+    AutoGrind = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
+        Name = 'AutoGrind',
+        HoverText = 'Hides you in the sky to not get killed',
+        Function = function(callback)
+            if callback then
+				local sethigh = false
+				if AutoGrindMode.Value == 'Infinite' then
+					task.spawn(function()
+						repeat task.wait()
+							if not GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api.Enabled then
+								GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api.ToggleButton(true)
+							end
+						until not AutoGrind.Enabled
+					end)
+				else
+					lplr.Character.PrimaryPart.CFrame *= CFrame.new(0, AutoGrindHeight.Value, 0)
+					lplr.Character.Head.Anchored = true
+					lplr.Character.PrimaryPart:Destroy()
+					sethigh = true
+				end
+			else
+				if sethigh then
+					lplr.Character.Head.Anchored = false
+					bedwars.ClientHandler:Get(bedwars.ResetRemote):SendToServer()
+				end
+				sethigh = false
+            end
+        end,
+        ExtraText = function()
+            return AutoGrindMode.Value
+        end
+    })
+	AutoGrindMode = AutoGrind.CreateDropdown({
+        Name = 'Mode',
+        List = {
+            'Infinite',
+            'CFrame'
+        },
+        Value = 'Infinite',
+        Function = function() end
+    })
+	AutoGrindHeight = AutoGrind.CreateSlider({
+        Name = 'Height',
+        Min = 100,
+        Max = 2000,
+        Value = 1000,
+        Function = function() end
     })
 end)
