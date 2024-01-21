@@ -30,7 +30,9 @@ local vapeCachedAssets = {}
 local vapeTargetInfo = shared.VapeTargetInfo
 local vapeInjected = true
 local RenderFunctions = {}
+local executor = (identifyexecutor and identifyexecutor() or getexecutorname and getexecutorname() or 'Unknown')
 local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() end)
+
 local RenderStore = {Bindable = {}, raycast = RaycastParams.new(), MessageReceived = Instance.new('BindableEvent'), tweens = {}, ping = 0, platform = inputService:GetPlatform()}
 getgenv().RenderStore = RenderStore
 local vec3 = Vector3.new
@@ -82,14 +84,14 @@ local InfoNotification = function() end
 local errorNotification = function() end
 
 local networkownerswitch = tick()
-local isnetworkowner = isnetworkowner or function(part)
+local isnetworkowner = (executor ~= 'Arceus X' and isnetworkowner or function(part)
 	local suc, res = pcall(function() return gethiddenproperty(part, 'NetworkOwnershipRule') end)
 	if suc and res == Enum.NetworkOwnership.Manual then 
 		sethiddenproperty(part, 'NetworkOwnershipRule', Enum.NetworkOwnership.Automatic)
 		networkownerswitch = tick() + 8
 	end
 	return networkownerswitch <= tick()
-end
+end)
 local vapeAssetTable = {['vape/assets/VapeCape.png'] = 'rbxassetid://13380453812', ['vape/assets/ArrowIndicator.png'] = 'rbxassetid://13350766521'}
 local getcustomasset = getsynasset or getcustomasset or function(location) return vapeAssetTable[location] or '' end
 local queueonteleport = syn and syn.queue_on_teleport or queue_on_teleport or function() end
