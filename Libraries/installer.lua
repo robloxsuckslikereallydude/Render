@@ -175,8 +175,8 @@ return function(ria)
 	progressbar.Name = 'Progress Bar'
 	progressbar.AnchorPoint = Vector2.new(1, 1)
 	progressbar.BackgroundColor3 = Color3.new()
-	progressbar.Size = UDim2.new(0, 1335, 0, 45)
-	progressbar.Position = UDim2.new(0.84, 0, 0.65, 0)
+	progressbar.Size = UDim2.new(0, 700, 0, 45)
+	progressbar.Position = UDim2.new(0.84, 50, 0.65, 0)
 	progressbar.ZIndex = 5
 	progressbar.Visible = false
 	progressbar.Parent = maingui
@@ -203,7 +203,7 @@ return function(ria)
 	rendericon2.Image = 'rbxassetid://15688086520'
 	rendericon2.BackgroundTransparency = 1
 	rendericon2.AnchorPoint = Vector2.new(1, 1)
-	rendericon2.Position = UDim2.new(0.575, 0, 0.569, 0)
+	rendericon2.Position = UDim2.new(0.575, 80, 0.569, 0)
 	rendericon2.Size = UDim2.new(0, 309, 0, 285)
 	rendericon2.ZIndex = 5
 	rendericon2.Parent = progressbk
@@ -223,7 +223,7 @@ return function(ria)
 	abortbutton.Text = 'Abort'
 	abortbutton.BackgroundColor3 = Color3.fromRGB(135, 0, 0)
 	abortbutton.AnchorPoint = Vector2.new(1, 1)
-	abortbutton.Position = UDim2.new(0.550, 0, 0.8, 0) 
+	abortbutton.Position = UDim2.new(0.550, 50, 0.8, 10) 
 	abortbutton.ZIndex = 5
 	abortbutton.Parent = progressbk 
 	
