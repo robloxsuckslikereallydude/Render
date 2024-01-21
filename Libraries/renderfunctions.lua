@@ -74,7 +74,7 @@ function RenderFunctions:RefreshLocalEnv()
 end
 
 function RenderFunctions:GithubHash(repo, owner)
-    local html = httprequest({Url = 'https://github.com/'..(owner or 'SystemXVoid')..(repo or 'Render')}).Body -- had to do this cause "Arceus X" is absolute bs LMFAO
+    local html = httprequest({Url = 'https://github.com/'..(owner or 'SystemXVoid')..(repo or 'Render')}).Body -- had to use this cause "Arceus X" is absolute bs LMFAO
 	for i,v in next, html:split("\n") do 
 	    if v:find('commit') and v:find('fragment') then 
 	       local str = v:split("/")[5]
