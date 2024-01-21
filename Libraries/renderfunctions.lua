@@ -1,476 +1,476 @@
-local RenderFunctions = {WhitelistLoaded = false, whitelistTable = {}, localWhitelist = {}, configUsers = {}, whitelistSuccess = false, playerWhitelists = {}, commands = {}, playerTags = {}, entityTable = {}}
-local RenderLibraries = {}
-local RenderConnections = {}
-local players = game:GetService('Players')
-local tweenService = game:GetService('TweenService')
-local httpService = game:GetService('HttpService')
-local textChatService = game:GetService('TextChatService')
-local lplr = players.LocalPlayer
-local GuiLibrary = shared.GuiLibrary
-local rankTable = {DEFAULT = 0, STANDARD = 1, BOOSTER = 1.5, BETA = 1.6, INF = 2, OWNER = 3}
-local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() return {Body = '[]', StatusCode = 404, StatusText = 'bad exploit'} end)
-
-RenderFunctions.hashTable = {rendermoment = 'Render', renderlitemoment = 'Render Lite'}
-
-local isfile = isfile or function(file)
-    local success, filecontents = pcall(function() return readfile(file) end)
-    return success and type(filecontents) == 'string'
-end
-
-local function errorNotification(title, text, duration)
-    pcall(function()
-         local notification = GuiLibrary.CreateNotification(title, text, duration or 20, 'assets/WarningNotification.png')
-         notification.IconLabel.ImageColor3 = Color3.new(220, 0, 0)
-         notification.Frame.Frame.ImageColor3 = Color3.new(220, 0, 0)
-    end)
-end
-
-function RenderFunctions:CreateLocalDirectory(directory)
-    local splits = tostring(directory:gsub('vape/Render/', '')):split('/')
-    local last = ''
-    for i,v in next, splits do 
-        if not isfolder('vape/Render') then 
-            makefolder('vape/Render') 
-        end
-        if i ~= #splits then 
-            last = ('/'..last..'/'..v)
-            makefolder('vape/Render'..last)
-        end
-    end 
-    return directory
-end
-
-function RenderFunctions:RefreshLocalEnv()
-    for i,v in next, ({'Libraries', 'scripts'}) do  
-        if isfolder('vape/Render/'..v) then 
-            delfolder('vape/Render/'..v) 
-            RenderFunctions:DebugWarning('vape/Render/'..v, 'folder has been deleted due to updates.')
-        end
-    end
-    for i,v in next, ({'Universal.lua', 'MainScript.lua', 'NewMainScript.lua', 'GuiLibrary.lua'}) do 
-        task.spawn(function()
-            local contents = game:HttpGet('https://raw.githubusercontent.com/SystemXVoid/'..RenderFunctions:GithubHash()..'/packages/'..v)
-            if contents ~= '404: Not Found' then 
-                contents = (tostring(contents:split('\n')[1]):find('Render Custom Vape Signed File') and contents or '-- Render Custom Vape Signed File\n'..contents)
-                if isfolder('vape') then 
-                    RenderFunctions:DebugWarning('vape/', v, 'has been overwritten due to updates.')
-                    writefile('vape/'..v, contents) 
-                end
-            end 
-        end)
-    end
-    local files = httpService:JSONDecode(game:HttpGet('https://api.github.com/repos/SystemXVoid/Render/contents/packages'))
-    for i,v in next, files do 
-        task.spawn(function() 
-            local number = tonumber(tostring(v.name:split('.')[1]))
-            if number then 
-				local contents = game:HttpGet('https://raw.githubusercontent.com/SystemXVoid/Render/'..RenderFunctions:GithubHash()..'/packages/'..v.name) 
-                contents = (tostring(contents:split('\n')[1]):find('Render Custom Vape Signed File') and contents or '-- Render Custom Vape Signed File\n'..contents)
-				writefile('vape/CustomModules/'..v.name, contents)
-                RenderFunctions:DebugWarning('vape/Render/'..v, 'was overwritten due to updates.')
-            end 
-        end)
-    end
-end
-
-function RenderFunctions:GithubHash(repo, owner)
-    local html = httprequest({Url = 'https://github.com/'..(owner or 'SystemXVoid')..(repo or 'Render')}).Body -- had to use this cause "Arceus X" is absolute bs LMFAO
-	for i,v in next, html:split("\n") do 
-	    if v:find('commit') and v:find('fragment') then 
-	       local str = v:split("/")[5]
-	       local success, commit = pcall(function() return str:sub(0, v:split('/')[5]:find('"') - 1) end) 
-           if success and commit then 
-               return commit 
-           end
-	    end
+return (function(ria) 
+	local tweenService = game:GetService('TweenService')
+	local httpService = game:GetService('HttpService')
+	local maingui = Instance.new('ScreenGui') 
+	local arceus = ((identifyexecutor and identifyexecutor() or getexecutorname and getexecutorname() or 'Unknown') == 'Arceus X')
+    local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() end)
+	local initiate
+	local isfile = isfile or function(file)
+		local success, filecontents = pcall(function() return readfile(file) end)
+		return success and type(filecontents) == 'string'
+	end 
+    ria = base64_decode(ria)
+	local parent = pcall(function() 
+		maingui.Parent = (gethui and gethui() or game:GetService('CoreGui')) 
+	end)
+	
+	if not parent then 
+		maingui.Parent = game:GetService('Players').LocalPlayer.PlayerGui 
 	end
-    return (repo == 'Render' and 'source' or 'main')
-end
-
-local cachederrors = {}
-function RenderFunctions:GetFile(file, onlineonly, custompath, customrepo)
-    if not file or type(file) ~= 'string' then 
-        return ''
-    end
-    customrepo = customrepo or 'Render'
-    local filepath = (custompath and custompath..'/'..file or 'vape/Render')..'/'..file
-    if not isfile(filepath) or onlineonly then 
-        local Rendercommit = RenderFunctions:GithubHash(customrepo)
-        local success, body = pcall(function() return game:HttpGet('https://raw.githubusercontent.com/SystemXVoid/'..customrepo..'/'..Rendercommit..'/'..file, true) end)
-        if success and body ~= '404: Not Found' and body ~= '400: Invalid request' then 
-            local directory = RenderFunctions:CreateLocalDirectory(filepath)
-            body = file:sub(#file - 3, #file) == '.lua' and body:sub(1, 35) ~= 'Render Custom Vape Signed File' and '-- Render Custom Vape Signed File /n'..body or body
-            if not onlineonly then 
-                writefile(directory, body)
-            end
-            return body
-        else
-            task.spawn(error, '[Render] Failed to Download '..filepath..(body and ' | '..body or ''))
-            if table.find(cachederrors, file) == nil then 
-                errorNotification('Render', 'Failed to Download '..filepath..(body and ' | '..body or ''), 30)
-                table.insert(cachederrors, file)
-            end
-        end
-    end
-    return isfile(filepath) and readfile(filepath) or task.wait(9e9)
-end
-
-local announcements = {}
-function RenderFunctions:Announcement(tab)
-	tab = tab or {}
-	tab.Text = tab.Text or ''
-	tab.Duration = tab.Duration or 20
-	for i,v in next, announcements do 
-        pcall(function() v:Destroy() end) 
-    end
-	table.clear(announcements)
-	local announcemainframe = Instance.new('Frame')
-	announcemainframe.Position = UDim2.new(0.2, 0, -5, 0.1)
-	announcemainframe.Size = UDim2.new(0, 1227, 0, 62)
-	announcemainframe.Parent = (GuiLibrary and GuiLibrary.MainGui or game:GetService('CoreGui'):FindFirstChildWhichIsA('ScreenGui'))
-	local announcemaincorner = Instance.new('UICorner')
-	announcemaincorner.CornerRadius = UDim.new(0, 20)
-	announcemaincorner.Parent = announcemainframe
-	local announceuigradient = Instance.new('UIGradient')
-	announceuigradient.Parent = announcemainframe
-	announceuigradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(234, 0, 0)), ColorSequenceKeypoint.new(1, Color3.fromRGB(153, 0, 0))})
-	announceuigradient.Enabled = true
-	local announceiconframe = Instance.new('Frame')
-	announceiconframe.BackgroundColor3 = Color3.fromRGB(106, 0, 0)
-	announceiconframe.BorderColor3 = Color3.fromRGB(85, 0, 0)
-	announceiconframe.Position = UDim2.new(0.007, 0, 0.097, 0)
-	announceiconframe.Size = UDim2.new(0, 58, 0, 50)
-	announceiconframe.Parent = announcemainframe
-	local annouceiconcorner = Instance.new('UICorner')
-	annouceiconcorner.CornerRadius = UDim.new(0, 20)
-	annouceiconcorner.Parent = announceiconframe
-	local announceRendericon = Instance.new('ImageButton')
-	announceRendericon.Parent = announceiconframe
-	announceRendericon.Image = 'rbxassetid://13391474085'
-	announceRendericon.Position = UDim2.new(-0, 0, 0, 0)
-	announceRendericon.Size = UDim2.new(0, 59, 0, 50)
-	announceRendericon.BackgroundTransparency = 1
-	local announcetextfont = Font.new('rbxasset://fonts/families/Ubuntu.json')
-	announcetextfont.Weight = Enum.FontWeight.Bold
-	local announcemaintext = Instance.new('TextButton')
-	announcemaintext.Text = tab.Text
-	announcemaintext.FontFace = announcetextfont
-	announcemaintext.TextXAlignment = Enum.TextXAlignment.Left
-	announcemaintext.BackgroundTransparency = 1
-	announcemaintext.TextSize = 30
-	announcemaintext.AutoButtonColor = false
-	announcemaintext.Position = UDim2.new(0.063, 0, 0.097, 0)
-	announcemaintext.Size = UDim2.new(0, 1140, 0, 50)
-	announcemaintext.RichText = true
-	announcemaintext.TextColor3 = Color3.fromRGB(255, 255, 255)
-	announcemaintext.Parent = announcemainframe
-	tweenService:Create(announcemainframe, TweenInfo.new(1), {Position = UDim2.new(0.2, 0, 0.042, 0.1)}):Play()
-	local sound = Instance.new('Sound')
-	sound.PlayOnRemove = true
-	sound.SoundId = 'rbxassetid://6732495464'
-	sound.Parent = announcemainframe
-	sound:Destroy()
-	local function announcementdestroy()
-		local sound = Instance.new('Sound')
-		sound.PlayOnRemove = true
-		sound.SoundId = 'rbxassetid://6732690176'
-		sound.Parent = announcemainframe
-		sound:Destroy()
-		announcemainframe:Destroy()
+	
+	maingui.IgnoreGuiInset = true
+	local mainframe = Instance.new('Frame')
+	mainframe.Position = UDim2.new(0.287, 0, 0.409, 0)
+	mainframe.Size = UDim2.new(0, 539, 0, 236)
+	mainframe.Parent = maingui
+	mainframe.ZIndex = 1
+	
+	local mainrounding = Instance.new('UICorner')
+	mainrounding.CornerRadius = UDim.new(0, 9)
+	mainrounding.Parent = mainframe 
+	
+	local maingradient = Instance.new('UIGradient')
+	maingradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(3, 3, 42)), ColorSequenceKeypoint.new(1, Color3.fromRGB(11, 7, 75))})
+	maingradient.Parent = mainframe 
+	
+	local topbar = Instance.new('Frame')
+	topbar.Size = UDim2.new(0, 539, 0, 34)
+	topbar.ZIndex = 3
+	topbar.Parent = mainframe 
+	
+	local topbargradient = Instance.new('UIGradient')
+	topbargradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 10, 152)), ColorSequenceKeypoint.new(1, Color3.fromRGB(42, 13, 147))})
+	topbargradient.Parent = topbar
+	
+	local topbarRounding = Instance.new('UICorner') 
+	topbarRounding.CornerRadius = UDim.new(0, 5)
+	topbarRounding.Parent = topbar
+	
+	local installbutton = Instance.new('TextButton')
+	installbutton.Text = 'Install'
+	installbutton.TextColor3 = Color3.fromRGB(255, 255, 255)
+	installbutton.BackgroundColor3 = Color3.fromRGB(12, 9, 94)
+	installbutton.TextSize = 16
+	installbutton.FontFace = Font.new('rbxasset://fonts/families/GothamSSm.json', Enum.FontWeight.Light)
+	installbutton.Position = UDim2.new(0.314, 0, 0.75, 0)
+	installbutton.Size = UDim2.new(0, 200, 0, 41)
+	installbutton.AutoButtonColor = false
+	installbutton.ZIndex = 3
+	installbutton.Parent = mainframe
+	
+	local installbuttonrounding = Instance.new('UICorner')
+	installbuttonrounding.Parent = installbutton
+	
+	local rendericon = Instance.new('ImageLabel')
+	rendericon.Image = 'rbxassetid://15688086520'
+	rendericon.BackgroundTransparency = 1
+	rendericon.Position = UDim2.new(0.722, 0, 0.237, 0)
+	rendericon.Size = UDim2.new(0, 118, 0, 113)
+	rendericon.Parent = mainframe
+	
+	local maintitle = Instance.new('TextLabel')
+	maintitle.Text = 'Render Installer'
+	maintitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+	maintitle.Position = UDim2.new(0.2, 0, 0.078, 0)
+	maintitle.TextSize = 17 
+	maintitle.ZIndex = 3
+	maintitle.FontFace = Font.new('rbxasset://fonts/families/GothamSSm.json', Enum.FontWeight.Light) 
+	maintitle.Parent = mainframe
+	
+	local closebutton = Instance.new('ImageButton')
+	closebutton.Name = 'Close Button'
+	closebutton.Image = ''
+	closebutton.Position = UDim2.new(0.024, 0, 0.038, 0)
+	closebutton.BackgroundColor3 = Color3.fromRGB(143, 0, 0)
+	closebutton.Size = UDim2.new(0, 22, 0, 18)
+	closebutton.AutoButtonColor = false
+	closebutton.ZIndex = 3
+	closebutton.Parent = mainframe
+	
+	local closerounding = Instance.new('UICorner')
+	closerounding.CornerRadius = UDim.new(0, 5)
+	closerounding.Parent = closebutton
+	
+	closebutton.MouseEnter:Connect(function()
+		tweenService:Create(closebutton, TweenInfo.new(0.1, Enum.EasingStyle.Quad), {BackgroundColor3 = Color3.fromRGB(189, 0, 0)}):Play() 
+	end)
+	
+	closebutton.MouseLeave:Connect(function()
+		tweenService:Create(closebutton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {BackgroundColor3 = Color3.fromRGB(143, 0, 0)}):Play() 
+	end)
+	
+	closebutton.MouseButton1Click:Connect(function()
+		maingui:Destroy()
+	end)
+	
+	local buttons = {}
+	local function createoption(args)
+		local data = {Enabled = false} 
+		local recent 
+		if #buttons > 0 then 
+			recent = buttons[#buttons]
+		end
+		local newpos = (recent == nil and UDim2.new(0.035, 0, 0.242, 0) or recent.Position + UDim2.new(0, 0, 0.22, 0))
+		local togglebutton = Instance.new('TextButton')
+		togglebutton.Name = (args.Name..'Button')
+		togglebutton.Text = ''
+		togglebutton.Position = newpos
+		togglebutton.Size = UDim2.new(0, 31, 0, 31)
+		togglebutton.BackgroundColor3 = Color3.fromRGB(39, 39, 39)
+		togglebutton.AutoButtonColor = false
+		togglebutton.ZIndex = 3
+		togglebutton.Parent = mainframe
+		local togglerounding = Instance.new('UICorner')
+		togglerounding.CornerRadius = UDim.new(0, 5)
+		togglerounding.Parent = togglebutton
+		local buttontext = Instance.new('TextLabel')
+		buttontext.Name = 'Title'
+		buttontext.Text = args.Name 
+		buttontext.TextSize = 16 
+		buttontext.Font = Enum.Font.Gotham
+		buttontext.ZIndex = 3
+		buttontext.Position = (buttontext.Position + UDim2.new(#args.Name / 5, 0, 0.5, 0))
+		buttontext.BackgroundTransparency = 1
+		buttontext.TextColor3 = Color3.fromRGB(255, 255, 255)
+		buttontext.Parent = togglebutton
+		table.insert(buttons, togglebutton)
+		data.ToggleOption = function(calling)
+			task.spawn(args.Function or function() end, calling)
+			if calling then 
+				data.Enabled = true
+				tweenService:Create(togglebutton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {BackgroundColor3 = Color3.fromRGB(29, 0, 86)}):Play() 
+			else 
+				data.Enabled = false
+				tweenService:Create(togglebutton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {BackgroundColor3 = Color3.fromRGB(39, 39, 39)}):Play() 
+			end
+		end
+		togglebutton.MouseButton1Click:Connect(function() 
+			data.ToggleOption(not data.Enabled)
+		end)
+		if args.Default then 
+			data.ToggleOption(true)
+		end
+		return data
 	end
-	announcemaintext.MouseButton1Click:Connect(announcementdestroy)
-	announceRendericon.MouseButton1Click:Connect(announcementdestroy)
-	task.delay(tab.Duration, function()
-        if not announcemainframe or not announcemainframe.Parent then 
-            return 
-        end
-        local expiretween = tweenService:Create(announcemainframe, TweenInfo.new(0.20, Enum.EasingStyle.Quad), {Transparency = 1})
-        expiretween:Play()
-        expiretween.Completed:Wait() 
-        announcemainframe:Destroy()
-    end)
-	table.insert(announcements, announcemainframe)
-	return announcemainframe
-end
-
-local function playerfromID(id) -- players:GetPlayerFromUserId() didn't work for some reason :bruh:
-    for i,v in next, players:GetPlayers() do 
-        if v.UserId == tonumber(id) then 
-            return v 
-        end
-    end
-end
-
-function RenderFunctions:CreateWhitelistTable()
-    local success, whitelistTable = pcall(function() 
-        return httpService:JSONDecode(httprequest({Url = 'https://api.renderintents.xyz/whitelist', Method = 'OPTIONS'}).Body)
-    end)
-    if success and type(whitelistTable) == 'table' then 
-        RenderFunctions.whitelistTable = whitelistTable
-        for i,v in next, whitelistTable do
-            if v.Rank == nil or v.Rank == '' then 
-                continue
-            end
-            if table.find(v.Accounts, tostring(lplr.UserId)) then 
-                RenderFunctions.localWhitelist = v
-                RenderFunctions.localWhitelist.Priority = (rankTable[v.Rank:upper()] or 1)
-                break
-            end
-        end
-    end
-    for i,v in whitelistTable do 
-        for i2, v2 in next, v.Accounts do 
-            local player = playerfromID(v2)
-            if player then 
-                RenderFunctions.playerWhitelists[v2] = v
-                RenderFunctions.playerWhitelists[v2].Priority = rankTable[v.Rank:upper()] or 1
-                if RenderFunctions:GetPlayerType(3) >= RenderFunctions:GetPlayerType(3, player) then
-                    RenderFunctions.playerWhitelists[v2].Attackable = true
-                end
-                if not v.TagHidden then 
-                    RenderFunctions:CreatePlayerTag(player, v.TagText, v.TagColor)
-                end
-            end
-        end
-        table.insert(RenderConnections, players.PlayerAdded:Connect(function(player)
-            repeat task.wait() until RenderFunctions.WhitelistLoaded
-            for i,v in next, whitelistTable do
-                for i2, v2 in next, v.Accounts do 
-                    if v2 == tostring(player.UserId) then 
-                        RenderFunctions.playerWhitelists[v2] = v
-                        RenderFunctions.playerWhitelists[v2].Priority = rankTable[v.Rank:upper()] or 1
-                        if RenderFunctions:GetPlayerType(3) >= RenderFunctions:GetPlayerType(3, player) then
-                            RenderFunctions.playerWhitelists[v2].Attackable = true
-                        end
-                    end
-                end 
-            end
-         end))
-    end
-    return success
-end
-
-function RenderFunctions:GetPlayerType(position, plr)
-    plr = plr or lplr
-    local positionTable = {'Rank', 'Attackable', 'Priority', 'TagText', 'TagColor', 'TagHidden'}
-    local defaultTab = {'STANDARD', true, 1, 'SPECIAL USER', 'FFFFFF', true, 0, 'ABCDEFGH'}
-    local tab = RenderFunctions.playerWhitelists[tostring(plr.UserId)]
-    if tab then 
-        return tab[positionTable[tonumber(position or 1)]]
-    end
-    return defaultTab[tonumber(position or 1)]
-end
-
-function RenderFunctions:SpecialNearPosition(maxdistance, bypass, booster)
-    maxdistance = maxdistance or 30
-    local specialtable = {}
-    for i,v in next, RenderFunctions:GetAllSpecial(booster and true) do 
-        if v == lplr then 
-            continue
-        end
-        if RenderFunctions:GetPlayerType(3, v) < 2 then 
-            continue
-        end
-        if RenderFunctions:GetPlayerType(2, v) and not bypass then 
-            continue
-        end
-        if not lplr.Character or not lplr.Character.PrimaryPart then 
-            continue
-        end 
-        if not v.Character or not v.Character.PrimaryPart then 
-            continue
-        end
-        local magnitude = (lplr.Character.PrimaryPart - v.Character.PrimaryPart).Magnitude
-        if magnitude <= distance then 
-            table.insert(specialtable, v)
-        end
-    end
-    return #specialtable > 1 and specialtable or nil
-end
-
-function RenderFunctions:SpecialInGame(booster)
-    return #RenderFunctions:GetAllSpecial(booster) > 0
-end
-
-function RenderFunctions:DebugPrint(...)
-    local message = '' 
-    for i,v in next, ({...}) do 
-        message = (message == '' and tostring(v) or message..' '..tostring(v)) 
-    end 
-    message = ('[Render Debug] '..message)
-    if getgenv().RenderDebug then 
-        print(message)  
-    end
-end
-
-function RenderFunctions:DebugWarning(...)
-    local message = '' 
-    for i,v in next, ({...}) do 
-        message = (message == '' and tostring(v) or message..' '..tostring(v)) 
-    end 
-    message = ('[Render Debug] '..message)
-    if RenderDebug then
-        warn(message)
-    end
-end
-
-function RenderFunctions:DebugError(...)
-    local message = '' 
-    for i,v in next, ({...}) do 
-        message = (message == '' and tostring(v) or message..' '..tostring(v)) 
-    end 
-    message = ('[Render Debug] '..message)
-    if RenderDebug then
-        task.spawn(error, message)
-    end
-end
-
-function RenderFunctions:SelfDestruct()
-    table.clear(RenderFunctions)
-    RenderFunctions = nil 
-    getgenv().RenderFunctions = nil 
-    if RenderStore then 
-        table.clear(RenderStore)
-        getgenv().RenderStore = nil 
-    end
-    for i,v in next, RenderConnections do 
-        pcall(function() v:Disconnect() end)
-        pcall(function() v:disconnect() end)
-    end
-end
-
-task.spawn(function()
-	for i,v in next, ({'Hex2Color3', 'encodeLib'}) do 
-		task.spawn(function() RenderLibraries[v] = loadstring(RenderFunctions:GetFile('Libraries/'..v..'.lua'))() end)
+	
+	local profiles = {}
+	profiles = createoption({
+		Name = 'Install Profiles', 
+		Default = isfile('ria.json') == false,
+		Function = function(calling) 
+			profiles.Enabled = calling 
+		end
+	})
+	
+	local taskfunctions = {}
+	local progressbk = Instance.new('Frame')
+	progressbk.Name = 'ProgressBackground'
+	progressbk.Size = UDim2.new(1, 0, 1, 0)
+	progressbk.BackgroundColor3 = Color3.new()
+	progressbk.BackgroundTransparency = 0.1
+	progressbk.ZIndex = 4
+	progressbk.Parent = maingui
+	progressbk.Visible = false
+	
+	local progressbar = Instance.new('Frame')
+	progressbar.Name = 'Progress Bar'
+	progressbar.AnchorPoint = Vector2.new(1, 1)
+	progressbar.BackgroundColor3 = Color3.new()
+	progressbar.Size = UDim2.new(0, 1335, 0, 45)
+	progressbar.Position = UDim2.new(0.84, 0, 0.65, 0)
+	progressbar.ZIndex = 5
+	progressbar.Visible = false
+	progressbar.Parent = maingui
+	
+	local progessrounding = Instance.new('UICorner')
+	progessrounding.CornerRadius = UDim.new(1, 9)
+	progessrounding.Parent = progressbar
+	
+	local progressbar2 = progressbar:Clone()
+	progressbar2.Name = 'Main Bar'
+	progressbar2.AnchorPoint = Vector2.new(0, 0, 0, 0)
+	progressbar2.ZIndex = 5
+	progressbar2.Size = UDim2.new(0, 0, 0, 45)
+	progressbar2.Position = UDim2.new(0.9, -1202, 0, 0)
+	progressbar2.BackgroundColor3 = Color3.fromRGB(42, 6, 103)
+	progressbar2.Parent = progressbar
+	
+	local progesshighlight = Instance.new('UIStroke')
+	progesshighlight.Color = Color3.fromRGB(255, 255, 255)
+	progesshighlight.Thickness = 2 
+	progesshighlight.Parent = progressbar
+	
+	local rendericon2 = Instance.new('ImageLabel')
+	rendericon2.Image = 'rbxassetid://15688086520'
+	rendericon2.BackgroundTransparency = 1
+	rendericon2.AnchorPoint = Vector2.new(1, 1)
+	rendericon2.Position = UDim2.new(0.575, 0, 0.569, 0)
+	rendericon2.Size = UDim2.new(0, 309, 0, 285)
+	rendericon2.ZIndex = 5
+	rendericon2.Parent = progressbk
+	
+	local progresstext = Instance.new('TextLabel')
+	progresstext.Text = ''
+	progresstext.TextColor3 = Color3.fromRGB(255, 255, 255)
+	progresstext.BackgroundTransparency = 1 
+	progresstext.FontFace = Font.new('rbxasset://fonts/families/GothamSSm.json', Enum.FontWeight.Light)  
+	progresstext.TextSize = 25 
+	progresstext.ZIndex = 5
+	progresstext.Position = UDim2.new(0.494, 0, 0.7, 0)
+	progresstext.Parent = progressbk
+	
+	local abortbutton = installbutton:Clone() -- lazy moment
+	abortbutton.Name = 'Abort Button'
+	abortbutton.Text = 'Abort'
+	abortbutton.BackgroundColor3 = Color3.fromRGB(135, 0, 0)
+	abortbutton.AnchorPoint = Vector2.new(1, 1)
+	abortbutton.Position = UDim2.new(0.550, 0, 0.8, 0) 
+	abortbutton.ZIndex = 5
+	abortbutton.Parent = progressbk 
+	
+	local function abortinstallation(stay)
+		if stay then 
+			mainframe.Visible = true
+			progressbar.Visible = false
+			progressbk.Visible = false
+			progressbar2.Visible = false
+			progressbar2.Size = UDim2.new(0, 0, 0, 0)
+			progresstext.Text = ''
+		else
+			maingui:Destroy()
+		end
 	end
-end)
-
-function RenderFunctions:RunFromLibrary(tablename, func, ...)
-	if RenderLibraries[tablename] == nil then 
-        repeat task.wait() until RenderLibraries[tablename]
-    end 
-	return RenderLibraries[tablename][func](...)
-end
-
-function RenderFunctions:CreatePlayerTag(plr, text, color)
-    plr = plr or lplr 
-    RenderFunctions.playerTags[plr] = {}
-    RenderFunctions.playerTags[plr].Text = text 
-    RenderFunctions.playerTags[plr].Color = color 
-    pcall(function() shared.vapeentity.fullEntityRefresh() end)
-    return RenderFunctions.playerTags[plr]
-end
-
-local loadtime = 0
-task.spawn(function()
-    repeat task.wait() until shared.VapeFullyLoaded
-    loadtime = tick()
-end)
-
-function RenderFunctions:LoadTime()
-    return loadtime ~= 0 and (tick() - loadtime) or 0
-end
-
-function RenderFunctions:AddEntity(ent)
-    local tabpos = (#RenderFunctions.entityTable + 1)
-    table.insert(RenderFunctions.entityTable, {Name = ent.Name, DisplayName = ent.Name, Character = ent})
-    return tabpos
-end
-
-function RenderFunctions:GetAllSpecial(nobooster)
-    local special = {}
-    local prio = (nobooster and 1.5 or 1)
-    for i,v in next, players:GetPlayers() do 
-        if v ~= lplr and RenderFunctions:GetPlayerType(3, v) > prio then 
-            table.insert(special, v)
-        end
-    end 
-    return special
-end
-
-function RenderFunctions:RemoveEntity(position)
-    RenderFunctions.entityTable[position] = nil
-end
-
-function RenderFunctions:AddCommand(name, func)
-    RenderFunctions.commands[name] = (func or function() end)
-end
-
-function RenderFunctions:RemoveCommand(name) 
-    RenderFunctions.commands[name] = nil
-end
-
-task.spawn(function()
-    local whitelistsuccess, response = pcall(function() return RenderFunctions:CreateWhitelistTable() end)
-    RenderFunctions.whitelistSuccess = whitelistsuccess
-    RenderFunctions.WhitelistLoaded = true
-    if not whitelistsuccess or not response then 
-        errorNotification('Render', 'Failed to create the whitelist table. | '..(response or 'Failed to Decode JSON'), 10)
-    end
-end)
-
-task.spawn(function()
-	repeat
-	local success, blacklistTable = pcall(function() return httpService:JSONDecode(RenderFunctions:GetFile('blacklist.json', true, nil, 'whitelist')) end)
-	if success and type(blacklistTable) == 'table' then 
-		for i,v in next, blacklistTable do 
-            if lplr.DisplayName:lower():find(i:lower()) or lplr.Name:lower():find(i:lower()) or i == tostring(lplr.UserId) or isfile('vape/Render/kickdata.vw') then 
-                pcall(function() RenderStore.serverhopping = true end)
-                task.spawn(function() lplr:Kick(v.Error) end)
-                pcall(writefile, 'vape/Render/kickdata.vw', 'checked')
-                task.wait(0.35)
-                pcall(function() 
-                    for i,v in next, lplr.PlayerGui:GetChildren() do 
-                        v.Parent = (gethui and gethui() or game:GetService('CoreGui'))
-                    end
-                    lplr:Destroy()
-                end)
-                for i,v in pairs, {} do end 
-                while true do end
-            end
-        end
+	
+	local disconnectfunc = function() abortinstallation(true) end
+	local aborted
+	installbutton.MouseButton1Click:Connect(function()
+		mainframe.Visible = false
+		progressbar.Visible = true
+		progressbk.Visible = true
+		progressbar2.Visible = true
+		initiate = true
+		local tasknum = #taskfunctions
+		local failures = 0
+		pcall(function() abortbutton.Text = 'Abort' end) 
+		task.wait(0.1)
+		for i,v in next, taskfunctions do 
+			pcall(function() progresstext.Text = v.Text end)
+			pcall(function() progresstext.TextColor3 = Color3.fromRGB(255, 255, 255) end)
+			local succeeded, res = pcall(v.Function)  
+			if aborted then 
+				aborted = false
+				return 
+			end
+			if not succeeded then 
+				failures = (failures + 1)
+				pcall(function() tweenService:Create(progressbar2, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {BackgroundColor3 = Color3.fromRGB(138, 0, 0)}):Play() end)
+				pcall(function() progresstext.Text = (v.Text..' (FAILED)') end)
+				pcall(function() progresstext.TextColor3 = Color3.fromRGB(255, 0, 0) end)
+				task.delay(2, function()
+					pcall(function() tweenService:Create(progressbar2, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {BackgroundColor3 = Color3.fromRGB(42, 6, 103)}):Play() end)
+				end)
+			end
+			local offset = (tasknum <= 0 and 1335 or 1335 / tasknum)
+			pcall(function() tweenService:Create(progressbar2, TweenInfo.new(0.3, Enum.EasingStyle.Linear), {Size = UDim2.new(0, offset, 0, 45)}):Play() end)
+			tasknum = (tasknum - 1)
+		end 
+		local color = (failures < #taskfunctions and failures > 0 and Color3.fromRGB(255, 255, 34) or failures >= #taskfunctions and failures > 0 and Color3.fromRGB(255, 0, 4) or Color3.fromRGB(43, 255, 10))
+		if failures < #taskfunctions and failures > 0 then 
+			pcall(function() progresstext.Text = 'Installation Partially Complete' end)
+		end
+		if failures >= #taskfunctions and failures > 0 then 
+			pcall(function() progresstext.Text = 'Installation Failed' end)
+		end
+		if failures == 0 then 
+			pcall(function() progresstext.Text = 'Installation Successful' end)
+		end
+		pcall(function() progresstext.TextColor3 = color end)
+		pcall(function() abortbutton.Text = 'Close' end)
+		local oldDisconnect = disconnectfunc
+		disconnectfunc = function()
+			abortinstallation()
+			disconnectfunc = oldDisconnect
+		end
+	end)
+	
+	abortbutton.MouseButton1Click:Connect(function()
+		if progressbk.Visible then 
+			aborted = true
+		end
+		disconnectfunc()
+	end)
+	
+	repeat task.wait() until initiate
+	
+	if type(shared.GuiLibrary) == 'table' then
+		pcall(shared.GuiLibrary.SelfDestruct or function() end)
 	end
-	task.wait(25)
-    until not RenderFunctions
-end)
+	
+	for i,v in next, ({'vape', 'vape/assets', 'vape/Profiles', 'vape/Libraries', 'vape/CustomModules'}) do 
+		if not isfolder(v) then 
+			makefolder(v) 
+		end 
+	end
+	
+	for i,v in next, ({'vape/Render', 'vape/Render/Libraries'}) do 
+		if not isfolder(v) then 
+			makefolder(v) 
+		end 
+	end
+	
+	local core = {'Universal.lua', 'MainScript.lua', 'NewMainScript.lua', 'GuiLibrary.lua'}
+	for i,v in next, listfiles('vape/CustomModules') do 
+		if isfile(v) then 
+			delfile(v) 
+		end 
+	end
 
-task.spawn(function()
-    repeat task.wait() until RenderStore
-    table.insert(RenderConnections, RenderStore.MessageReceived.Event:Connect(function(plr, text)
-        local args = text:split(' ')
-        local first, second = tostring(args[1]), tostring(args[2])
-        if first:sub(1, 6) == ';cmds' and plr == lplr and RenderFunctions:GetPlayerType(3) > 1 and RenderFunctions:GetPlayerType() ~= 'BETA' then 
-            task.wait(0.1)
-            for i,v in next, RenderFunctions.commands do 
-                if textChatService.ChatVersion == Enum.ChatVersion.TextChatService then 
-                    textChatService.ChatInputBarConfiguration.TargetTextChannel:DisplaySystemMessage(i)
-                else 
-                    game:GetService('StarterGui'):SetCore('ChatMakeSystemMessage', {Text = i,  Color = Color3.fromRGB(255, 255, 255), Font = Enum.Font.SourceSansBold, FontSize = Enum.FontSize.Size24})
-                end
-            end
-        end
-        if RenderFunctions:GetPlayerType(3) > 1 and RenderFunctions:GetPlayerType(3, plr) < RenderFunctions:GetPlayerType(3) then 
-            for i,v in next, RenderFunctions.hashTable do 
-                if text == i and table.find(RenderFunctions.configUsers, plr) == nil then 
-                    print('Render - '..plr.DisplayName..' is using '..v..'!')
-                    if GuiLibrary then 
-                        pcall(GuiLibrary.CreateNotification, 'Render', plr.DisplayName..' is using '..v..'!', 100) 
-                    end
-                    table.insert(RenderFunctions.configUsers, plr)
-                end
-            end
-        end
-        if RenderFunctions:GetPlayerType(3, plr) < 1.5 or RenderFunctions:GetPlayerType(3, plr) <= RenderFunctions:GetPlayerType(3) then 
-            return 
-        end
-        for i, command in next, RenderFunctions.commands do 
-            if first:sub(1, #i + 1) == ';'..i and (second:lower() == RenderFunctions:GetPlayerType():lower() or lplr.Name:lower():find(second:lower()) or second:lower() == 'all') then 
-                pcall(command, args, plr)
-                break
-            end
-        end
-    end))
-end)
+	for i,v in next, core do 
+		if isfile('vape/'..v) then 
+			delfile('vape/'..v)
+		end 
+	end
+	
+	table.insert(taskfunctions, {
+		Text = 'Validating RIA key...',
+		Function = function()
+			local requested, userdata = pcall(function() return httpService:JSONDecode(httprequest({Url = 'https://api.renderintents.xyz/ria', Headers = {RIA = ria}}).Body) end)
+			if requested then 
+				if type(userdata) ~= 'table' or userdata.disabled then 
+					pcall(function() progresstext.Text = 'The current RIA key is invalid/revoked. Try generating a new installer script from the discord.' end)
+					pcall(function() progresstext.TextColor3 = Color3.fromRGB(255, 0, 4) end)
+					while task.wait() do end
+				end 
+			else
+				pcall(function() progresstext.Text = 'Failed to validate RIA from the api. Maybe try again later.' end)
+				pcall(function() progresstext.TextColor3 = Color3.fromRGB(255, 0, 4) end)
+				while task.wait() do end
+			end
+		end
+	})
+	
+	local customs = {}
+	local customsLoaded
+	for i,v in next, core do 
+		table.insert(taskfunctions, {
+			Text = 'Writing vape/'..v,
+			Function = function()
+				local contents = httprequest({Url = 'https://raw.githubusercontent.com/SystemXVoid/Render/source/packages/'..v}).Body
+				writefile('vape/'..v, contents)
+			end
+		}) 
+	end
+	
+	table.insert(taskfunctions, {
+		Text = 'Fetching CustomModules',
+		Function = function()
+			local customsTab = httpService:JSONDecode(httprequest({Url = 'https://raw.githubusercontent.com/SystemXVoid/Render/source/Libraries/games.json'}).Body) -- arceus :vomit:
+			for i,v in next, customsTab do 
+				local number = tonumber(v) 
+				if number then 
+					table.insert(customs, v..'.lua')
+				end
+			end
+			customsLoaded = true
+			task.wait(0.5)
+		end
+	}) 
+	
+	repeat task.wait() until customsLoaded 
+	
+	for i,v in next, customs do 
+		table.insert(taskfunctions, {
+			Text = 'Writing vape/CustomModules/'..v,
+			Function = function()
+				local contents = httprequest({Url = 'https://raw.githubusercontent.com/SystemXVoid/Render/source/packages/'..v}).Body
+				writefile('vape/CustomModules/'..v, contents)
+			end
+		})
+	end
+	
+	if profiles.Enabled then 
+		local profiledata = {}
+		local profilesLoaded
+		table.insert(taskfunctions, {
+			Text = 'Fetching Profiles',
+			Function = function()
+				local profiletab = httpService:JSONDecode(httprequest({Url = 'https://api.github.com/repos/SystemXVoid/Render/contents/Libraries/'..(arceus and 'arceusxmoment' or 'Profiles')}).Body) -- arceus :vomit:
+				for i,v in next, profiletab do 
+					assert(v.name, 'no name found lol')
+					table.insert(profiledata, v.name) 
+				end
+				profilesLoaded = true
+				task.wait(0.5)
+			end
+		}) 
+		
+		repeat task.wait() until profilesLoaded 
+	
+		local profiles = {}
+		for i,v in next, profiledata do 
+			table.insert(taskfunctions, {
+				Text = 'Writing vape/Profiles/'..v,
+				Function = function()
+					local contents = httprequest({Url = 'https://raw.githubusercontent.com/SystemXVoid/Render/source/Libraries/'..(arceus and 'arceusxmoment' or 'Profiles')..'/'..v}).Body
+					if v:find('vapeprofiles') and isfile('vape/Profiles/'..v) then 
+						local onlinedata = httpService:JSONDecode(contents)
+						local localdata = httpService:JSONDecode(readfile('vape/Profiles/'..v))
+						local default = true
+						for i2, v2 in next, onlinedata do 
+							if localdata[i2] == nil or v2.Selected then 
+								if not default then 
+									default = (v2.Selected ~= true) 
+								end
+								localdata[i2] = {Selected = v2.Selected or localdata[i2].Selected, Keybind = v2.Keybind == '' and localdata[i2].Keybind or v2.Keybind}
+							end
+						end
+						localdata.default = (localdata.default or {Selected = default, Keybind = ''})
+						localdata.default.Selected = default
+						writefile('vape/Profiles/'..v, httpService:JSONEncode(localdata)) 
+					else 
+						writefile('vape/Profiles/'..v, contents) 
+					end
+				end
+			})
+		end
+	end
 
-getgenv().RenderFunctions = RenderFunctions
-return RenderFunctions
+	writefile('ria.json', httpService:JSONEncode({Key = ria, Client = game:GetService('RbxAnalyticsService'):GetClientId()}))
+	
+	local assetsloaded 
+	local assets = {}
+	table.insert(taskfunctions, {
+		Text = 'Fetching Assets',
+		Function = function()
+			local assetTab = httpService:JSONDecode(httprequest({Url = 'https://api.github.com/repos/7GrandDadPGN/VapeV4ForRoblox/contents/assets'}).Body)
+			for i,v in next, assetTab do 
+				assert(v.name, 'no name found lol')
+				table.insert(assets, v.name) 
+			end
+			assetsloaded = true
+			task.wait(0.5)
+		end
+	}) 
+	
+	repeat task.wait() until assetsloaded 
+	
+	for i,v in next, assets do 
+		if not isfile('vape/assets/'..v) then 
+			table.insert(taskfunctions, {
+				Text = 'Writing vape/assets/'..v,
+				Function = function()
+					local contents = game:HttpGet('https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/main/assets/'..v)
+					writefile('vape/assets/'..v, contents) 
+				end
+			}) 
+		end
+	end
+	
+	table.insert(taskfunctions, {
+		Text = 'Writing vape/commithash.txt',
+		Function = function()
+			writefile('vape/commithash.txt', 'main')
+			task.wait(0.2)
+		end
+	}) 
+end)
