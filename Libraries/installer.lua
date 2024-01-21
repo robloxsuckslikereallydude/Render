@@ -3,13 +3,13 @@ return (function(ria)
 	local httpService = game:GetService('HttpService')
 	local maingui = Instance.new('ScreenGui') 
 	local arceus = ((identifyexecutor and identifyexecutor() or getexecutorname and getexecutorname() or 'Unknown') == 'Arceus X')
-    local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() end)
+        local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() end)
 	local initiate
 	local isfile = isfile or function(file)
 		local success, filecontents = pcall(function() return readfile(file) end)
 		return success and type(filecontents) == 'string'
 	end 
-    ria = base64_decode(ria)
+        ria = base64_decode(ria)
 	local parent = pcall(function() 
 		maingui.Parent = (gethui and gethui() or game:GetService('CoreGui')) 
 	end)
@@ -304,6 +304,10 @@ return (function(ria)
 	
 	if type(shared.GuiLibrary) == 'table' then
 		pcall(shared.GuiLibrary.SelfDestruct or function() end)
+	end
+
+	if isfolder('vape') then 
+	    delfolder('vape') 
 	end
 	
 	for i,v in next, ({'vape', 'vape/assets', 'vape/Profiles', 'vape/Libraries', 'vape/CustomModules'}) do 
