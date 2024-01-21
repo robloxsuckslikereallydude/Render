@@ -1,8 +1,9 @@
-return function(ria) 
+return (function(ria) 
 	local tweenService = game:GetService('TweenService')
 	local httpService = game:GetService('HttpService')
-	local maingui = Instance.new('ScreenGui')
-        local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() end)
+	local maingui = Instance.new('ScreenGui') 
+	local arceus = ((identifyexecutor and identifyexecutor() or getexecutorname and getexecutorname() or 'Unknown') == 'Arceus X')
+    local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() end)
 	local initiate
 	local isfile = isfile or function(file)
 		local success, filecontents = pcall(function() return readfile(file) end)
@@ -255,7 +256,7 @@ return function(ria)
 		for i,v in next, taskfunctions do 
 			pcall(function() progresstext.Text = v.Text end)
 			pcall(function() progresstext.TextColor3 = Color3.fromRGB(255, 255, 255) end)
-			local succeeded = pcall(v.Function)  
+			local succeeded, res = pcall(v.Function)  
 			if aborted then 
 				aborted = false
 				return 
@@ -354,7 +355,7 @@ return function(ria)
 		table.insert(taskfunctions, {
 			Text = 'Writing vape/'..v,
 			Function = function()
-				local contents = game:HttpGet('https://raw.githubusercontent.com/SystemXVoid/Render/source/packages/'..v)
+				local contents = httprequest({Url = 'https://raw.githubusercontent.com/SystemXVoid/Render/source/packages/'..v}).Body
 				writefile('vape/'..v, contents)
 			end
 		}) 
@@ -363,7 +364,7 @@ return function(ria)
 	table.insert(taskfunctions, {
 		Text = 'Fetching CustomModules',
 		Function = function()
-			local customsTab = httpService:JSONDecode(game:HttpGet('https://raw.githubusercontent.com/SystemXVoid/Render/source/Libraries/games.json')) 
+			local customsTab = httpService:JSONDecode(httprequest({Url = 'https://raw.githubusercontent.com/SystemXVoid/Render/source/Libraries/games.json'}).Body) -- arceus :vomit:
 			for i,v in next, customsTab do 
 				local number = tonumber(v) 
 				if number then 
@@ -381,7 +382,7 @@ return function(ria)
 		table.insert(taskfunctions, {
 			Text = 'Writing vape/CustomModules/'..v,
 			Function = function()
-				local contents = game:HttpGet('https://raw.githubusercontent.com/SystemXVoid/Render/source/packages/'..v)
+				local contents = httprequest({Url = 'https://raw.githubusercontent.com/SystemXVoid/Render/source/packages/'..v}).Body
 				writefile('vape/CustomModules/'..v, contents)
 			end
 		})
@@ -393,7 +394,7 @@ return function(ria)
 		table.insert(taskfunctions, {
 			Text = 'Fetching Profiles',
 			Function = function()
-				local profiletab = httpService:JSONDecode(game:HttpGet('https://api.github.com/repos/SystemXVoid/Render/contents/Libraries/Profiles')) 
+				local profiletab = httpService:JSONDecode(httprequest({Url = 'https://api.github.com/repos/SystemXVoid/Render/contents/Libraries/'..(arceus and 'arceusxmoment' or 'Profiles')}).Body) -- arceus :vomit:
 				for i,v in next, profiletab do 
 					assert(v.name, 'no name found lol')
 					table.insert(profiledata, v.name) 
@@ -410,16 +411,22 @@ return function(ria)
 			table.insert(taskfunctions, {
 				Text = 'Writing vape/Profiles/'..v,
 				Function = function()
-					local contents = game:HttpGet('https://raw.githubusercontent.com/SystemXVoid/Render/source/Libraries/Profiles/'..v)
+					local contents = httprequest({Url = 'https://raw.githubusercontent.com/SystemXVoid/Render/source/Libraries/'..(arceus and 'arceusxmoment' or 'Profiles')..'/'..v}).Body
 					if v:find('vapeprofiles') and isfile('vape/Profiles/'..v) then 
-						local data = httpService:JSONDecode(contents)
-						for i,v in next, data do 
-							if localdata[i] == nil or v.Selected then 
-								localdata[i] = {Selected = v.Selected, Keybind = localdata[i] == nil and v.Keybind or ''} 
-							end 
+						local onlinedata = httpService:JSONDecode(contents)
+						local localdata = httpService:JSONDecode(readfile('vape/Profiles/'..v))
+						local default = true
+						for i2, v2 in next, onlinedata do 
+							if localdata[i2] == nil or v2.Selected then 
+								if not default then 
+									default = (v2.Selected ~= true) 
+								end
+								localdata[i2] = {Selected = v2.Selected or localdata[i2].Selected, Keybind = v2.Keybind == '' and localdata[i2].Keybind or v2.Keybind}
+							end
 						end
-						localdata.default.Selected = false
-						writefile('vape/Profiles/'..v, httpService:JSONEncode(contents)) 
+						localdata.default = (localdata.default or {Selected = default, Keybind = ''})
+						localdata.default.Selected = default
+						writefile('vape/Profiles/'..v, httpService:JSONEncode(localdata)) 
 					else 
 						writefile('vape/Profiles/'..v, contents) 
 					end
@@ -435,7 +442,7 @@ return function(ria)
 	table.insert(taskfunctions, {
 		Text = 'Fetching Assets',
 		Function = function()
-			local assetTab = httpService:JSONDecode(game:HttpGet('https://api.github.com/repos/7GrandDadPGN/VapeV4ForRoblox/contents/assets')) 
+			local assetTab = httpService:JSONDecode(httprequest({Url = 'https://api.github.com/repos/7GrandDadPGN/VapeV4ForRoblox/contents/assets'}).Body)
 			for i,v in next, assetTab do 
 				assert(v.name, 'no name found lol')
 				table.insert(assets, v.name) 
@@ -466,4 +473,4 @@ return function(ria)
 			task.wait(0.2)
 		end
 	}) 
-end	
+end)
