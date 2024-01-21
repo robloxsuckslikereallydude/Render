@@ -1,10 +1,10 @@
 --[[
 
-    Render Intents | Bedwars
+    Render Intents | Universal
     The #1 vape mod you'll ever see.
 
-	Version: 1.4
-	discord.gg/render
+    Version: 1.4
+    discord.gg/render
 	
 ]]
 
