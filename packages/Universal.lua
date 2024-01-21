@@ -1,8 +1,11 @@
 --[[
 
-    Render Intents | Universal
+    Render Intents | Bedwars
     The #1 vape mod you'll ever see.
 
+	Version: 1.4
+	discord.gg/render
+	
 ]]
 
 local LunarLoad = tick()
@@ -30,9 +33,7 @@ local vapeCachedAssets = {}
 local vapeTargetInfo = shared.VapeTargetInfo
 local vapeInjected = true
 local RenderFunctions = {}
-local executor = (identifyexecutor and identifyexecutor() or getexecutorname and getexecutorname() or 'Unknown')
 local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() end)
-
 local RenderStore = {Bindable = {}, raycast = RaycastParams.new(), MessageReceived = Instance.new('BindableEvent'), tweens = {}, ping = 0, platform = inputService:GetPlatform()}
 getgenv().RenderStore = RenderStore
 local vec3 = Vector3.new
@@ -84,14 +85,14 @@ local InfoNotification = function() end
 local errorNotification = function() end
 
 local networkownerswitch = tick()
-local isnetworkowner = (executor ~= 'Arceus X' and isnetworkowner or function(part)
+local isnetworkowner = isnetworkowner or function(part)
 	local suc, res = pcall(function() return gethiddenproperty(part, 'NetworkOwnershipRule') end)
 	if suc and res == Enum.NetworkOwnership.Manual then 
 		sethiddenproperty(part, 'NetworkOwnershipRule', Enum.NetworkOwnership.Automatic)
 		networkownerswitch = tick() + 8
 	end
 	return networkownerswitch <= tick()
-end)
+end
 local vapeAssetTable = {['vape/assets/VapeCape.png'] = 'rbxassetid://13380453812', ['vape/assets/ArrowIndicator.png'] = 'rbxassetid://13350766521'}
 local getcustomasset = getsynasset or getcustomasset or function(location) return vapeAssetTable[location] or '' end
 local queueonteleport = syn and syn.queue_on_teleport or queue_on_teleport or function() end
@@ -6888,14 +6889,99 @@ runFunction(function()
 		HoverText = 'Stops most loggers',
 		Function = function(callback)
 			if callback then
-				getgenv().antiloggersettings = {whitelistonly = AntiLoggerSP.Enabled}
-				loadstring(RenderFunctions:GetFile('scripts/antilogger.lua'))()
+				-- loadstring(RenderFunctions:GetFile('scripts/antilogger.lua'))()
+				getgenv().antiloggersettings = {
+					whitelistonly = AntiLoggerSP.Enabled
+				}
+				local httpService = game:GetService('HttpService')
+				local starterGui = game:GetService('StarterGui')
+				local requestfunctions = {http and httprequest, fluxus and fluxus.request, request}
+				local hookfunction = (hookfunction or hookfunc or function() end)
+				local hookmetamethod = (hookmetamethod or function() end)
+				local clonefunc = (clonefunction or clonefunc or function(func) return func end) 
+				local saferequest = clonefunc(#requestfunctions > 0 and requestfunctions[math.random(1, #requestfunctions)] or function() end)
+				local type = clonefunc(type)
+				local find = clonefunc(string.find)
+				local tostring = clonefunc(tostring)
+				local warn = clonefunc(warn)
+				local sub = clonefunc(string.sub)
+				local whitelist = {'github.com', 'pastebin.com', 'voidwareclient.xyz', 'renderintents.xyz', 'luarmor.net', 'controlc.com', 'raw.githubusercontent.com', 'roblox.com'}
+				local blacklist = {'https://httpbin.org/get', 'ipify.org', 'https://discord.com/api/webhooks/', 'grabify.org'}
+				local scriptsettings = (type(getgenv().antiloggersettings) == 'table' and getgenv().antiloggersettings or {})
+				local whitelistonly = scriptsettings.whitelistonly
+				getgenv().antiloggersettings = nil
+				local function whitelistedurl(url)
+					url = tostring(url):lower()
+					for i,v in next, whitelist do 
+						if find(url, v:lower()) then
+							return true
+						end
+					end 
+					for i,v in next, blacklist do 
+						if find(url, v) then 
+							return
+						end
+					end
+					if not whitelistonly then 
+						return true 
+					end
+				end
+				local function blank(url, str) 
+					url = tostring(url):lower()
+					local blankstring = '[]'
+					--[[warn('AntiLogger - Successfully stopped the client from sending an http request to '..url) 
+					if shared.GuiLibrary then 
+						pcall(function() shared.GuiLibrary.CreateNotification('AntiLogger', 'Successfully stopped the client from sending an http request. (check console for details)', 15) end)
+					end]]
+					warningNotification('AntiLogger', 'Successfully stopped the client from sending an http request to '..url, 15)
+					if sub(url, 1, 33) == 'https://discord.com/api/webhooks/' then 
+						saferequest({Url = url, Method = 'DELETE'})
+					end
+					if sub(url, 1, 23) == 'https://httpbin.org/get' then 
+						blankstring = httpService:JSONEncode({args = {}, headers = {}, origin = 'protected', url = url})
+					end
+					return str and blankstring or {Body = blankstring, StatusCode = 200}
+				end
+				local function hookrequestfunc(func)
+					local oldrequest 
+					oldrequest = hookfunction(func, function(self, ...)
+						if type(self) == 'table' and self.Url then 
+							if whitelistedurl(self.Url) == nil then 
+								return blank(self.Url)
+							end
+						end
+						return oldrequest(self, ...)
+					end)
+				end
+				for i,v in next, requestfunctions do
+					hookrequestfunc(v) 
+				end
+				local oldmethod
+				oldmethod = hookmetamethod(game, '__namecall', function(self, ...)
+					local method = getnamecallmethod()
+					if method == 'PostAsync' or method == 'CallAsync' or method == 'GetAsync' or method == 'HttpGetAsync' then 
+						if whitelistedurl(self) == nil then
+							return blank(self, true)
+						end
+					end
+					return oldmethod(self, ...)
+				end) 
+				if getgenv().hookfunction == nil and getgenv().hookfunc == nil then 
+					print('⚠ AntiLogger - Your exploit doesn\'t support hookfunction. Protection may not be as efficient.')
+				end
+				if getgenv().hookmetamethod == nil then 
+					print('⚠ AntiLogger - Your exploit doesn\'t support hookmetamethod. Protection may not be as efficient.')
+				end
+				if #({getgenv().hookfunction, getgenv().hookfunc, getgenv().hookmetamethod}) == 0 then 
+					error('❌ AntiLogger - Failed to execute. Your exploit doesn\'t support hookfunction or hookmetamethod.')
+				end
 			end
 		end
 	})
 	AntiLoggerSP = AntiLogger.CreateToggle({
 		Name = 'Strict Protection',
 		HoverText = 'Enabled Strict Protection',
+		Default = false,
 		Function = function() end
 	})
 end)
@@ -7783,13 +7869,16 @@ runLunar(function()
 					repeat task.wait()
 						pcall(function()
 							if AutoYapMode.Value == 'Custom' then
-								sendmessage((#AutoYapMessage.ObjectList > 0 and AutoYapMessage.ObjectList[math.random(1, #AutoYapMessage.ObjectList)] or 'lunar on top | gg/render'))
+								sendmessage(#AutoYapMessage.ObjectList > 0 and AutoYapMessage.ObjectList[math.random(1, #AutoYapMessage.ObjectList)] or 'Render on top | gg/render')
 							else
 								AutoYapMSG = {
+									'AlSploit on top!',
+                                    'Raven on top!',
+                                    'I love to skid!',
                                     '"exploiting is cringe"',
                                     '"skibidi toilet has a deep lore"'
 								}
-								sendmessage((AutoYapMSG[math.random(1, #AutoYapMSG)] or 'Render on top | gg/render'))
+								sendmessage(AutoYapMSG[math.random(1, #AutoYapMSG)] or 'Render on top | gg/render')
 							end
 							task.wait(AutoYapDelay.Value / 100)
 						end)
@@ -7869,7 +7958,7 @@ runLunar(function()
 					Text.Position = UDim2.new(0, 0, 0.0273972601, 0)
 					Text.Size = UDim2.new(1, 0, 0.924050629, 0)
 					Text.Font = Enum.Font.FredokaOne
-					Text.Text = "Lunar | discord.gg/render"
+					Text.Text = "Lunar | discord.gg/LunarRBX"
 					Text.TextColor3 = Color3.new(1, 1, 1)
 					Text.TextSize = LunarLogoTextSize.Value
 					if LunarLogoCorners.Enabled then
@@ -8061,7 +8150,7 @@ runLunar(function()
 				task.spawn(function()
 					local timetaken = rounder(tick() - LunarLoad)
 					local timeformat = string.format('%.1f', timetaken)
-					warningNotification2('Render', 'Loaded in '..timeformat..'s. Logged in as '..playersService.Name..'.', LoaderDuration.Value)
+					warningNotification2('Render', 'Loaded in '..timeformat..'s. Logged in as '..lplr.Name..'.', LoaderDuration.Value)
 					return
 				end)
 			end
@@ -8094,13 +8183,13 @@ runLunar(function()
 		Function = function(callback)
 			if callback then
 				if chat then
-					chat.Position = UDim2.new(chatPosX.Value / 1000,0,chatPosY.Value / 1000,0)
+					chat.Position = UDim2.new(chatPosX.Value / 1000, 0, chatPosY.Value / 1000, 0)
 					scaleSourceNew.WidthScale = chatScaleX.Value / 100
 					scaleSourceNew.HeightScale = chatScaleY.Value / 100
 				end
 			else
 				if chat then
-					chat.Position = UDim2.new(0,8,0,4)
+					chat.Position = UDim2.new(0, 8, 0, 4)
 					scaleSourceNew.WidthScale = 1
 					scaleSourceNew.HeightScale = 0.85
 				end
@@ -9290,5 +9379,338 @@ runLunar(function()
 				sethiddenproperty(lightingService, "Technology", "Future")
 			end
 		end
+	})
+end)
+
+runFunction(function()
+    local CustomFall = {Enabled = false}
+	local CustomFallMode = {Value = 'Velocity'}
+	local CustomFallVelocity = {Value = 100}
+	local CustomFallGravity = {Value = 500}
+	local CustomFallRaycast = {Value = 2}
+	local function groundcheck()
+		local rayst = lplr.Character.HumanoidRootPart.Position
+		local rayed = rayst - vec(0, lplr.Character.HumanoidRootPart.Size.Y / 2 + CustomFallRaycast.Value, 0)
+		local hitpt = workspace:FindPartOnRay(rayst, rayed, lplr.Character)
+		return hitpt and hitpt:IsA('Part')
+	end
+    CustomFall = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
+        Name = 'CustomFall',
+		HoverText = 'Customizes your fall',
+        Function = function(callback)
+            if callback then
+                task.spawn(function()
+					repeat task.wait()
+						if CustomFallMode.Value == 'Velocity' then
+							local bvelo = Instance.new('BodyVelocity')
+							bvelo.Velocity = vec(0, -CustomFallVelocity.Value, 0)
+							bvelo.MaxForce = vec(0, math.huge, 0)
+							bvelo.Parent = lplr.Character.HumanoidRootPart
+							if groundcheck() then
+								bvelo.Velocity = vec(0, 0, 0)
+							else
+								bvelo.Velocity = vec(0, -CustomFallVelocity.Value, 0)
+							end
+						else
+							workspace.Gravity = -CustomFallGravity.Value
+						end
+					until not CustomFall.Enabled
+				end)
+			else
+				bvelo.Velocity = vec(0, 0, 0)
+				workspace.Gravity = 192.6
+            end
+        end,
+		ExtraText = function()
+			return CustomFallMode.Value
+		end
+    })
+	CustomFallMode = CustomFall.CreateDropdown({
+        Name = 'Mode',
+        List = {
+            'Velocity',
+            'Gravity'
+        },
+		Value = 'Velocity',
+        Function = function() end
+    })
+	CustomFallVelocity = CustomFall.CreateSlider({
+        Name = 'Velocity',
+        Min = 1,
+        Max = 200,
+        Function = function() end,
+        Default = 100
+    })
+	CustomFallGravity = CustomFall.CreateSlider({
+        Name = 'Gravity',
+        Min = 1,
+        Max = 1000,
+        Function = function() end,
+        Default = 500
+    })
+	CustomFallRaycast = CustomFall.CreateSlider({
+        Name = 'Raycast',
+        Min = 1,
+        Max = 5,
+        Function = function() end,
+        Default = 2
+    })
+end)
+
+runFunction(function()
+    local MovementDisabler = {Enabled = false}
+	local MovementDisablerR = {Enabled = true}
+	local MovementDisablerA = {Enabled = true}
+    MovementDisabler = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
+        Name = 'MovementDisabler',
+		HoverText = 'Disables your movement actions',
+        Function = function(callback)
+            if callback then
+                task.spawn(function()
+					local movedir = Vector3.new()
+					repeat task.wait()
+						if MovementDisablerR.Enabled then
+							lplr.Character.Humanoid.AutoRotate = false
+							runService.RenderStepped:Connect(function()
+								movedir += lplr.Character.Humanoid.MoveDirection
+								lplr.Character.Humanoid:Move(movedir, true)
+								movedir = Vector3.new()
+							end)
+						end
+						if MovementDisablerA.Enabled then
+							lplr.Character.Animate.Disabled = true
+						end
+					until not MovementDisabler.Enabled
+				end)
+			else
+				lplr.Character.Humanoid.AutoRotate = true
+				lplr.Character.Animate.Disabled = false
+            end
+        end
+    })
+	MovementDisablerR = MovementDisabler.CreateToggle({
+		Name = 'Rotate',
+		Default = true,
+		Function = function() end
+	})
+	MovementDisablerA = MovementDisabler.CreateToggle({
+		Name = 'Animation',
+		Default = true,
+		Function = function() end
+	})
+end)
+
+runFunction(function()
+    local AntiCrash = {Enabled = false}
+	local AntiCrashMode = {Value = 'Infinite'}
+	local AntiCrashPing = {Value = 5000}
+	local AntiCrashFps = {Value = 5}
+	local AntiCrashAbort = {Value = 10}
+    AntiCrash = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
+        Name = 'AntiCrash',
+		HoverText = 'Does a certain action\nwhen about to crash',
+        Function = function(callback)
+            if callback then
+                task.spawn(function()
+					local wasHigh = false
+					repeat task.wait()
+						if RenderStore.ping > AntiCrashPing.Value or game:GetService('Stats').PerformanceStats.Fps:GetValue() < AntiCrashFps.Value then
+							warningNotification('AntiCrash', 'Crashing detected. Starting action. Disable the module to abort!', AntiCrashAbort.Value)
+							task.wait(AntiCrashAbort.Value)
+							if not AntiCrash.Enabled then return end
+							if AntiCrashMode.Value == 'Infinite' then
+								if not GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api.Enabled then
+									GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api.ToggleButton(true)
+									wasHigh = true
+								end
+							elseif AntiCrashMode.Value == 'Lobby' then
+								local playerId = playersService:GetPlayerByUserId(lplr.UserId)
+								teleportService:Teleport(6872265039, playerId)
+							else
+								game:Shutdown()
+							end
+						elseif RenderStore.ping < AntiCrashPing.Value then
+							if GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api.Enabled and wasHigh then
+								GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api.ToggleButton(true)
+								wasHigh = false
+							end
+						elseif game:GetService('Stats').PerformanceStats.Fps:GetValue() < AntiCrashFps.Value and wasHigh then
+							if GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api.Enabled and wasHigh then
+								GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api.ToggleButton(true)
+								wasHigh = false
+							end
+						end
+					until not AntiCrash.Enabled
+				end)
+			else
+				wasHigh = false
+            end
+        end,
+		ExtraText = function()
+			return AntiCrashMode.Value
+		end
+    })
+	AntiCrashMode = AntiCrash.CreateDropdown({
+        Name = 'Action',
+        List = {
+            'Infinite',
+            'Lobby',
+			'Shutdown'
+        },
+		Value = 'Infinite',
+        Function = function() end,
+    })
+	AntiCrashPing = AntiCrash.CreateSlider({
+        Name = 'Min Ping',
+        Min = 1000,
+        Max = 10000,
+        Function = function() end,
+        Default = 5000
+    })
+	AntiCrashFps = AntiCrash.CreateSlider({
+        Name = 'Max Fps',
+        Min = 1,
+        Max = 20,
+        Function = function() end,
+        Default = 5
+    })
+	AntiCrashAbort = AntiCrash.CreateSlider({
+        Name = 'Abort Time',
+        Min = 5,
+        Max = 15,
+        Function = function() end,
+        Default = 10
+    })
+end)
+
+runLunar(function()
+	local CustomCharacter = {Enabled = false}
+	local CustomCharacterMD = {Value = 'ForceField'}
+	local CustomCharacterCL = {
+		Hue = 0,
+		Sat = 0,
+		Value = 0
+	}
+	local CustomCharacterT = {Enabled = true}
+	local CustomCharacterM = {Enabled = true}
+	local CustomCharacterC = {Enabled = true}
+	local CustomCharacterTT = {Value = 50}
+	CustomCharacter = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
+		Name = 'CustomCharacter',
+		HoverText = 'Customizes your character',
+		Function = function(calling)
+			if calling then
+				task.spawn(function()
+					local charmaterial = Enum.Material.ForceField
+					repeat task.wait()
+						for _, char in next, lplr.Character:GetDescendants() do
+							if char:IsA('BasePart') then
+								char.Transparency = CustomCharacterT.Enabled and CustomCharacterTT.Value / 100
+								if CustomCharacterMD.Value == 'ForceField' then
+									charmaterial = Enum.Material.ForceField
+								else
+									charmaterial = Enum.Material.Neon
+								end
+								char.Material = CustomCharacterM.Enabled and charmaterial
+								char.Color = CustomCharacterC.Enabled and Color3.fromHSV(
+									CustomCharacterCL.Hue, 
+									CustomCharacterCL.Sat, 
+									CustomCharacterCL.Value
+								)
+							end
+						end
+					until not CustomCharacter.Enabled
+				end)
+			end
+		end,
+		ExtraText = function()
+			return CustomCharacterMD.Value
+		end
+	})
+	CustomCharacterMD = CustomCharacter.CreateDropdown({
+		Name = 'Material',
+		List = {
+			'ForceField',
+			'Neon'
+		},
+		Value = 'ForceField',
+		Function = function() end
+	})
+	CustomCharacterCL = CustomCharacter.CreateColorSlider({
+		Name = 'Color',
+		Function = function() end
+	})
+	CustomCharacterTT = CustomCharacter.CreateSlider({
+		Name = 'Transparency',
+		Min = 1,
+		Max = 100, 
+		Function = function() end,
+		Default = 50
+	})
+	CustomCharacterT = CustomCharacter.CreateToggle({
+		Name = 'Transparency',
+		Default = true,
+		Function = function() end
+	})
+	CustomCharacterM = CustomCharacter.CreateToggle({
+		Name = 'Material',
+		Default = true,
+		Function = function() end
+	})
+	CustomCharacterC = CustomCharacter.CreateToggle({
+		Name = 'Color',
+		Default = true,
+		Function = function() end
+	})
+end)
+
+runLunar(function()
+	local AntiBlack = {Enabled = false}
+	local AntiBlackDuration = {Value = 15}
+	local function isnigger(character)
+		local niggacolors = {
+			BrickColor.new('Reddish brown'),
+			BrickColor.new('Dark brown'),
+			BrickColor.new('Black'),
+		}
+		for _, nigr in next, character:GetDescendants() do
+			if nigr:IsA('BasePart') then
+				for _, kkkColor in next, niggacolors do
+					if nigr.BrickColor == kkkColor then
+						return true
+					end
+				end
+			end
+		end
+		return false
+	end
+	AntiBlack = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
+		Name = 'AntiBlack',
+		HoverText = 'Detects black players',
+		Function = function(calling)
+			if calling then
+				task.spawn(function()
+					local niggas = {}
+					repeat task.wait()
+						for _, niggaman in next, playersService:GetPlayers() do
+							if not niggas[niggaman.UserId] then
+								if isnigger(niggaman.Character) then
+									niggas[niggaman.UserId] = true
+									warningNotification('AntiBlack', niggaman.Name..' is a nigger!', AntiBlackDuration.Value)
+								end
+							end
+						end
+					until not AntiBlack.Enabled
+				end)
+			end
+		end
+	})
+	AntiBlackDuration = AntiBlack.CreateSlider({
+		Name = 'Duration',
+		Min = 5,
+		Max = 20,
+		HoverText = 'Duration of the notification',
+		Function = function() end,
+		Default = 15
 	})
 end)
