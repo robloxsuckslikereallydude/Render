@@ -473,7 +473,7 @@ local function getSpeed()
 			speed = speed + 20
 		end
 		if lplr.Character:FindFirstChild('elk') then  
-			speed = speed + 20
+			speed = speed + 19
 		end
 		local armor = bedwarsStore.localInventory.inventory.armor[3]
 		if type(armor) ~= 'table' then armor = {itemType = ''} end
