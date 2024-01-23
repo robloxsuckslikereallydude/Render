@@ -1,1 +1,1 @@
-{"AnnouncementText":"welcome!","Announcement":false,"Disabled":false,"AnnouncementDuration":10}
+{"AnnouncementText":"This render build is outdated","Announcement":false,"Disabled":true,"AnnouncementDuration":10}
