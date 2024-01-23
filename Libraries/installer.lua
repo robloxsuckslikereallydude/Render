@@ -284,7 +284,7 @@ return (function(ria)
 				end)
 			end
 			local offset = (tasknum <= 0 and 490 or 490 / tasknum)
-			pcall(function() tweenService:Create(progressbar2, TweenInfo.new(0.3, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, true, 0), {Size = UDim2.new(0, offset, 0, 45)}):Play() end)
+			pcall(function() tweenService:Create(progressbar2, TweenInfo.new(0.3, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, true, 0), {Size = UDim2.new(0.13, offset, 0, 45)}):Play() end)
 			tasknum = (tasknum - 1)
 		end 
 		local color = (failures < #taskfunctions and failures > 0 and Color3.fromRGB(255, 255, 34) or failures >= #taskfunctions and failures > 0 and Color3.fromRGB(255, 0, 4) or Color3.fromRGB(43, 255, 10))
