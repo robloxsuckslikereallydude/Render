@@ -10,7 +10,6 @@
 
 local LunarLoad = tick()
 repeat task.wait() until pcall(function() return game.HttpGet and ria end)
-game:GetService('StarterGui'):SetCore('SendNotification', {Title = 'Render', Text = 'The bedwars script is currently down. Wait to be fixed.', Duration = 60})
 local GuiLibrary = shared.GuiLibrary
 local identifyexecutor = identifyexecutor or function() return 'Unknown' end
 local getconnections = getconnections or function() return {} end
