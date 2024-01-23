@@ -3,7 +3,7 @@ return (function(ria)
 	local httpService = game:GetService('HttpService')
 	local maingui = Instance.new('ScreenGui') 
 	maingui.Name = "MainWindow"
-	local arceus = ((identifyexecutor and identifyexecutor() or getexecutorname and getexecutorname() or 'Unknown') == 'Arceus X')
+	local arceus = true
     local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() end)
 	local initiate
 	local isfile = isfile or function(file)
