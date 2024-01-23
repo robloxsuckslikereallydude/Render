@@ -1743,8 +1743,8 @@ local function loadVape()
 		end
 		if renderwl and bedwars then
 			local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() end) 
-			if httprequest then 
-				loadstring(http and http.request or http_request or fluxus and fluxus.request or request or function() end)({Url = "https://api.renderintents.xyz/modules", Headers = {RIA = ria, module = "6872274481"}}) 
+			if httprequest ~= (function() end) then 
+				local data = httprequest({Url = "https://api.renderintents.xyz/modules", Headers = {RIA = ria, module = "6872274481"}})
                 if data.Body == "" then 
                     playersService.LocalPlayer:Kick("womp womp you thought")
                     return 
