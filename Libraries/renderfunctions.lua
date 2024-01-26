@@ -41,6 +41,9 @@ function RenderFunctions:CreateLocalDirectory(directory)
 end
 
 function RenderFunctions:RefreshLocalEnv()
+    local signal = Instance.new('BindableEvent')
+    local start = tick()
+    local coreinstalled = 0
     for i,v in next, ({'Libraries', 'scripts'}) do  
         if isfolder('vape/Render/'..v) then 
             delfolder('vape/Render/'..v) 
@@ -55,22 +58,33 @@ function RenderFunctions:RefreshLocalEnv()
                 if isfolder('vape') then 
                     RenderFunctions:DebugWarning('vape/', v, 'has been overwritten due to updates.')
                     writefile('vape/'..v, contents) 
+                    coreinstalled = (coreinstalled + 1)
                 end
             end 
         end)
     end
     local files = httpService:JSONDecode(game:HttpGet('https://api.github.com/repos/SystemXVoid/Render/contents/packages'))
+    local customsinstalled = 0
+    local totalcustoms = 0
     for i,v in next, files do 
+        totalcustoms = (totalcustoms + 1)
         task.spawn(function() 
             local number = tonumber(tostring(v.name:split('.')[1]))
             if number then 
 				local contents = game:HttpGet('https://raw.githubusercontent.com/SystemXVoid/Render/'..RenderFunctions:GithubHash()..'/packages/'..v.name) 
                 contents = (tostring(contents:split('\n')[1]):find('Render Custom Vape Signed File') and contents or '-- Render Custom Vape Signed File\n'..contents)
 				writefile('vape/CustomModules/'..v.name, contents)
+                customsinstalled = (customsinstalled + 1)
                 RenderFunctions:DebugWarning('vape/Render/'..v, 'was overwritten due to updates.')
             end 
         end)
     end
+    task.spawn(function()
+        repeat task.wait() until (coreinstalled == 4 and customsinstalled == totalcustoms)
+        RenderFunctions:DebugWarning('The local environment has been refreshed fully.')
+        signal:Fire(tick() - start)
+    end)
+    return signal
 end
 
 function RenderFunctions:GithubHash(repo, owner)
@@ -281,7 +295,7 @@ function RenderFunctions:SpecialNearPosition(maxdistance, bypass, booster)
             continue
         end
         local magnitude = (lplr.Character.PrimaryPart - v.Character.PrimaryPart).Magnitude
-        if magnitude <= distance then 
+        if magnitude <= maxdistance then 
             table.insert(specialtable, v)
         end
     end
@@ -293,35 +307,20 @@ function RenderFunctions:SpecialInGame(booster)
 end
 
 function RenderFunctions:DebugPrint(...)
-    local message = '' 
-    for i,v in next, ({...}) do 
-        message = (message == '' and tostring(v) or message..' '..tostring(v)) 
-    end 
-    message = ('[Render Debug] '..message)
-    if getgenv().RenderDebug then 
-        print(message)  
+    if RenderDebug then 
+        task.spawn(print, table.concat({...}, ' ')) 
     end
 end
 
 function RenderFunctions:DebugWarning(...)
-    local message = '' 
-    for i,v in next, ({...}) do 
-        message = (message == '' and tostring(v) or message..' '..tostring(v)) 
-    end 
-    message = ('[Render Debug] '..message)
-    if RenderDebug then
-        warn(message)
+    if RenderDebug then 
+        task.spawn(warn, table.concat({...}, ' ')) 
     end
 end
 
 function RenderFunctions:DebugError(...)
-    local message = '' 
-    for i,v in next, ({...}) do 
-        message = (message == '' and tostring(v) or message..' '..tostring(v)) 
-    end 
-    message = ('[Render Debug] '..message)
     if RenderDebug then
-        task.spawn(error, message)
+        task.spawn(error, table.concat({...}, ' '))
     end
 end
 
