@@ -2,6 +2,10 @@
 
     Render Intents | Bedwars
     The #1 vape mod you'll ever see.
+
+    Version: 1.4
+    discord.gg/render
+
 ]]
 
 local GuiLibrary = shared.GuiLibrary
