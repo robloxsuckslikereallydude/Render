@@ -2,6 +2,10 @@
 
     Render Intents | Bedwars
     The #1 vape mod you'll ever see.
+
+    Version: 1.4
+    discord.gg/render
+
 ]]
 
 local GuiLibrary = shared.GuiLibrary
@@ -13853,10 +13857,10 @@ runLunar(function()
 				task.spawn(function()
 					repeat task.wait()
 						local target = GetTarget(AntiHitRange.Value, nil, AntiHitRaycast.Enabled, AntiHitNPC.Enabled)
-						if target.RootPart == nil or not isAlive() then
+						--[[if target.RootPart == nil or not isAlive() then
 							AntiHit.ToggleButton(false)
 							return
-						end
+						end]]
 						if GuiLibrary.ObjectsThatCanBeSaved.PlayerAttachOptionsButton.Api.Enabled then
 							GuiLibrary.ObjectsThatCanBeSaved.PlayerAttachOptionsButton.Api.ToggleButton(false)
 						end
@@ -13969,10 +13973,10 @@ runLunar(function()
 				task.spawn(function()
 					repeat task.wait()
 						local target = GetTarget(CustomAttackRange.Value, nil, true, true)
-						if target.RootPart == nil or not isAlive() then
+						--[[if target.RootPart == nil or not isAlive() then
 							CustomAttack.ToggleButton(false)
 							return
-						end
+						end]]
 						if not CustomAttackMode1.Value == 'Seat' then
 							lplr.Character.Humanoid.Sit = false
 						end
@@ -14083,138 +14087,6 @@ runLunar(function()
 	})
 end)
 
-runLunar(function()
-	local CustomCharacter = {Enabled = false}
-	local CustomCharacterMD = {Value = 'ForceField'}
-	local CustomCharacterCL = {
-		Hue = 0,
-		Sat = 0,
-		Value = 0
-	}
-	local CustomCharacterT = {Enabled = true}
-	local CustomCharacterM = {Enabled = true}
-	local CustomCharacterC = {Enabled = true}
-	local CustomCharacterTT = {Value = 50}
-	CustomCharacter = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
-		Name = 'CustomCharacter',
-		HoverText = 'Customizes your character',
-		Function = function(calling)
-			if calling then
-				task.spawn(function()
-					local charmaterial = Enum.Material.ForceField
-					repeat task.wait()
-						for _, char in next, lplr.Character:GetDescendants() do
-							if char:IsA('BasePart') then
-								char.Transparency = CustomCharacterT.Enabled and CustomCharacterTT.Value / 100
-								if CustomCharacterMD.Value == 'ForceField' then
-									charmaterial = Enum.Material.ForceField
-								else
-									charmaterial = Enum.Material.Neon
-								end
-								char.Material = CustomCharacterM.Enabled and charmaterial
-								char.Color = CustomCharacterC.Enabled and Color3.fromHSV(
-									CustomCharacterCL.Hue, 
-									CustomCharacterCL.Sat, 
-									CustomCharacterCL.Value
-								)
-							end
-						end
-					until not CustomCharacter.Enabled
-				end)
-			end
-		end,
-		ExtraText = function()
-			return CustomCharacterMD.Value
-		end
-	})
-	CustomCharacterMD = CustomCharacter.CreateDropdown({
-		Name = 'Material',
-		List = {
-			'ForceField',
-			'Neon'
-		},
-		Value = 'ForceField',
-		Function = function() end
-	})
-	CustomCharacterCL = CustomCharacter.CreateColorSlider({
-		Name = 'Color',
-		Function = function() end
-	})
-	CustomCharacterTT = CustomCharacter.CreateSlider({
-		Name = 'Transparency',
-		Min = 1,
-		Max = 100, 
-		Function = function() end,
-		Default = 50
-	})
-	CustomCharacterT = CustomCharacter.CreateToggle({
-		Name = 'Transparency',
-		Default = true,
-		Function = function() end
-	})
-	CustomCharacterM = CustomCharacter.CreateToggle({
-		Name = 'Material',
-		Default = true,
-		Function = function() end
-	})
-	CustomCharacterC = CustomCharacter.CreateToggle({
-		Name = 'Color',
-		Default = true,
-		Function = function() end
-	})
-end)
-
-runLunar(function()
-	local AntiBlack = {Enabled = false}
-	local AntiBlackDuration = {Value = 15}
-	local function isnigger(character)
-		local niggacolors = {
-			BrickColor.new('Reddish brown'),
-			BrickColor.new('Dark brown'),
-			BrickColor.new('Black'),
-		}
-		for _, nigr in next, character:GetDescendants() do
-			if nigr:IsA('BasePart') then
-				for _, kkkColor in next, niggacolors do
-					if nigr.BrickColor == kkkColor then
-						return true
-					end
-				end
-			end
-		end
-		return false
-	end
-	AntiBlack = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
-		Name = 'AntiBlack',
-		HoverText = 'Detects black players',
-		Function = function(calling)
-			if calling then
-				task.spawn(function()
-					local niggas = {}
-					repeat task.wait()
-						for _, niggaman in next, playersService:GetPlayers() do
-							if not niggas[niggaman.UserId] then
-								if isnigger(niggaman.Character) then
-									niggas[niggaman.UserId] = true
-									warningNotification('AntiBlack', niggaman.Name..' is a nigger!', AntiBlackDuration.Value)
-								end
-							end
-						end
-					until not AntiBlack.Enabled
-				end)
-			end
-		end
-	})
-	AntiBlackDuration = AntiBlack.CreateSlider({
-		Name = 'Duration',
-		Min = 5,
-		Max = 20,
-		HoverText = 'Duration of the notification',
-		Function = function() end,
-		Default = 15
-	})
-end)
-
 runFunction(function()
     local Crasher = {Enabled = false}
     local CrasherMode = {Value = 'Shield'}
@@ -14225,11 +14097,10 @@ runFunction(function()
         'UseInfernalShield',
         'UseGlitchShield'
     }
-    local ChatUsage = {Message = 'âŸâŸâŸâŸâŸâŸâŸâŸâŸâŸ'}
+    local ChatUsage = {Message = 'ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ'}
 	local Shield = getItem('infernal_shield')
 	local function crasherfunc()
-		switchItem(Shield.tool)
-		local ShieldRemote = replicatedStorageService.rbxts_include.node_modules:FindFirstChild('@rbxts').net.out._NetManaged
+		--[[local ShieldRemote = replicatedStorageService.rbxts_include.node_modules:FindFirstChild('@rbxts').net.out._NetManaged
 		for _, shieldName in next, Shields do
 			local Shielder = ShieldRemote:FindFirstChild(shieldName)
 			if Shielder then
@@ -14237,8 +14108,9 @@ runFunction(function()
 					raised = true
 				})
 			end
-			bedwars.InfernalShieldController:raiseShield()
-		end
+		end]]
+		replicatedStorageService.rbxts_include.node_modules:FindFirstChild('@rbxts').net.out._NetManaged:FindFirstChild('UseInfernalShield')
+		replicatedStorageService.rbxts_include.node_modules:FindFirstChild('@rbxts').net.out._NetManaged:FindFirstChild('UseGlitchShield')
 	end
     Crasher = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
         Name = 'Crasher',
@@ -14250,10 +14122,11 @@ runFunction(function()
                             repeat task.wait(CrasherSlow.Value)
 								if CrasherRO.Enabled then
 									local target = GetTarget(CrasherRange.Value, nil, true, true)
-									if target.RootPart == nil or not isAlive() then
+									--[[if target.RootPart == nil or not isAlive() then
 										Crasher.ToggleButton(false)
 										return
-									end
+									end]]
+									repeat task.wait() until target
 									if target then
 										crasherfunc()
 									end
@@ -14272,10 +14145,11 @@ runFunction(function()
                         repeat task.wait(CrasherSlow.Value)
 							if CrasherRO.Enabled then
 								local target = GetTarget(AntiHitRange.Value, nil, true, true)
-								if target.RootPart == nil or not isAlive() then
+								--[[if target.RootPart == nil or not isAlive() then
 									Crasher.ToggleButton(false)
 									return
-								end
+								end]]
+								repeat task.wait() until target
 								if target then
 									sendmessage(ChatUsage.Message)
 								end
@@ -14289,10 +14163,11 @@ runFunction(function()
 						repeat task.wait(CrasherSlow.Value)
 							if CrasherRO.Enabled then
 								local target = GetTarget(CrasherRange.Value, nil, true, true)
-								if target.RootPart == nil or not isAlive() then
+								--[[if target.RootPart == nil or not isAlive() then
 									Crasher.ToggleButton(false)
 									return
-								end
+								end]]
+								repeat task.wait() until target
 								if target then
 									crasherfunc()
 									sendmessage(ChatUsage.Message)
@@ -14504,3 +14379,236 @@ runFunction(function()
         Default = 5
     })
 end)
+
+runFunction(function()
+    local AutoSkywars = {Enabled = false}
+	local AutoSkywarsDepth = {Value = 7}
+	local AutoSkywarsNotify = {Enabled = false}
+    AutoSkywars = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
+        Name = 'AutoSkywars',
+		HoverText = 'Automatically phases out of\nthe skywars cage',
+        Function = function(callback)
+            if callback then
+                task.spawn(function()
+					local cage = workspace:FindFirstChild('spawn_cage')
+					repeat task.wait() until cage
+					if cage then
+						lplr.Character.HumanoidRootPart.CFrame *= CFrame.new(0, -AutoSkywarsDepth.Value, 0)
+					end
+					if AutoSkywarsNotify.Enabled then
+						warningNotification('AutoSkywars', 'Clipped ' .. AutoSkywarsDepth.Value .. ' studs out of the cage', 5)
+					end
+					return
+				end)
+            end
+        end
+    })
+	AutoSkywarsDepth = AutoSkywars.CreateSlider({
+        Name = 'Depth',
+        Min = 1,
+        Max = 10,
+        Function = function() end,
+        Default = 7
+    })
+	AutoSkywarsNotify = AutoSkywars.CreateToggle({
+		Name = 'Notification',
+		Default = false,
+		Function = function() end
+	})
+end)
+
+runFunction(function()
+    local FastFly = {Enabled = false}
+    local FastFlyMode = {Value = 'Velocity'}
+	local FastFlyMode2 = {Value = 'CFrame'}
+    local FastFlyMode1 = {Value = 'Sin'}
+    local FastFlySpeed = {Value = 8}
+    local FastFlyAmplitude = {Value = 17}
+    local FastFlyFrequency = {Value = 13}
+    local FastFlyMultiplier = {Value = 1.3}
+	local ffspeed = 0
+    --[[local function charvelo(mode, meth)
+        return lplr.Character.HumanoidRootPart[mode] = lplr.Character.HumanoidRootPart[mode] + vec3(
+            lplr.Character.HumanoidRootPart[mode].X,
+            2 + math[meth](ffspeed / FastFlySpeed.Value) * FastFlyAmplitude.Value,
+            lplr.Character.HumanoidRootPart[mode].Z
+        )
+    end]]
+	local function charvelo1()
+        lplr.Character.HumanoidRootPart.Velocity = lplr.Character.HumanoidRootPart.Velocity + vec3(lplr.Character.HumanoidRootPart.Velocity.X,
+            2 + math.sin(ffspeed / FastFlySpeed.Value) * FastFlyAmplitude.Value,
+            lplr.Character.HumanoidRootPart.Velocity.Z
+        )
+    end
+	local function charvelo2()
+        lplr.Character.HumanoidRootPart.Velocity = lplr.Character.HumanoidRootPart.Velocity + vec3(
+            lplr.Character.HumanoidRootPart.Velocity.X,
+            2 + math.cos(ffspeed / FastFlySpeed.Value) * FastFlyAmplitude.Value,
+            lplr.Character.HumanoidRootPart.Velocity.Z
+        )
+    end
+	local function charcf1()
+        lplr.Character.HumanoidRootPart.CFrame = lplr.Character.HumanoidRootPart.CFrame + vec3(
+            lplr.Character.HumanoidRootPart.CFrame.X,
+            2 + math.sin(ffspeed / FastFlySpeed.Value) * FastFlyAmplitude.Value,
+            lplr.Character.HumanoidRootPart.CFrame.Z
+        )
+    end
+	local function charcf2()
+        lplr.Character.HumanoidRootPart.CFrame = lplr.Character.HumanoidRootPart.CFrame + vec3(
+            lplr.Character.HumanoidRootPart.CFrame.X,
+            2 + math.cos(ffspeed / FastFlySpeed.Value) * FastFlyAmplitude.Value,
+            lplr.Character.HumanoidRootPart.CFrame.Z
+        )
+    end
+    FastFly = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
+        Name = 'FastFly',
+        HoverText = 'Flies fast',
+        Function = function(callback)
+            if callback then
+                table.insert(FastFly.Connections, runService.Heartbeat:Connect(function()
+					if not isAlive(lplr, true) then 
+						return 
+					end
+                    ffspeed = ffspeed + 1
+                    if FastFlyMode.Value == 'Velocity' then
+                        if FastFlyMode1.Value == 'Sin' then
+                            --charvelo('Velocity', 'sin')
+							charvelo1()
+                        else
+                            --charvelo('Velocity', 'cos')
+							charvelo2()
+                        end
+                    else
+                        if FastFlyMode1.Value == 'Sin' then
+                            --charvelo('CFrame', 'sin')
+							charcf1()
+                        else
+                            --charvelo('CFrame', 'cos')
+							charcf2()
+                        end
+                    end
+                    if ffspeed % FastFlyFrequency.Value == 0 then
+						if FastFlyMode2.Value == 'CFrame' then
+                        	lplr.Character.HumanoidRootPart.CFrame += lplr.Character.Humanoid.MoveDirection * (FastFlyMultiplier.Value / 10)
+						else
+							lplr.Character.HumanoidRootPart.Velocity += lplr.Character.Humanoid.MoveDirection * (FastFlyMultiplier.Value / 10)
+						end
+                    end
+                end))
+            end
+        end,
+        ExtraText = function()
+            return FastFlyMode.Value
+        end
+    })
+    FastFlyMode = FastFly.CreateDropdown({
+        Name = 'Bounce Mode',
+        List = {
+            'Velocity',
+            'CFrame'
+        },
+        Value = 'Velocity',
+        Function = function() end
+    })
+	FastFlyMode2 = FastFly.CreateDropdown({
+        Name = 'Speed Mode',
+        List = {
+			'CFrame',
+            'Velocity'
+        },
+        Value = 'CFrame',
+        Function = function() end
+    })
+    FastFlyMode1 = FastFly.CreateDropdown({
+        Name = 'Math',
+        List = {
+            'Sin',
+            'Cos'
+        },
+        Value = 'Sin',
+        Function = function() end
+    })
+    FastFlySpeed = FastFly.CreateSlider({
+        Name = 'Speed',
+        Min = 1,
+        Max = 20,
+        Value = 8,
+        Function = function() end
+    })
+    FastFlyAmplitude = FastFly.CreateSlider({
+        Name = 'Amplitude',
+        Min = 1,
+        Max = 30,
+        Value = 18,
+        Function = function() end
+    })
+    FastFlyFrequency = FastFly.CreateSlider({
+        Name = 'Frequency',
+        Min = 1,
+        Max = 20,
+        Value = 12,
+        Function = function() end
+    })
+    FastFlyMultiplier = FastFly.CreateSlider({
+        Name = 'Multiplier',
+        Min = 5,
+        Max = 20,
+        Value = 13,
+        Function = function() end
+    })
+end)
+
+runFunction(function()
+    local AutoGrind = {Enabled = false}
+	local AutoGrindMode = {Value = 'Infinite'}
+	local AutoGrindHeight = {Value = 1000}
+    AutoGrind = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
+        Name = 'AutoGrind',
+        HoverText = 'Hides you in the sky to not get killed',
+        Function = function(callback)
+            if callback then
+				local sethigh = false
+				if AutoGrindMode.Value == 'Infinite' then
+					task.spawn(function()
+						repeat task.wait()
+							if not GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api.Enabled then
+								GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api.ToggleButton(true)
+							end
+						until not AutoGrind.Enabled
+					end)
+				else
+					lplr.Character.HumanoidRootPart.CFrame *= CFrame.new(0, AutoGrindHeight.Value, 0)
+					lplr.Character.Head.Anchored = true
+					lplr.Character.HumanoidRootPart:Destroy()
+					sethigh = true
+				end
+			else
+				if sethigh then
+					lplr.Character.Head.Anchored = false
+					bedwars.ClientHandler:Get(bedwars.ResetRemote):SendToServer()
+				end
+				sethigh = false
+            end
+        end,
+        ExtraText = function()
+            return AutoGrindMode.Value
+        end
+    })
+	AutoGrindMode = AutoGrind.CreateDropdown({
+        Name = 'Mode',
+        List = {
+            'Infinite',
+            'CFrame'
+        },
+        Value = 'Infinite',
+        Function = function() end
+    })
+	AutoGrindHeight = AutoGrind.CreateSlider({
+        Name = 'Height',
+        Min = 100,
+        Max = 2000,
+        Value = 1000,
+        Function = function() end
+    })
+end)									
