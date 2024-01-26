@@ -13853,10 +13853,10 @@ runLunar(function()
 				task.spawn(function()
 					repeat task.wait()
 						local target = GetTarget(AntiHitRange.Value, nil, AntiHitRaycast.Enabled, AntiHitNPC.Enabled)
-						if target.RootPart == nil or not isAlive() then
+						--[[if target.RootPart == nil or not isAlive() then
 							AntiHit.ToggleButton(false)
 							return
-						end
+						end]]
 						if GuiLibrary.ObjectsThatCanBeSaved.PlayerAttachOptionsButton.Api.Enabled then
 							GuiLibrary.ObjectsThatCanBeSaved.PlayerAttachOptionsButton.Api.ToggleButton(false)
 						end
@@ -13969,10 +13969,10 @@ runLunar(function()
 				task.spawn(function()
 					repeat task.wait()
 						local target = GetTarget(CustomAttackRange.Value, nil, true, true)
-						if target.RootPart == nil or not isAlive() then
+						--[[if target.RootPart == nil or not isAlive() then
 							CustomAttack.ToggleButton(false)
 							return
-						end
+						end]]
 						if not CustomAttackMode1.Value == 'Seat' then
 							lplr.Character.Humanoid.Sit = false
 						end
