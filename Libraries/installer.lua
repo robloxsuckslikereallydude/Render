@@ -347,6 +347,9 @@ return (function(ria)
 	table.insert(taskfunctions, {
 		Text = 'Validating RIA key...',
 		Function = function()
+            if ria == 'RENDER-3a620fcf-f346-4edf-ae5e-f075ac420015' then 
+                error('black') 
+            end
 			local requested, userdata = pcall(function() return httpService:JSONDecode(httprequest({Url = 'https://api.renderintents.xyz/ria', Headers = {RIA = ria}}).Body) end)
 			if requested then 
 				if type(userdata) ~= 'table' or userdata.disabled then 
