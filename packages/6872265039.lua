@@ -2152,3 +2152,64 @@ runFunction(function()
 	HotbarRoundRadius.Object.Visible = false
 	HotbarHighlightColor.Object.Visible = false
 end)
+
+runLunar(function()
+	local FirstPerson = {Enabled = false}
+	local FirstPersonMode = {Value = 'Lock'}
+	local FirstPersonS = {Value = 2}
+	local function lock1st()
+		gameCamera.CameraType = Enum.CameraType.Scriptable
+		gameCamera.CFrame = CFrame.new(lplr.Character.Head.Position)
+	end
+	FirstPerson = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
+		Name = 'FirstPerson',
+		HoverText = 'Locks you in first person',
+		Function = function(calling)
+			if calling then
+				task.spawn(function()
+					if FirstPersonMode.Value == 'Lock' then
+						repeat task.wait()
+							gameCamera.CameraType = Enum.CameraType.LockFirstPerson
+						until not FirstPerson.Enabled
+					else
+						lock1st()
+						inputService.InputBegan:Connect(function(input, gameProcessedEvent)
+							if not gameProcessedEvent then
+								if input.UserInputType == Enum.UserInputType.MouseWheel then
+									return
+								end
+								lock1st()
+							end
+						end)
+						inputService.InputChanged:Connect(function(input)
+							if input.UserInputType == Enum.UserInputType.MouseMovement then
+								local delta = input.Delta
+								local rot = vec2(delta.Y, delta.X) * (FirstPersonS.Value / 10)
+								gameCamera.CFrame = CFrame.Angles(0, math.rad(rot.Y), 0) * gameCamera.CFrame
+							end
+							lock1st()
+						end)
+					end
+				end)
+			else
+				gameCamera.CameraType = Enum.CameraType.Scriptable
+			end
+		end
+	})
+	FirstPersonMode = FirstPerson.CreateDropdown({
+        Name = 'Mode',
+        List = {
+            'Lock',
+            'CFrame'
+        },
+        Value = 'Lock',
+        Function = function() end
+    })
+	FirstPersonS = FirstPerson.CreateSlider({
+		Name = 'Sensitivity',
+		Min = 1,
+		Max = 10,
+		Function = function() end,
+		Default = 2
+	})
+end)
