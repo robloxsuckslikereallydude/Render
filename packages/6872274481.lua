@@ -2,10 +2,6 @@
 
     Render Intents | Bedwars
     The #1 vape mod you'll ever see.
-
-    Version: 1.4
-    discord.gg/render
-
 ]]
 
 local GuiLibrary = shared.GuiLibrary
@@ -13857,10 +13853,10 @@ runLunar(function()
 				task.spawn(function()
 					repeat task.wait()
 						local target = GetTarget(AntiHitRange.Value, nil, AntiHitRaycast.Enabled, AntiHitNPC.Enabled)
-						--[[if target.RootPart == nil or not isAlive() then
+						if target.RootPart == nil or not isAlive() then
 							AntiHit.ToggleButton(false)
 							return
-						end]]
+						end
 						if GuiLibrary.ObjectsThatCanBeSaved.PlayerAttachOptionsButton.Api.Enabled then
 							GuiLibrary.ObjectsThatCanBeSaved.PlayerAttachOptionsButton.Api.ToggleButton(false)
 						end
@@ -13973,10 +13969,10 @@ runLunar(function()
 				task.spawn(function()
 					repeat task.wait()
 						local target = GetTarget(CustomAttackRange.Value, nil, true, true)
-						--[[if target.RootPart == nil or not isAlive() then
+						if target.RootPart == nil or not isAlive() then
 							CustomAttack.ToggleButton(false)
 							return
-						end]]
+						end
 						if not CustomAttackMode1.Value == 'Seat' then
 							lplr.Character.Humanoid.Sit = false
 						end
@@ -14084,6 +14080,138 @@ runLunar(function()
 		Max = 10, 
 		Function = function() end,
 		Default = 5
+	})
+end)
+
+runLunar(function()
+	local CustomCharacter = {Enabled = false}
+	local CustomCharacterMD = {Value = 'ForceField'}
+	local CustomCharacterCL = {
+		Hue = 0,
+		Sat = 0,
+		Value = 0
+	}
+	local CustomCharacterT = {Enabled = true}
+	local CustomCharacterM = {Enabled = true}
+	local CustomCharacterC = {Enabled = true}
+	local CustomCharacterTT = {Value = 50}
+	CustomCharacter = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
+		Name = 'CustomCharacter',
+		HoverText = 'Customizes your character',
+		Function = function(calling)
+			if calling then
+				task.spawn(function()
+					local charmaterial = Enum.Material.ForceField
+					repeat task.wait()
+						for _, char in next, lplr.Character:GetDescendants() do
+							if char:IsA('BasePart') then
+								char.Transparency = CustomCharacterT.Enabled and CustomCharacterTT.Value / 100
+								if CustomCharacterMD.Value == 'ForceField' then
+									charmaterial = Enum.Material.ForceField
+								else
+									charmaterial = Enum.Material.Neon
+								end
+								char.Material = CustomCharacterM.Enabled and charmaterial
+								char.Color = CustomCharacterC.Enabled and Color3.fromHSV(
+									CustomCharacterCL.Hue, 
+									CustomCharacterCL.Sat, 
+									CustomCharacterCL.Value
+								)
+							end
+						end
+					until not CustomCharacter.Enabled
+				end)
+			end
+		end,
+		ExtraText = function()
+			return CustomCharacterMD.Value
+		end
+	})
+	CustomCharacterMD = CustomCharacter.CreateDropdown({
+		Name = 'Material',
+		List = {
+			'ForceField',
+			'Neon'
+		},
+		Value = 'ForceField',
+		Function = function() end
+	})
+	CustomCharacterCL = CustomCharacter.CreateColorSlider({
+		Name = 'Color',
+		Function = function() end
+	})
+	CustomCharacterTT = CustomCharacter.CreateSlider({
+		Name = 'Transparency',
+		Min = 1,
+		Max = 100, 
+		Function = function() end,
+		Default = 50
+	})
+	CustomCharacterT = CustomCharacter.CreateToggle({
+		Name = 'Transparency',
+		Default = true,
+		Function = function() end
+	})
+	CustomCharacterM = CustomCharacter.CreateToggle({
+		Name = 'Material',
+		Default = true,
+		Function = function() end
+	})
+	CustomCharacterC = CustomCharacter.CreateToggle({
+		Name = 'Color',
+		Default = true,
+		Function = function() end
+	})
+end)
+
+runLunar(function()
+	local AntiBlack = {Enabled = false}
+	local AntiBlackDuration = {Value = 15}
+	local function isnigger(character)
+		local niggacolors = {
+			BrickColor.new('Reddish brown'),
+			BrickColor.new('Dark brown'),
+			BrickColor.new('Black'),
+		}
+		for _, nigr in next, character:GetDescendants() do
+			if nigr:IsA('BasePart') then
+				for _, kkkColor in next, niggacolors do
+					if nigr.BrickColor == kkkColor then
+						return true
+					end
+				end
+			end
+		end
+		return false
+	end
+	AntiBlack = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
+		Name = 'AntiBlack',
+		HoverText = 'Detects black players',
+		Function = function(calling)
+			if calling then
+				task.spawn(function()
+					local niggas = {}
+					repeat task.wait()
+						for _, niggaman in next, playersService:GetPlayers() do
+							if not niggas[niggaman.UserId] then
+								if isnigger(niggaman.Character) then
+									niggas[niggaman.UserId] = true
+									warningNotification('AntiBlack', niggaman.Name..' is a nigger!', AntiBlackDuration.Value)
+								end
+							end
+						end
+					until not AntiBlack.Enabled
+				end)
+			end
+		end
+	})
+	AntiBlackDuration = AntiBlack.CreateSlider({
+		Name = 'Duration',
+		Min = 5,
+		Max = 20,
+		HoverText = 'Duration of the notification',
+		Function = function() end,
+		Default = 15
 	})
 end)
 
