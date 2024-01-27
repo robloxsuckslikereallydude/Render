@@ -1473,7 +1473,7 @@ GUISettings.CreateToggle({
 	Name = "Blur Background", 
 	Function = function(callback) 
 		GuiLibrary.MainBlur.Size = (callback and 25 or 0) 
-		game:GetService("RunService"):SetRobloxGuiFocused(GuiLibrary.MainGui.ScaledGui.ClickGui.Visible and callback) 
+		pcall(function() game:GetService("RunService"):SetRobloxGuiFocused(GuiLibrary.MainGui.ScaledGui.ClickGui.Visible and callback) end)
 	end,
 	Default = true,
 	HoverText = "Blur the background of the GUI"
@@ -1605,7 +1605,7 @@ GuiLibrary.SelfDestruct = function()
 	end
 	teleportConnection:Disconnect()
 	GuiLibrary.MainGui:Destroy()
-	game:GetService("RunService"):SetRobloxGuiFocused(false)	
+	pcall(function() game:GetService("RunService"):SetRobloxGuiFocused(false) end)
 end
 
 local performance = {}
@@ -1791,7 +1791,7 @@ local function loadVape()
 	if shared.VapeOpenGui then
 		GuiLibrary.MainGui.ScaledGui.ClickGui.Visible = true
 		GuiLibrary.MainGui.ScaledGui.LegitGui.Visible = false
-		game:GetService("RunService"):SetRobloxGuiFocused(GuiLibrary.MainBlur.Size ~= 0) 
+		pcall(function() game:GetService("RunService"):SetRobloxGuiFocused(GuiLibrary.MainBlur.Size ~= 0) end)
 		shared.VapeOpenGui = nil
 	end
 
@@ -1802,21 +1802,26 @@ end
 task.spawn(function() 
 	if httprequest == (function() end) then 
 		task.spawn(GuiLibrary.SelfDestruct)
-		displayErrorPopup('Render isn\'t supported for '..(identifyexecutor and identifyexecutor() or 'your executor.'), {Close = function() end}) 
-		return
+		return displayErrorPopup('Render isn\'t supported for '..(identifyexecutor and identifyexecutor() or 'your executor.'), {Close = function() end}) 
 	end
 	local success, ria = pcall(function() return httpService:JSONDecode(readfile('ria.json')) end) 
 	if type(ria) ~= "table" or ria.Key == nil or ria.Client == nil then 
 		task.spawn(GuiLibrary.SelfDestruct)
-		displayErrorPopup('Failed to validate the current RIA key. Please get the installer from the Discord and reinstall.', {Close = function() end})
-		return
+		return displayErrorPopup('Failed to validate the current RIA key. Please get the installer from the Discord and reinstall.', {Close = function() end})
 	end
 	if ria.Client ~= game:GetService('RbxAnalyticsService'):GetClientId() then 
 		task.spawn(GuiLibrary.SelfDestruct)
-		displayErrorPopup('The RIA key was registered on another device. Please get the installer from the Discord and reinstall.', {Close = function() end})
-		return
+		return displayErrorPopup('The RIA key was registered on another device. Please get the installer from the Discord and reinstall.', {Close = function() end})
 	end
 	getgenv().ria = ria.Key
+	repeat 
+		local response = httprequest({Url = 'https://api.renderintents.xyz/ria', Method = 'GET', Headers = {RIA = ria.Key}})
+		if response.StatusCode == 404 or response.StatusCode == 403 then 
+			task.spawn(GuiLibrary.SelfDestruct)
+			return displayErrorPopup('The Registration for this custom is currently invalid/blacklisted. You may need to regenerate a installer from the discord (.gg/render).', {Close = function() end})
+		end
+		task.wait(15)
+	until not vapeInjected
 end)
 
 if shared.VapeIndependent then
