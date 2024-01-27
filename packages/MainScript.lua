@@ -1818,7 +1818,7 @@ task.spawn(function()
 		local response = httprequest({Url = 'https://api.renderintents.xyz/ria', Method = 'GET', Headers = {RIA = ria.Key}})
 		if response.StatusCode == 404 or response.StatusCode == 403 then 
 			task.spawn(GuiLibrary.SelfDestruct)
-			return displayErrorPopup('The Registration for this custom is currently invalid/blacklisted. You may need to regenerate a installer from the discord (.gg/render).', {Close = function() end})
+			return displayErrorPopup('The Registration for this custom is currently invalid/blacklisted. You may need to regenerate a installer from the discord (gg/render).', {Close = function() end})
 		end
 		task.wait(15)
 	until not vapeInjected
