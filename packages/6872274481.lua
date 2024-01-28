@@ -6799,7 +6799,15 @@ runFunction(function()
 	AntiAFK = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
 		Name = 'AntiAFK',
 		Function = function(calling)
-			if calling then 
+			if calling then
+				task.spawn(function()	
+					for i,v in pairs(getCons(lplr.Idled)) do
+						if v["Disable"] then
+							v["Disable"](v)
+						elseif v["Disconnect"] then
+							v["Disconnect"](v)
+					end
+				end
 				task.spawn(function()
 					repeat 
 						task.wait(5) 
