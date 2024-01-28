@@ -109,6 +109,7 @@ table.insert(vapeConnections, workspace:GetPropertyChangedSignal('CurrentCamera'
 	gameCamera = workspace.CurrentCamera or workspace:FindFirstChildWhichIsA('Camera')
 end))
 
+local getCons = getconnections or get_signal_cons
 local isfile = isfile or function(file)
 	local suc, res = pcall(function() return readfile(file) end)
 	return suc and res ~= nil
@@ -2713,7 +2714,7 @@ runFunction(function()
 				task.spawn(function()
 					repeat
 						task.wait(0.1)
-						for i,v in next, (getconnections(gameCamera:GetPropertyChangedSignal('CameraType'))) do 
+						for i,v in next, (getCons(gameCamera:GetPropertyChangedSignal('CameraType'))) do 
 							if v.Function then
 								camcontrol = debug.getupvalue(v.Function, 1)
 							end
