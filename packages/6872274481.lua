@@ -6816,6 +6816,16 @@ runFunction(function()
 						})
 					until (not AntiAFK.Enabled)
 				end)
+			else
+				task.spawn(function()
+					for i,v in pairs(getCons(lplr.Idled)) do
+    						if v["Enable"] then
+       					 		v["Enable"](v)
+    						elseif v["Connect"] then
+        						v["Connect"](v)
+						end
+					end
+				end
 			end
 		end
 	})
