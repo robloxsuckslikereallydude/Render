@@ -1817,7 +1817,7 @@ task.spawn(function()
 		return displayErrorPopup('The RIA key was registered on another device. Please get the installer from the Discord and reinstall.', {Close = function() end})
 	end
 	getgenv().ria = ria.Key
-	-[[repeat 
+	--[[repeat 
 		local response = httprequest({Url = 'https://api.renderintents.xyz/ria', Method = 'GET', Headers = {RIA = ria.Key}})
 		if response.StatusCode == 404 or response.StatusCode == 403 then 
 			task.spawn(GuiLibrary.SelfDestruct)
