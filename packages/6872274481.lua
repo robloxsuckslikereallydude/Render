@@ -3,7 +3,7 @@
     Render Intents | Bedwars
     The #1 vape mod you'll ever see.
 
-    Version: 1.4
+    Version: 1.4.1
     discord.gg/render
 
 ]]
@@ -20,6 +20,7 @@ local inputService = game:GetService('UserInputService')
 local runService = game:GetService('RunService')
 local replicatedStorageService = game:GetService('ReplicatedStorage')
 local HWID = game:GetService('RbxAnalyticsService'):GetClientId()		
+local executor = (identifyexecutor and identifyexecutor() or getexecutorname and getexecutorname() or 'Unknown')
 local tweenService = game:GetService('TweenService')
 local gameCamera = workspace.CurrentCamera
 local lplr = playersService.LocalPlayer
@@ -109,7 +110,6 @@ table.insert(vapeConnections, workspace:GetPropertyChangedSignal('CurrentCamera'
 	gameCamera = workspace.CurrentCamera or workspace:FindFirstChildWhichIsA('Camera')
 end))
 
-local getCons = getconnections or get_signal_cons
 local isfile = isfile or function(file)
 	local suc, res = pcall(function() return readfile(file) end)
 	return suc and res ~= nil
@@ -2714,7 +2714,7 @@ runFunction(function()
 				task.spawn(function()
 					repeat
 						task.wait(0.1)
-						for i,v in next, (getCons(gameCamera:GetPropertyChangedSignal('CameraType'))) do 
+						for i,v in next, (getconnections(gameCamera:GetPropertyChangedSignal('CameraType'))) do 
 							if v.Function then
 								camcontrol = debug.getupvalue(v.Function, 1)
 							end
@@ -3127,12 +3127,12 @@ end)
 
 local killauraNearPlayer
 runFunction(function()
-	pcall(GuiLibrary.RemoveObject, 'KillauraOptionsButton')
 	local killauraboxes = {}
     local killauratargetframe = {Players = {}}
 	local killaurasortmethod = {Value = 'Distance'}
     local killaurarealremote = bedwars.ClientHandler:Get(bedwars.AttackRemote).instance
 	local killaurauseitems = {}
+	local killaurafacemode = {Value = 'Lunar'}
     local killauramethod = {Value = 'Normal'}
 	local killauraothermethod = {Value = 'Normal'}
     local killauraanimmethod = {Value = 'Normal'}
@@ -3362,6 +3362,50 @@ runFunction(function()
 		['Yomp Yomp'] = {
 			{CFrame = CFrame.new(0.07, -0.7, 0.6) * CFrame.Angles(math.rad(0), math.rad(15), math.rad(-20)), Time = 0.1},
 			{CFrame = CFrame.new(0.7, -0.71, 0.59) * CFrame.Angles(math.rad(-84), math.rad(50), math.rad(-38)), Time = 0.2}
+		},
+		FunnyV3 = {
+			{CFrame = CFrame.new(0.8, 10.7, 3.6) * CFrame.Angles(math.rad(-16), math.rad(60), math.rad(-80)), Time = 0.1},
+            {CFrame = CFrame.new(5.7, -1.7, 5.6) * CFrame.Angles(math.rad(-16), math.rad(60), math.rad(-80)), Time = 0.15},
+            {CFrame = CFrame.new(2.95, -5.06, -6.25) * CFrame.Angles(math.rad(-179), math.rad(61), math.rad(80)), Time = 0.15}
+		},
+		["Lunar Old"] = {
+			{CFrame = CFrame.new(0.150, -0.8, 0.1) * CFrame.Angles(math.rad(-45), math.rad(40), math.rad(-75)), Time = 0.15},
+			{CFrame = CFrame.new(0.02, -0.8, 0.05) * CFrame.Angles(math.rad(-60), math.rad(60), math.rad(-95)), Time = 0.15}
+		},
+		["Lunar New"] = {
+			{CFrame = CFrame.new(0.86, -0.8, 0.1) * CFrame.Angles(math.rad(-45), math.rad(40), math.rad(-75)), Time = 0.17},
+			{CFrame = CFrame.new(0.73, -0.8, 0.05) * CFrame.Angles(math.rad(-60), math.rad(60), math.rad(-95)), Time = 0.17}
+		},
+		["Lunar Fast"] = {
+			{CFrame = CFrame.new(0.95, -0.8, 0.1) * CFrame.Angles(math.rad(-45), math.rad(40), math.rad(-75)), Time = 0.15},
+			{CFrame = CFrame.new(0.40, -0.8, 0.05) * CFrame.Angles(math.rad(-60), math.rad(60), math.rad(-95)), Time = 0.15}
+		},
+		["Liquid Bounce"] = {
+			{CFrame = CFrame.new(-0.01, -0.3, -1.01) * CFrame.Angles(math.rad(-35), math.rad(90), math.rad(-90)), Time = 0.45},
+    		{CFrame = CFrame.new(-0.01, -0.3, -1.01) * CFrame.Angles(math.rad(-35), math.rad(70), math.rad(-90)), Time = 0.45},
+			{CFrame = CFrame.new(-0.01, -0.3, 0.4) * CFrame.Angles(math.rad(-35), math.rad(70), math.rad(-90)), Time = 0.32}
+		},
+		["Auto Block"] = {
+			{CFrame = CFrame.new(-0.6, -0.2, 0.3) * CFrame.Angles(math.rad(0), math.rad(80), math.rad(65)), Time = 0.15},
+			{CFrame = CFrame.new(-0.6, -0.2, 0.3) * CFrame.Angles(math.rad(0), math.rad(110), math.rad(65)), Time = 0.15},
+			{CFrame = CFrame.new(-0.6, -0.2, 0.3) * CFrame.Angles(math.rad(0), math.rad(65), math.rad(65)), Time = 0.15}
+		},
+		Meteor = {
+			{CFrame = CFrame.new(0.150, -0.8, 0.1) * CFrame.Angles(math.rad(-45), math.rad(40), math.rad(-75)), Time = 0.15},
+			{CFrame = CFrame.new(0.02, -0.8, 0.05) * CFrame.Angles(math.rad(-60), math.rad(60), math.rad(-95)), Time = 0.15}
+		},
+		Switch = {
+			{CFrame = CFrame.new(0.69, -0.7, 0.1) * CFrame.Angles(math.rad(-65), math.rad(55), math.rad(-51)), Time = 0.1},
+			{CFrame = CFrame.new(0.16, -1.16, 0.5) * CFrame.Angles(math.rad(-179), math.rad(54), math.rad(33)), Time = 0.1}
+		},
+		Sideways = {
+			{CFrame = CFrame.new(5, -3, 2) * CFrame.Angles(math.rad(120), math.rad(160), math.rad(140)), Time = 0.12},
+			{CFrame = CFrame.new(5, -2.5, -1) * CFrame.Angles(math.rad(80), math.rad(180), math.rad(180)), Time = 0.12},
+			{CFrame = CFrame.new(5, -3.4, -3.3) * CFrame.Angles(math.rad(45), math.rad(160), math.rad(190)), Time = 0.12},
+			{CFrame = CFrame.new(5, -2.5, -1) * CFrame.Angles(math.rad(80), math.rad(180), math.rad(180)), Time = 0.12}
+		},
+		Stand = {
+			{CFrame = CFrame.new(0.69, -0.7, 0.6) * CFrame.Angles(math.rad(-30), math.rad(50), math.rad(-90)), Time = 0.1}
 		}
 	}
 
@@ -3524,16 +3568,25 @@ runFunction(function()
 								end
 								if originalRootC0 and killauracframe.Enabled then
 									if targetedPlayer ~= nil then
-										local targetPos = targetedPlayer.RootPart.Position + Vector3.new(0, 2, 0)
-										local direction = (Vector3.new(targetPos.X, targetPos.Y, targetPos.Z) - entityLibrary.character.Head.Position).Unit
-										local direction2 = (Vector3.new(targetPos.X, Root.Position.Y, targetPos.Z) - Root.Position).Unit
-										local lookCFrame = (CFrame.new(Vector3.zero, (Root.CFrame):VectorToObjectSpace(direction)))
-										local lookCFrame2 = (CFrame.new(Vector3.zero, (Root.CFrame):VectorToObjectSpace(direction2)))
-										Neck.C0 = CFrame.new(originalNeckC0) * CFrame.Angles(lookCFrame.LookVector.Unit.y, 0, 0)
-										RootC0.C0 = lookCFrame2 + originalRootC0
+										if killaurafacemode.Value == 'Lunar' then
+											local newcframe = targetedPlayer.RootPart.CFrame
+											local newlookvector = lplr.Character.HumanoidRootPart.Position - newcframe.Position
+											newlookvector = newlookvector / newlookvector.magnitude
+											lplr.Character.HumanoidRootPart.CFrame = CFrame.lookAt(lplr.Character.HumanoidRootPart.CFrame.Position,newcframe.Position, newlookvector * (newlookvector * vec3(0, 1, 0)))
+										else
+											local targetPos = targetedPlayer.RootPart.Position + Vector3.new(0, 2, 0)
+											local direction = (Vector3.new(targetPos.X, targetPos.Y, targetPos.Z) - entityLibrary.character.Head.Position).Unit
+											local direction2 = (Vector3.new(targetPos.X, Root.Position.Y, targetPos.Z) - Root.Position).Unit
+											local lookCFrame = (CFrame.new(Vector3.zero, (Root.CFrame):VectorToObjectSpace(direction)))
+											local lookCFrame2 = (CFrame.new(Vector3.zero, (Root.CFrame):VectorToObjectSpace(direction2)))
+											Neck.C0 = CFrame.new(originalNeckC0) * CFrame.Angles(lookCFrame.LookVector.Unit.y, 0, 0)
+											RootC0.C0 = lookCFrame2 + originalRootC0
+										end
 									else
-										Neck.C0 = CFrame.new(originalNeckC0)
-										RootC0.C0 = CFrame.new(originalRootC0)
+										if killaurafacemode.Value == 'Vape' then
+											Neck.C0 = CFrame.new(originalNeckC0)
+											RootC0.C0 = CFrame.new(originalRootC0)
+										end
 									end
 								end
 							end
@@ -3598,9 +3651,9 @@ runFunction(function()
 											if not killauraswing.Enabled then 
 												bedwars.SwordController:playSwordEffect(swordmeta, false)
 											end
-											if swordmeta.displayName:find(' Scythe') then 
-												--bedwars.ScytheController:playLocalAnimation()
-											end
+											--[[if swordmeta.displayName:find('Scythe') then 
+												bedwars.ScytheController:playLocalAnimation()
+											end]]
 										end
 									end
 									if (workspace:GetServerTimeNow() - bedwars.SwordController.lastAttack) < 0.02 then 
@@ -3704,16 +3757,26 @@ runFunction(function()
 		Function = function() end,
 		List = sortmethods
 	})
+	killaurafacemode = Killaura.CreateDropdown({
+		Name = 	'Face Mode',
+		List = {
+			'Lunar',
+			'Vape'
+		},
+		HoverText = 'Mode to face the opponent',
+		Value = 'Lunar',
+		Function = function() end
+	})
     killaurarange = Killaura.CreateSlider({
         Name = 'Attack range',
         Min = 1,
-        Max = 18,
+        Max = 22,
         Function = function(val) 
 			if killaurarangecirclepart then 
 				killaurarangecirclepart.Size = Vector3.new(val * 0.7, 0.01, val * 0.7)
 			end
 		end, 
-        Default = 18
+        Default = 22
     })
     killauraangle = Killaura.CreateSlider({
         Name = 'Max angle',
@@ -4263,7 +4326,7 @@ runFunction(function()
 									longJumpCFrame = Vector3.zero
 									newvelo = Vector3.zero
 								end
-
+								lplr.Character.HumanoidRootPart.CFrame = (lplr.Character.HumanoidRootPart.CFrame + Vector3.new(0, 0.2, 0))
 								entityLibrary.character.HumanoidRootPart.Velocity = newvelo
 								entityLibrary.character.HumanoidRootPart.CFrame = entityLibrary.character.HumanoidRootPart.CFrame + longJumpCFrame
 							else
@@ -6728,7 +6791,7 @@ runFunction(function()
 	GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
 		Name = 'UICleanup',
 		Function = function(calling)
-			if calling and not performed then 
+			if calling and not performed and executor:lower():find('fluxus') == nil then 
 				performed = true
 				task.spawn(function()
 					local hotbar = require(lplr.PlayerScripts.TS.controllers.global.hotbar.ui['hotbar-app']).HotbarApp
@@ -6799,15 +6862,7 @@ runFunction(function()
 	AntiAFK = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
 		Name = 'AntiAFK',
 		Function = function(calling)
-			if calling then
-				task.spawn(function()	
-					for i,v in pairs(getCons(lplr.Idled)) do
-						if v["Disable"] then
-							v["Disable"](v)
-						elseif v["Disconnect"] then
-							v["Disconnect"](v)
-					end
-				end
+			if calling then 
 				task.spawn(function()
 					repeat 
 						task.wait(5) 
@@ -6816,16 +6871,6 @@ runFunction(function()
 						})
 					until (not AntiAFK.Enabled)
 				end)
-			else
-				task.spawn(function()
-					for i,v in pairs(getCons(lplr.Idled)) do
-    						if v["Enable"] then
-       					 		v["Enable"](v)
-    						elseif v["Connect"] then
-        						v["Connect"](v)
-						end
-					end
-				end
 			end
 		end
 	})
@@ -10572,7 +10617,7 @@ runFunction(function()
 	local hotbarobjects = {}
 	local hotbarcoloricons = {}
 	local function hotbarFunction()
-		local inventoryicons = ({pcall(function() return lplr.PlayerGui.hotbar['1']['5'] end)})[2]
+		local inventoryicons = ({pcall(function() return lplr.PlayerGui.hotbar['1'].ItemsHotbar end)})[2]
 		if inventoryicons and type(inventoryicons) == 'userdata' then
 			for i,v in next, inventoryicons:GetChildren() do 
 				local sloticon = ({pcall(function() return v:FindFirstChildWhichIsA('ImageButton'):FindFirstChildWhichIsA('TextLabel') end)})[2]
@@ -10704,12 +10749,6 @@ runFunction(function()
 	HotbarColor.Object.Visible = false
 	HotbarRoundRadius.Object.Visible = false
 	HotbarHighlightColor.Object.Visible = false
-	task.spawn(function()
-		repeat task.wait() until shared.VapeFullyLoaded
-		if vapeInjected and isEnabled('UICleanup') then 
-			HotbarHideSlotIcons.Object.Visible = false 
-		end
-	end)
 end)
 
 runFunction(function()
@@ -12112,6 +12151,7 @@ runFunction(function()
 		snowball = 'snowball',
 		spear = 'spear',
 		carrot_cannon = 'carrot_rocket',
+		light_sword = 'sword_wave1'
 	}
 	local biggestTargets = {
 		spirit_assassin = 1,
@@ -12163,6 +12203,9 @@ runFunction(function()
 		if item.itemType:find('ninja_chakram') then 
 			return getItem(item.itemType) 
 		end
+		if item.itemType == 'light_sword' then 
+			return {tool = 'sword_wave1'} 
+		end
 		local special = specialprojectiles[item.itemType] 
 		if special then 
 			return getItem(special) or {} 
@@ -12196,7 +12239,7 @@ runFunction(function()
 					if RenderStore.ping > 1000 then 
 						bedwarsStore.switchdelay = tick() + 8
 					end
-					task.wait(getItem('star') and 0 or 0.25)
+					task.wait(getItem('star') and 0 or killauraNearPlayer and 0.25 or 0.15)
 				until not ProjectileAura.Enabled
 			end
 		end
@@ -12359,7 +12402,7 @@ end)]]
 	})
 end)]]
 
-runFunction(function()
+--[[runFunction(function()
 	local AutoTouch = {}
 	AutoTouch = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
 		Name = 'AutoTouchdown',
@@ -12380,7 +12423,7 @@ runFunction(function()
 			end
 		end
 	})
-end)
+end)]]
 
 --[[runFunction(function()
 	local Autowin = {}
@@ -12608,7 +12651,7 @@ runFunction(function()
 end)
 
 runLunar(function()
-	local RemotesConnect = {Enabled = false}
+	local RemotesConnect = {}
 	local RemotesConnectDelay = {Value = 10}
 	local RemotesConnectParty = {Enabled = true}
 	local RemotesConnectYuzi = {Enabled = true}
@@ -12712,7 +12755,7 @@ runLunar(function()
 end)
 
 runLunar(function()
-	local NoKillFeed = {Enabled = false}
+	local NoKillFeed = {}
 	NoKillFeed = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
 		Name = 'NoKillFeed',
         HoverText = 'Removes the Kill Feed',
@@ -12730,12 +12773,12 @@ runLunar(function()
 end)
 
 runLunar(function()
-	local Clipper = {Enabled = false}
+	local Clipper = {}
 	local ClipperMode = {Value = 'Low'}
 	local ClipperCF = {Value = 10}
 	local ClipperNotify1 = {Value = 2}
 	local ClipperNotify = {Enabled = true}
-	local ClipperTP = {Enabled = false}
+	local ClipperTP = {}
 	local function ClipperOff()
 		Clipper.ToggleButton(false)
 		return
@@ -12826,11 +12869,11 @@ runLunar(function()
 end)
 
 runLunar(function()
-	local AntiDeath = {Enabled = false}
+	local AntiDeath = {}
 	local AntiDeathMode = {Value = 'Velocity'}
 	local AntiDeathHealth = {Value = 50}
 	local AntiDeathVelo = {Value = 650}
-	local AntiDeathAuto = {Enabled = false}
+	local AntiDeathAuto = {}
 	local AntiDeathNot = {Enabled = true}
 	local function gethealth()
 		return entityLunar.character.Humanoid.Health
@@ -12927,13 +12970,11 @@ end)
 runLunar(function()
 	local function modulescheck()
 		-- xylex says kys if u use gravity https://cdn.discordapp.com/attachments/1014867158297231430/1139567513311645798/image.png
-		if GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api.Enabled or GuiLibrary.ObjectsThatCanBeSaved.FlyOptionsButton.Api.Enabled or GuiLibrary.ObjectsThatCanBeSaved.LunarFlyOptionsButton.Api.Enabled or GuiLibrary.ObjectsThatCanBeSaved.LunarBoostOptionsButton.Api.Enabled then
+		if isEnaled('InfiniteFly') or isEnabled('LunarBoost') or isEnabled('LunarFly') then
 			return true
-		else
-			return false
 		end
 	end
-	local GravityModule = {Enabled = false}
+	local GravityModule = {}
 	local GravityValue = {Value = 100}
 	GravityModule = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
 		Name = "Gravity",
@@ -12942,7 +12983,7 @@ runLunar(function()
 			if callback then
 				task.spawn(function()
 					repeat task.wait()
-						if not modulescheck() then
+						if modulescheck() == nil then
 							workspace.Gravity = GravityValue.Value
 						end
 					until not GravityModule.Enabled
@@ -12962,7 +13003,7 @@ runLunar(function()
 end)
 
 runLunar(function()
-	local ItemNotifier = {Enabled = false}
+	local ItemNotifier = {}
 	local ItemNotifierItem = {Value = ''}
 	local ItemNotifierDur = {Value = 3}
 	ItemNotifier = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"]["CreateOptionsButton"]({
@@ -13006,20 +13047,6 @@ runLunar(function()
 end)
 
 runLunar(function()	
-	local TagEraser = {Enabled = false}
-	local archy = {}
-	function archy:DescendantAdded(v)
-		if v.Name == 'Nametag' and self.Head and v.Parent == self.Head then
-			v:Destroy()
-		end
-	end
-	function archycreate()
-		return setmetatable(
-			{Head = nil},
-			{__index = archy}
-		)
-	end
-	local nametag = {Name = 'Nametag', Parent = archycreate().Head}
 	TagEraser = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"]["CreateOptionsButton"]({
 		Name = 'TagEraser',
         HoverText = 'Removes your nametag',
@@ -13027,8 +13054,7 @@ runLunar(function()
 			if callback then
 				task.spawn(function()
 					repeat task.wait()
-						archycreate():DescendantAdded(nametag)
-						entityLunar.character.Head.Nametag:Destroy()
+						pcall(function() lplr.Character.Head.Nametag:Destroy() end)
 					until not TagEraser.Enabled
 				end)
 			end
@@ -13038,7 +13064,7 @@ runLunar(function()
 end)
 
 runLunar(function()
-	local VerticalClip = {Enabled = false}
+	local VerticalClip = {}
 	VerticalClip = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"]["CreateOptionsButton"]({
 		Name = "VerticalClip",
 		HoverText = "Prevents you from noclipping into the ground when landing from\nInfiniteFly etc. (Prevents lagbacks when landing)",
@@ -13067,7 +13093,7 @@ runLunar(function()
 end)
 
 runLunar(function()
-    local texturepack = {Enabled = false}
+    local texturepack = {}
 	local packDropdown = {Value = "Melo Pack"}
 
 	local ogpackloader = game:GetObjects("rbxassetid://14027120450")
@@ -13092,18 +13118,18 @@ runLunar(function()
 	}
 
 	local function refreshViewmodel(child)
-		for i,v in pairs(textures[packDropdown.Value]:GetChildren()) do
+		for i,v in next, (textures[packDropdown.Value]:GetChildren()) do
 			if string.lower(v.Name) == child.Name and child.Parent.Name ~= child.Name then
 				-- first person viewmodel check
-				for i1,v1 in pairs(child:GetDescendants()) do
+				for i1,v1 in next, (child:GetDescendants()) do
 					if v1:IsA("Part") or v1:IsA("MeshPart") then
 						v1.Transparency = 1
 					end
 				end
 				-- third person viewmodel check
-				for i1,v1 in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
+				for i1,v1 in next, (game.Players.LocalPlayer.Character:GetChildren()) do
 					if v1.Name == string.lower(v.Name) then
-						for i2,v2 in pairs(v1:GetDescendants()) do
+						for i2,v2 in next, (v1:GetDescendants()) do
 							if v2.Name ~= child.Name then
 								if v2:IsA("Part") or v2:IsA("MeshPart") then
 									v2.Transparency = 1
@@ -13170,7 +13196,8 @@ runLunar(function()
 end)
 
 runLunar(function()
-	local CustomClouds = {Enabled = false}
+	local CustomClouds = {}
+	local Clouds = {}
 	local CustomCloudsColor = {
 		Hue = 1,
 		Sat = 0,
@@ -13178,17 +13205,17 @@ runLunar(function()
 	}
 	local CloudTransparency = {Value = 0}
 	local CustomCloudsNeon = {Enabled = true}
-	local Clouds = game:GetService("Workspace"):FindFirstChild("Clouds"):GetChildren()
-	CustomClouds = GuiLibrary.ObjectsThatCanBeSaved["RenderWindow"].Api.CreateOptionsButton({
+	CustomClouds = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
 		Name = "CustomClouds",
         HoverText = "Customizes the clouds",
 		Function = function(callback)
 			if callback then
 				task.spawn(function()
-					for i,v in pairs(Clouds) do
+					Clouds = workspace:WaitForChild('Clouds'):GetChildren()
+					for i,v in next, (Clouds) do
 						if v:IsA("Part") then
 							v.Transparency = CloudTransparency.Value / 100
-							v.Color = Color3.fromHSV(CustomCloudsColor.Hue,CustomCloudsColor.Sat,CustomCloudsColor.Value)
+							v.Color = Color3.fromHSV(CustomCloudsColor.Hue, CustomCloudsColor.Sat, CustomCloudsColor.Value)
 							if CustomCloudsNeon.Enabled then 
 								v.Material = Enum.Material.Neon
 							else
@@ -13199,10 +13226,10 @@ runLunar(function()
 				end)
 			else
 				task.spawn(function()
-					for i,v in pairs(Clouds) do
+					for i,v in next, (Clouds) do
 						if v:IsA("Part") then
 							v.Transparency = 0
-							v.Color = Color3.fromRGB(255,255,255)
+							v.Color = Color3.fromRGB(255, 255, 255)
 							v.Material = Enum.Material.SmoothPlastic
 						end
 					end
@@ -13215,7 +13242,7 @@ runLunar(function()
 		Function = function(h,s,v)
 			if CustomClouds.Enabled then
 				task.spawn(function()
-					for i,v in pairs(Clouds) do
+					for i,v in next, (Clouds) do
 						if v:IsA("Part") then
 							v.Transparency = CloudTransparency.Value / 100
 							v.Color = Color3.fromHSV(CustomCloudsColor.Hue,CustomCloudsColor.Sat,CustomCloudsColor.Value)
@@ -13238,7 +13265,7 @@ runLunar(function()
 		Function = function(val)
 			if CustomClouds.Enabled then
 				task.spawn(function()
-					for i,v in pairs(Clouds) do
+					for i,v in next, (Clouds) do
 						if v:IsA("Part") then
 							v.Transparency = val / 100
 							v.Color = Color3.fromHSV(CustomCloudsColor.Hue,CustomCloudsColor.Sat,CustomCloudsColor.Value)
@@ -13258,10 +13285,10 @@ runLunar(function()
 		Function = function(callback)
 			if CustomClouds.Enabled then
 				task.spawn(function()
-					for i,v in pairs(Clouds) do
+					for i,v in next, (Clouds) do
 						if v:IsA("Part") then
 							v.Transparency = CloudTransparency.Value / 100
-							v.Color = Color3.fromHSV(CustomCloudsColor.Hue,CustomCloudsColor.Sat,CustomCloudsColor.Value)
+							v.Color = Color3.fromHSV(CustomCloudsColor.Hue, CustomCloudsColor.Sat, CustomCloudsColor.Value)
 							if callback then 
 								v.Material = Enum.Material.Neon
 							else
@@ -13276,10 +13303,28 @@ runLunar(function()
 end)
 
 runLunar(function()
-	local LagbackSelf = {Enabled = false}
+	local CloudUnlocker = {}
+	CloudUnlocker = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
+		Name = 'CloudUnlocker',
+		HoverText = 'Makes all clouds visible without\nneeding max graphcis.',
+		Function = function(calling)
+			if calling then 
+				for i,v in next, workspace:WaitForChild('Clouds'):GetChildren() do 
+					if v:IsA('Part') then  
+						v.Transparency = 0
+						table.insert(CloudUnlocker.Connection, v:GetPropertyChangedSignal('Transparency'):Connect(function() v.Transparency = 0 end))
+					end
+				end
+			end 
+		end
+	})
+end)
+
+runLunar(function()
+	local LagbackSelf = {}
 	local LagbackSelfMode = {Value = "Velocity"}
 	local LagbackSelfPart = {Value = "Root"}
-	local LagbackSelfLoop = {Enabled = false}
+	local LagbackSelfLoop = {}
 	local LagbackSelfNotification = {Enabled = true}
 	local LagbackSelfVelocity = {Value = 9e9}
 	local LagbackSelfCFrame = {Value = 9e9}
@@ -13447,7 +13492,7 @@ runLunar(function()
 end)
 
 runLunar(function()
-	local ForceReset = {Enabled = false}
+	local ForceReset = {}
 	local ForceResetMode = {Value = "Remote"}
 	local ForceResetNotification = {Enabled = true}
 	ForceReset = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"]["CreateOptionsButton"]({
@@ -13497,7 +13542,7 @@ runLunar(function()
 end)
 
 runLunar(function()
-	local LunarAntiVoid = {Enabled = false}
+	local LunarAntiVoid = {}
 	local LunarAntiVoidMode = {Value = "Velocity"}
 	local LunarAntiVoidColor = {
 		Hue = 1,
@@ -13523,7 +13568,7 @@ runLunar(function()
 					repeat task.wait() until bedwarsStore.matchState ~= 0 or not vapeInjected
 					if vapeInjected and antivoidypos == 0 then
 						local lowestypos = 99999
-						for i,v in pairs(bedwarsStore.blocks) do 
+						for i,v in next, (bedwarsStore.blocks) do 
 							local newray = workspace:Raycast(v.Position + Vector3.new(0, 800, 0), Vector3.new(0, -1000, 0), bedwarsStore.blockRaycast)
 							if i % 200 == 0 then 
 								task.wait(0.06)
@@ -13658,16 +13703,16 @@ runLunar(function()
 end)
 
 runLunar(function()
-	local lunarVapeAnticheat = {Enabled = false}
+	local lunarVapeAnticheat = {}
 	local frame = 0
 	local players = {}
 	local lplrname = lplr.Name
 	local refreshFrequency = {Value = 0}
 	local notifyduration = {Value = 15}
-	local speedACheckToggle = {Enabled = false}
-	local speedBCheckToggle = {Enabled = false}
-	local flyACheckToggle = {Enabled = false}
-	local flyBCheckToggle = {Enabled = false}
+	local speedACheckToggle = {}
+	local speedBCheckToggle = {}
+	local flyACheckToggle = {}
+	local flyBCheckToggle = {}
 	local function highSpeedCheck(plrname)
 		local alreadyDetected = false
 		local pos
@@ -13764,7 +13809,7 @@ runLunar(function()
 					until not lunarVapeAnticheat.Enabled
 				end)
 				task.spawn(function()
-					for _,plr in pairs(playersService:GetPlayers()) do
+					for _,plr in next, (playersService:GetPlayers()) do
 						if plr.Name ~= lplr.Name then
 							if speedBCheckToggle.Enabled then
 								local con = plr.CharacterAdded:Connect(function() 
@@ -13789,7 +13834,7 @@ runLunar(function()
 					end
 				end)
 			else
-				for i, v in pairs(deathTPCheck) do 
+				for i, v in next, (deathTPCheck) do 
 					if v.Disconnect then pcall(function() v:Disconnect() end) continue end
 					if v.disconnect then pcall(function() v:disconnect() end) continue end
 				end
@@ -13838,7 +13883,7 @@ runLunar(function()
 end)
 
 runLunar(function()
-	local AntiHit = {Enabled = false}
+	local AntiHit = {}
 	local AntiHitMode = {Value = 'Teleport'}
 	local AntiHitRange = {Value = 22}
 	local AntiHitKD = {Value = 5}
@@ -13978,7 +14023,7 @@ runLunar(function()
 end)
 
 runLunar(function()
-	local CustomAttack = {Enabled = false}
+	local CustomAttack = {}
 	local CustomAttackMode = {Value = 'Spin'}
 	local CustomAttackMode1 = {Value = 'Swim'}
 	local CustomAttackMode2 = {Value = 'Time'}
@@ -14109,136 +14154,7 @@ runLunar(function()
 end)
 
 runFunction(function()
-    local Crasher = {Enabled = false}
-    local CrasherMode = {Value = 'Shield'}
-	local CrasherRange = {Value = 22}
-    local CrasherSlow = {Value = 0}
-	local CrasherRO = {Enabled = false}
-    local Shields = {
-        'UseInfernalShield',
-        'UseGlitchShield'
-    }
-    local ChatUsage = {Message = 'ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ'}
-	local Shield = getItem('infernal_shield')
-	local function crasherfunc()
-		--[[local ShieldRemote = replicatedStorageService.rbxts_include.node_modules:FindFirstChild('@rbxts').net.out._NetManaged
-		for _, shieldName in next, Shields do
-			local Shielder = ShieldRemote:FindFirstChild(shieldName)
-			if Shielder then
-				Shielder:FireServer({
-					raised = true
-				})
-			end
-		end]]
-		replicatedStorageService.rbxts_include.node_modules:FindFirstChild('@rbxts').net.out._NetManaged:FindFirstChild('UseInfernalShield')
-		replicatedStorageService.rbxts_include.node_modules:FindFirstChild('@rbxts').net.out._NetManaged:FindFirstChild('UseGlitchShield')
-	end
-    Crasher = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
-        Name = 'Crasher',
-        Function = function(callback)
-            if callback then
-                if CrasherMode.Value == 'Shield' then
-                    if Shield then
-                        task.spawn(function()
-                            repeat task.wait(CrasherSlow.Value)
-								if CrasherRO.Enabled then
-									local target = GetTarget(CrasherRange.Value, nil, true, true)
-									--[[if target.RootPart == nil or not isAlive() then
-										Crasher.ToggleButton(false)
-										return
-									end]]
-									repeat task.wait() until target
-									if target then
-										crasherfunc()
-									end
-								else
-                                	crasherfunc()
-								end
-                            until not Crasher.Enabled or not Shield
-                        end)
-                    else
-                        warningNotification('Crasher', 'Missing Shield', 10)
-                        Crasher.ToggleButton(false)
-                        return
-                    end
-                elseif CrasherMode.Value == 'Chat' then
-                    task.spawn(function()
-                        repeat task.wait(CrasherSlow.Value)
-							if CrasherRO.Enabled then
-								local target = GetTarget(AntiHitRange.Value, nil, true, true)
-								--[[if target.RootPart == nil or not isAlive() then
-									Crasher.ToggleButton(false)
-									return
-								end]]
-								repeat task.wait() until target
-								if target then
-									sendmessage(ChatUsage.Message)
-								end
-							else
-								sendmessage(ChatUsage.Message)
-							end
-                        until not Crasher.Enabled
-                    end)
-				else
-					task.spawn(function()
-						repeat task.wait(CrasherSlow.Value)
-							if CrasherRO.Enabled then
-								local target = GetTarget(CrasherRange.Value, nil, true, true)
-								--[[if target.RootPart == nil or not isAlive() then
-									Crasher.ToggleButton(false)
-									return
-								end]]
-								repeat task.wait() until target
-								if target then
-									crasherfunc()
-									sendmessage(ChatUsage.Message)
-								end
-							else
-								crasherfunc()
-								sendmessage(ChatUsage.Message)
-							end
-						until not Crasher.Enabled
-					end)
-                end
-            end
-        end,
-		ExtraText = function()
-			return CrasherMode.Value
-		end
-    })
-    CrasherMode = Crasher.CreateDropdown({
-        Name = 'Mode',
-        List = {
-            'Shield',
-            'Chat',
-			'Combined'
-        },
-		Value = 'Shield',
-        Function = function() end,
-    })
-	CrasherRange = Crasher.CreateSlider({
-		Name = 'Max Range',
-		Min = 10,
-		Max = 50, 
-		Function = function() end,
-		Default = 22
-	})
-    CrasherSlow = Crasher.CreateSlider({
-        Name = 'Slowdown',
-        Min = 0,
-        Max = 10,
-        Function = function() end,
-        Default = 0
-    })
-	CrasherRO = Crasher.CreateToggle({
-		Name = 'Range Only',
-		HoverText = 'Only attacks when a player\nenters the range',
-		Function = function() end
-	})
-end)
-
-runFunction(function()
-    local AntiCrash = {Enabled = false}
+    local AntiCrash = {}
 	local AntiCrashMode = {Value = 'Infinite'}
 	local AntiCrashPing = {Value = 5000}
 	local AntiCrashFps = {Value = 5}
@@ -14321,7 +14237,7 @@ runFunction(function()
 end)
 
 runFunction(function()
-    local Desync = {Enabled = false}
+    local Desync = {}
 	local DesyncMode = {Value = 'CFrame'}
 	local DesyncDistance = {Value = 5}
 	local DesyncTweenSpeed = {Value = 25}
@@ -14402,24 +14318,22 @@ runFunction(function()
 end)
 
 runFunction(function()
-    local AutoSkywars = {Enabled = false}
+    local AutoSkywars = {}
 	local AutoSkywarsDepth = {Value = 7}
-	local AutoSkywarsNotify = {Enabled = false}
+	local AutoSkywarsNotify = {}
     AutoSkywars = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
         Name = 'AutoSkywars',
 		HoverText = 'Automatically phases out of\nthe skywars cage',
         Function = function(callback)
             if callback then
                 task.spawn(function()
-					local cage = workspace:FindFirstChild('spawn_cage')
-					repeat task.wait() until cage
-					if cage then
+					local cage = workspace:WaitForChild('spawn_cage')
+					if cage and isAlive() then
 						lplr.Character.HumanoidRootPart.CFrame *= CFrame.new(0, -AutoSkywarsDepth.Value, 0)
 					end
 					if AutoSkywarsNotify.Enabled then
 						warningNotification('AutoSkywars', 'Clipped ' .. AutoSkywarsDepth.Value .. ' studs out of the cage', 5)
 					end
-					return
 				end)
             end
         end
@@ -14439,7 +14353,7 @@ runFunction(function()
 end)
 
 runFunction(function()
-    local FastFly = {Enabled = false}
+    local FastFly = {}
     local FastFlyMode = {Value = 'Velocity'}
 	local FastFlyMode2 = {Value = 'CFrame'}
     local FastFlyMode1 = {Value = 'Sin'}
@@ -14581,7 +14495,7 @@ runFunction(function()
 end)
 
 runFunction(function()
-    local AutoGrind = {Enabled = false}
+    local AutoGrind = {}
 	local AutoGrindMode = {Value = 'Infinite'}
 	local AutoGrindHeight = {Value = 1000}
     AutoGrind = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
@@ -14632,4 +14546,4 @@ runFunction(function()
         Value = 1000,
         Function = function() end
     })
-end)									
+end)
