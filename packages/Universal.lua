@@ -3,7 +3,7 @@
     Render Intents | Universal
     The #1 vape mod you'll ever see.
 
-    Version: 1.4
+    Version: 1.4.1
     discord.gg/render
 	
 ]]
@@ -9457,7 +9457,7 @@ runFunction(function()
     })
 end)
 
-runFunction(function()
+--[[runFunction(function()
     local MovementDisabler = {Enabled = false}
 	local MovementDisablerR = {Enabled = true}
 	local MovementDisablerA = {Enabled = true}
@@ -9498,7 +9498,7 @@ runFunction(function()
 		Default = true,
 		Function = function() end
 	})
-end)
+end)]]
 
 runFunction(function()
     local AntiCrash = {Enabled = false}
@@ -9595,32 +9595,41 @@ runLunar(function()
 	local CustomCharacterM = {Enabled = true}
 	local CustomCharacterC = {Enabled = true}
 	local CustomCharacterTT = {Value = 50}
+	local function charobjectFunction(char)
+		if not char:IsA('BasePart') then return end
+		local root = (char == lplr.Character.PrimaryPart)
+		local charmaterial = Enum.Material.ForceField
+		char.Transparency = (root and 1 or CustomCharacterT.Enabled and CustomCharacterTT.Value / 100 or char.Transparency)
+		if CustomCharacterMD.Value == 'ForceField' then
+			charmaterial = Enum.Material.ForceField
+		else
+			charmaterial = Enum.Material.Neon
+		end
+		if root == false then 
+			char.Material = CustomCharacterM.Enabled and charmaterial 
+		end
+		char.Color = CustomCharacterC.Enabled and Color3.fromHSV(
+			CustomCharacterCL.Hue, 
+			CustomCharacterCL.Sat, 
+			CustomCharacterCL.Value
+		)
+	end
 	CustomCharacter = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
 		Name = 'CustomCharacter',
 		HoverText = 'Customizes your character',
 		Function = function(calling)
 			if calling then
-				task.spawn(function()
-					local charmaterial = Enum.Material.ForceField
-					repeat task.wait()
-						for _, char in next, lplr.Character:GetDescendants() do
-							if char:IsA('BasePart') then
-								char.Transparency = CustomCharacterT.Enabled and CustomCharacterTT.Value / 100
-								if CustomCharacterMD.Value == 'ForceField' then
-									charmaterial = Enum.Material.ForceField
-								else
-									charmaterial = Enum.Material.Neon
-								end
-								char.Material = CustomCharacterM.Enabled and charmaterial
-								char.Color = CustomCharacterC.Enabled and Color3.fromHSV(
-									CustomCharacterCL.Hue, 
-									CustomCharacterCL.Sat, 
-									CustomCharacterCL.Value
-								)
-							end
-						end
-					until not CustomCharacter.Enabled
-				end)
+				if lplr.Character then 
+					for i,v in next, lplr.Character:GetDescendants() do 
+						charobjectFunction(v) 
+					end 
+					table.insert(CustomCharacter.Connections, lplr.Character.DescendantAdded:Connect(charobjectFunction))
+				end 
+				table.insert(CustomCharacter.Connections, lplr.CharacterAdded:Connect(function()
+					repeat task.wait() until isAlive(lplr, true) 
+					CustomCharacter.ToggleButton()
+					CustomCharacter.ToggleButton() 
+				end))
 			end
 		end,
 		ExtraText = function()
@@ -9715,64 +9724,79 @@ runLunar(function()
 	})
 end)
 
-
-runLunar(function()
-	local FirstPerson = {Enabled = false}
-	local FirstPersonMode = {Value = 'Lock'}
-	local FirstPersonS = {Value = 2}
-	local function lock1st()
-		gameCamera.CameraType = Enum.CameraType.Scriptable
-		gameCamera.CFrame = CFrame.new(lplr.Character.Head.Position)
+runFunction(function()
+	local Translation = {}
+	local language = {Value = 'chinese'} 
+	local oldnames = {}
+	local function addtranslated(old, translated)
+		if not isfolder('vape/Render/translations') then 
+			makefolder('vape/Render/translations') 
+		end
+		local success, data = pcall(function()
+			return httpService:JSONDecode(readfile('vape/Render/translations/'..language.Value:lower()..'.json')) 
+		end) 
+		if type(data) ~= 'table' then data = {} end 
+		data[old] = translated 
+		writefile('vape/Render/translations/'..language.Value:lower()..'.json', httpService:JSONEncode(data))
 	end
-	FirstPerson = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
-		Name = 'FirstPerson',
-		HoverText = 'Locks you in first person',
-		Function = function(calling)
-			if calling then
-				task.spawn(function()
-					if FirstPersonMode.Value == 'Lock' then
-						repeat task.wait()
-							gameCamera.CameraType = Enum.CameraType.LockFirstPerson
-						until not FirstPerson.Enabled
-					else
-						lock1st()
-						inputService.InputBegan:Connect(function(input, gameProcessedEvent)
-							if not gameProcessedEvent then
-								if input.UserInputType == Enum.UserInputType.MouseWheel then
-									return
+	local function translatedata(text)
+		local success, data = pcall(function()
+			return httpService:JSONDecode(readfile('vape/Render/translations/'..language.Value:lower()..'.json')) 
+		end) 
+		if type(data) ~= 'table' then data = {} end  
+		if data[text] then 
+			return (data[text] ~= '' and data[text])
+		end
+		local translation = httprequest({Url = 'https://translate.renderintents.xyz', Method = 'GET', Headers = {Language = language.Value, Text = text}}) 
+		if translation.StatusCode == 200 then 
+			local new = httpService:JSONDecode(translation.Body).translated
+			addtranslated(text, new) 
+			return (new ~= '' and new)
+		end
+	end
+	Translation = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
+		Name = 'Translation',
+		HoverText = 'Translates stuff in vape.',
+		Function = function(calling) 
+			if calling then 
+				for i,v in next, GuiLibrary.ObjectsThatCanBeSaved do 
+					if v.Type == 'OptionsButton' and i ~= 'TranslationOptionsButton' then
+						task.spawn(function()
+							if not Translation.Enabled then return end
+							local translated = translatedata(v.Object.ButtonText.Text)
+							if translated and Translation.Enabled then 
+								oldnames[i] = {ApiText = v.Api.Name, ObjectText = v.Object.ButtonText.Text}
+								v.Object.ButtonText.Text = translated
+								v.Api.Name = translated
+								if v.Api.Enabled then 
+									GuiLibrary.UpdateTextGUI() 
 								end
-								lock1st()
-							end
+							end 
 						end)
-						inputService.InputChanged:Connect(function(input)
-							if input.UserInputType == Enum.UserInputType.MouseMovement then
-								local delta = input.Delta
-								local rot = vec2(delta.Y, delta.X) * (FirstPersonS.Value / 10)
-								gameCamera.CFrame = CFrame.Angles(0, math.rad(rot.Y), 0) * gameCamera.CFrame
-							end
-							lock1st()
-						end)
-					end
-				end)
+					end 
+				end
 			else
-				gameCamera.CameraType = Enum.CameraType.Scriptable
-			end
+				if vapeInjected then 
+					for i,v in next, oldnames do 
+						GuiLibrary.ObjectsThatCanBeSaved[i].Object.ButtonText.Text = v.ObjectText
+						GuiLibrary.ObjectsThatCanBeSaved[i].Api.Name = v.ApiText 
+					end
+					GuiLibrary.UpdateTextGUI()  
+					table.clear(oldnames)
+				end
+			end 
 		end
 	})
-	FirstPersonMode = FirstPerson.CreateDropdown({
-        Name = 'Mode',
-        List = {
-            'Lock',
-            'CFrame'
-        },
-        Value = 'Lock',
-        Function = function() end
-    })
-	FirstPersonS = FirstPerson.CreateSlider({
-		Name = 'Sensitivity',
-		Min = 1,
-		Max = 10,
-		Function = function() end,
-		Default = 2
+	language = Translation.CreateDropdown({
+		Name = 'Language', 
+		List = {'Spanish', 'French', 'Japanese', 'Chinese', 'Hindi', 'Russian'},
+		Function = function() 
+			task.spawn(function()
+				if not shared.VapeFullyLoaded then return end
+				Translation.ToggleButton() 
+				task.wait(1)
+				if not Translation.Enabled then Translation.ToggleButton() end 
+			end)
+		end,
 	})
 end)
