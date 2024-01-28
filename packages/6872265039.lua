@@ -3,7 +3,7 @@
     Render Intents | Bedwars lobby
     The #1 vape mod you'll ever see.
 
-    Version: 1.4
+    Version: 1.4.1
     discord.gg/render
 
 ]]
@@ -23,7 +23,6 @@ local robloxfriends = {}
 local bedwars = {}
 local getfunctions
 local origC0 = nil
-local collectionservice = game:GetService('CollectionService')
 local function GetURL(scripturl)
 	if shared.VapeDeveloper then
 		return readfile('vape/'..scripturl)
@@ -954,7 +953,7 @@ runFunction(function()
 		end
 
 		local function notlasso()
-			for i,v in pairs(collectionService:GetTagged('LassoHooked')) do 
+			for i,v in pairs(game:GetService('CollectionService'):GetTagged('LassoHooked')) do 
 				if v == lplr.Character then 
 					return false
 				end
@@ -1473,7 +1472,7 @@ runFunction(function()
 					['SPEAR_THROW'] = 'rbxassetid://7813485044',
 				}
 				task.spawn(function()
-					for i,v in pairs(collectionservice:GetTagged('block')) do
+					for i,v in pairs(game:GetService('CollectionService'):GetTagged('block')) do
 						if oldbedwarsblocktab[v.Name] then
 							if type(oldbedwarsblocktab[v.Name]) == 'table' then
 								for i2,v2 in pairs(v:GetDescendants()) do
@@ -1498,7 +1497,7 @@ runFunction(function()
 						end
 					end
 				end)
-				collectionService:GetInstanceAddedSignal('block'):Connect(function(v)
+				game:GetService('CollectionService'):GetInstanceAddedSignal('block'):Connect(function(v)
 					if oldbedwarsblocktab[v.Name] then
 						if type(oldbedwarsblocktab[v.Name]) == 'table' then
 							for i2,v2 in pairs(v:GetDescendants()) do
@@ -1539,7 +1538,7 @@ runFunction(function()
 						end
 					end
 				end)
-				collectionService:GetInstanceAddedSignal('tnt'):Connect(function(v)
+				game:GetService('CollectionService'):GetInstanceAddedSignal('tnt'):Connect(function(v)
 					if oldbedwarsblocktab[v.Name] then
 						if type(oldbedwarsblocktab[v.Name]) == 'table' then
 							for i2,v2 in pairs(v:GetDescendants()) do
@@ -2019,7 +2018,7 @@ runFunction(function()
 	local hotbarobjects = {}
 	local hotbarcoloricons = {}
 	local function hotbarFunction()
-		local inventoryicons = ({pcall(function() return lplr.PlayerGui.hotbar['1']['3'] end)})[2]
+		local inventoryicons = ({pcall(function() return lplr.PlayerGui.hotbar['1'].ItemsHotbar end)})[2]
 		if inventoryicons and type(inventoryicons) == 'userdata' then
 			for i,v in next, inventoryicons:GetChildren() do 
 				local sloticon = ({pcall(function() return v:FindFirstChildWhichIsA('ImageButton'):FindFirstChildWhichIsA('TextLabel') end)})[2]
@@ -2152,3 +2151,4 @@ runFunction(function()
 	HotbarRoundRadius.Object.Visible = false
 	HotbarHighlightColor.Object.Visible = false
 end)
+
