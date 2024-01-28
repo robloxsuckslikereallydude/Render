@@ -14548,7 +14548,7 @@ runFunction(function()
     })
 end)
 
-runFunction(function()
+--[=[runFunction(function()
 	task.wait(0.3)
 	local AnticheatBypass = {Enabled = false}
 	local AnticheatBypassShowRoot = {Enabled = false}
@@ -15070,4 +15070,4 @@ runFunction(function()
 		end,
 		Default = true
 	})
-end)
+end)]=]
