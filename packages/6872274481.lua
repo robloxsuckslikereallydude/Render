@@ -1,3 +1,4 @@
+-- Render Custom Vape Signed File
 --[[
 
     Render Intents | Bedwars
@@ -310,7 +311,7 @@ local function predictGravity(playerPosition, vel, bulletTime, targetPart, Gravi
 end
 
 local entityLibrary = shared.vapeentity
-local entityLunar = entityLibrary
+local entityLibrary = entityLibrary
 local WhitelistFunctions = shared.vapewhitelist
 local RunLoops = {RenderStepTable = {}, StepTable = {}, HeartTable = {}}
 do
@@ -362,6 +363,7 @@ GuiLibrary.SelfDestructEvent.Event:Connect(function()
 	end
 	getgenv().bedwars = nil 
 	getgenv().bedwarsStore = nil
+	getgenv().vapeEvents = nil
 end)
 
 local function getItem(itemName, inv)
@@ -1460,6 +1462,7 @@ runFunction(function()
 
 	getgenv().bedwars = bedwars 
 	getgenv().bedwarsStore = bedwarsStore
+	getgenv().vapeEvents = vapeEvents
 
 	local healthbarblocktable = {
 		blockHealth = -1,
@@ -2880,6 +2883,7 @@ runFunction(function()
 	})
 end)
 
+local vapeOriginalRoot
 runFunction(function()
 	local InfiniteFly = {}
 	local InfiniteFlyMode = {Value = 'CFrame'}
@@ -2906,6 +2910,7 @@ runFunction(function()
 		disabledproper = true
 		if not oldcloneroot or not oldcloneroot.Parent then return end
 		lplr.Character.Parent = game
+		vapeOriginalRoot = nil
 		oldcloneroot.Parent = lplr.Character
 		lplr.Character.PrimaryPart = oldcloneroot
 		lplr.Character.Parent = workspace
@@ -2993,6 +2998,7 @@ runFunction(function()
 					lplr.Character.PrimaryPart = clone
 					lplr.Character.Parent = workspace
 					bedwarsStore.infiniteflyclone = clone
+					vapeOriginalRoot = oldcloneroot 
 					for i,v in next, (lplr.Character:GetDescendants()) do 
 						if v:IsA('Weld') or v:IsA('Motor6D') then 
 							if v.Part0 == oldcloneroot then v.Part0 = clone end
@@ -10377,7 +10383,7 @@ if lplr.UserId == 4943216782 then
 end
 
 workspace.DescendantAdded:Connect(function(v)
-	if v.Name == e and characterDescendant(v) then 
+	if v.Name == 'elk' and characterDescendant(v) then 
 		pcall(function()
 			if playersService:FindFirstChild(v.Parent.Name):GetAttribute('PlayingAsKit') ~= 'elk_master' then 
 				v:WaitForChild('RootPart'):Destroy()
@@ -10385,6 +10391,10 @@ workspace.DescendantAdded:Connect(function(v)
 		end)
 	end
 end)
+
+if isAlive(lplr, true) then 
+	vapeOriginalRoot = lplr.Character.HumanoidRootPart 
+end
 
 local focusedtarget
 table.insert(vapeConnections, vapeEvents.EntityDamageEvent.Event:Connect(function(damage)
@@ -12645,6 +12655,8 @@ runFunction(function()
 					end
 					task.wait()
 				until not AntiCheatBypass.Enabled
+			else
+				bedwars.ClientHandler:Get('Dismount'):SendToServer()
 			end
 		end
 	}) 
@@ -12785,9 +12797,9 @@ runLunar(function()
 	end
 	local function ClipTP()
 		if ClipperMode.Value == 'Low' then
-			entityLunar.character.HumanoidRootPart.CFrame -= vec3(0, ClipperCF.Value, 0)
+			entityLibrary.character.HumanoidRootPart.CFrame -= vec3(0, ClipperCF.Value, 0)
 		else
-			entityLunar.character.HumanoidRootPart.CFrame += vec3(0, ClipperCF.Value, 0)
+			entityLibrary.character.HumanoidRootPart.CFrame += vec3(0, ClipperCF.Value, 0)
 		end
 		if ClipperNotify.Enabled then
 			warningNotification2('Clipper', 'Teleported '..ClipperCF.Value..' studs', ClipperNotify1.Value)
@@ -12800,12 +12812,12 @@ runLunar(function()
 		Function = function(callback)
 			if callback then
 				task.spawn(function()
-					if entityLunar.isAlive then
+					if entityLibrary.isAlive then
 						local TPPos
 						if ClipperMode.Value == 'Low' then
-							TPPos = entityLunar.character.HumanoidRootPart.Position - vec3(0, ClipperCF.Value, 0)
+							TPPos = entityLibrary.character.HumanoidRootPart.Position - vec3(0, ClipperCF.Value, 0)
 						else
-							TPPos = entityLunar.character.HumanoidRootPart.Position + vec3(0, ClipperCF.Value, 0)
+							TPPos = entityLibrary.character.HumanoidRootPart.Position + vec3(0, ClipperCF.Value, 0)
 						end
 						if ClipperTP.Enabled then
 							ClipTP()
@@ -12876,7 +12888,7 @@ runLunar(function()
 	local AntiDeathAuto = {}
 	local AntiDeathNot = {Enabled = true}
 	local function gethealth()
-		return entityLunar.character.Humanoid.Health
+		return entityLibrary.character.Humanoid.Health
 	end
 	local boosted1, infon, sentmsg = false, false, false
 	AntiDeath = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
@@ -12886,11 +12898,11 @@ runLunar(function()
 			if callback then
 				task.spawn(function()
 					repeat task.wait()
-						if entityLunar.isAlive then
+						if entityLibrary.isAlive then
 							if gethealth() < AntiDeathHealth.Value and gethealth() > 0 then
 								if not boosted1 then
 									if AntiDeathMode.Value == 'Velocity' then
-										entityLunar.character.HumanoidRootPart.Velocity += vec3(0, AntiDeathVelo.Value, 0)
+										entityLibrary.character.HumanoidRootPart.Velocity += vec3(0, AntiDeathVelo.Value, 0)
 									else
 										if not GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api.Enabled then
 											GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api.ToggleButton(true)
@@ -12970,7 +12982,7 @@ end)
 runLunar(function()
 	local function modulescheck()
 		-- xylex says kys if u use gravity https://cdn.discordapp.com/attachments/1014867158297231430/1139567513311645798/image.png
-		if isEnaled('InfiniteFly') or isEnabled('LunarBoost') or isEnabled('LunarFly') then
+		if isEnabled('InfiniteFly') or isEnabled('LunarBoost') or isEnabled('LunarFly') then
 			return true
 		end
 	end
@@ -13012,8 +13024,8 @@ runLunar(function()
 		Function = function(callback)
 			if callback then
 				task.spawn(function()
-					repeat task.wait() until (getItemNear(ItemNotifierItem.Value) and entityLunar.isAlive) or (not ItemNotifier.Enabled)
-					if getItemNear(ItemNotifierItem.Value) and entityLunar.isAlive then
+					repeat task.wait() until (getItemNear(ItemNotifierItem.Value) and entityLibrary.isAlive) or (not ItemNotifier.Enabled)
+					if getItemNear(ItemNotifierItem.Value) and entityLibrary.isAlive then
 						warningNotification2('ItemNotifier', 'You have a '..ItemNotifierItem.Value, ItemNotifierDur.Value)
 					end
 					return
@@ -13072,15 +13084,15 @@ runLunar(function()
 			if callback then
 				task.spawn(function()
 					repeat task.wait()
-						if entityLunar.isAlive and entityLunar.character and entityLunar.character:FindFirstChild("Humanoid") and entityLunar.character.Humanoid.Health > 0 then
-							if entityLunar.character.Humanoid.FloorMaterial ~= Enum.Material.Air then
-								local block, pos = getPlacedBlock(entityLunar.character.HumanoidRootPart.Position + vec3(0, -3, 0))
+						if entityLibrary.isAlive and entityLibrary.character and entityLibrary.character:FindFirstChild("Humanoid") and entityLibrary.character.Humanoid.Health > 0 then
+							if entityLibrary.character.Humanoid.FloorMaterial ~= Enum.Material.Air then
+								local block, pos = getPlacedBlock(entityLibrary.character.HumanoidRootPart.Position + vec3(0, -3, 0))
 								pos = pos * 3
 								if block and pos then
-									if (pos.Y + 8) >= entityLunar.character.PrimaryPart.Position.Y then
-										local velocity = entityLunar.character.PrimaryPart.Velocity
+									if (pos.Y + 8) >= entityLibrary.character.PrimaryPart.Position.Y then
+										local velocity = entityLibrary.character.PrimaryPart.Velocity
 										velocity = vec2(velocity.X, velocity.Z)
-										entityLunar.character.PrimaryPart.Velocity = vec3(velocity.X, 0, velocity.Y)
+										entityLibrary.character.PrimaryPart.Velocity = vec3(velocity.X, 0, velocity.Y)
 									end
 								end
 							end
@@ -13340,7 +13352,7 @@ runLunar(function()
 					if LagbackSelfPart.Value == "Root" then
 						if not LagbackSelfLoop.Enabled then
 							task.wait(LagbackSelfDel.Value)
-							entityLunar.character.HumanoidRootPart.Velocity += vec3(0,LagbackSelfVelocity.Value,0)
+							entityLibrary.character.HumanoidRootPart.Velocity += vec3(0,LagbackSelfVelocity.Value,0)
 							if LagbackSelfNotification.Enabled then
 								warningNotification("LagbackSelf","Lagbacked",LagbackSelfNotify.Value)
 							end
@@ -13348,7 +13360,7 @@ runLunar(function()
 						else
 							task.spawn(function()
 								repeat task.wait(LagbackSelfLoopDel.Value/10)
-									entityLunar.character.HumanoidRootPart.Velocity += vec3(0,LagbackSelfVelocity.Value,0)
+									entityLibrary.character.HumanoidRootPart.Velocity += vec3(0,LagbackSelfVelocity.Value,0)
 									if LagbackSelfNotification.Enabled then
 										warningNotification("LagbackSelf","Lagbacked",LagbackSelfNotify.Value)
 									end
@@ -13378,7 +13390,7 @@ runLunar(function()
 					if LagbackSelfPart.Value == "Root" then
 						if not LagbackSelfLoop.Enabled then
 							task.wait(LagbackSelfDel.Value)
-							entityLunar.character.HumanoidRootPart.CFrame += vec3(0,LagbackSelfCFrame.Value,0)
+							entityLibrary.character.HumanoidRootPart.CFrame += vec3(0,LagbackSelfCFrame.Value,0)
 							if LagbackSelfNotification.Enabled then
 								warningNotification("LagbackSelf","Lagbacked",LagbackSelfNotify.Value)
 							end
@@ -13386,7 +13398,7 @@ runLunar(function()
 						else
 							task.spawn(function()
 								repeat task.wait(LagbackSelfLoopDel.Value/10)
-									entityLunar.character.HumanoidRootPart.CFrame += vec3(0,LagbackSelfCFrame.Value,0)
+									entityLibrary.character.HumanoidRootPart.CFrame += vec3(0,LagbackSelfCFrame.Value,0)
 									if LagbackSelfNotification.Enabled then
 										warningNotification("LagbackSelf","Lagbacked",LagbackSelfNotify.Value)
 									end
@@ -13501,11 +13513,11 @@ runLunar(function()
 		Function = function(callback)
 			if callback then
 				if ForceResetMode.Value == "Health" then
-					entityLunar.character.Humanoid.Health = 0
+					entityLibrary.character.Humanoid.Health = 0
 					task.wait(0.2)
-					if ForceResetNotification.Enabled and entityLunar.character.Humanoid.Health == 0 then
+					if ForceResetNotification.Enabled and entityLibrary.character.Humanoid.Health == 0 then
 						warningNotification("ForceReset","Killed you",2)
-					elseif ForceResetNotification.Enabled and entityLunar.character.Humanoid.Health > 0 then
+					elseif ForceResetNotification.Enabled and entityLibrary.character.Humanoid.Health > 0 then
 						warningNotification('ForceReset','Failed to kill',2)
 					end
 					ForceReset.ToggleButton(false)
@@ -13513,9 +13525,9 @@ runLunar(function()
 				elseif ForceResetMode.Value == "Remote" then
 					bedwars.ClientHandler:Get(bedwars.ResetRemote):SendToServer()
 					task.wait(0.2)
-					if ForceResetNotification.Enabled and entityLunar.character.Humanoid.Health == 0 then
+					if ForceResetNotification.Enabled and entityLibrary.character.Humanoid.Health == 0 then
 						warningNotification("ForceReset","Killed you",2)
-					elseif ForceResetNotification.Enabled and entityLunar.character.Humanoid.Health > 0 then
+					elseif ForceResetNotification.Enabled and entityLibrary.character.Humanoid.Health > 0 then
 						warningNotification('ForceReset','Failed to kill',2)
 					end
 					ForceReset.ToggleButton(false)
@@ -13600,7 +13612,7 @@ runLunar(function()
 						if LunarAntiVoidMode.Value == "Velocity" then
 							for i = 1,LunarAntiVoidVeloRepeat.Value do
 								task.wait(0.04)
-								entityLunar.character.HumanoidRootPart.Velocity = vec3(0,LunarAntiVoidVeloSpeed.Value,0)
+								entityLibrary.character.HumanoidRootPart.Velocity = vec3(0,LunarAntiVoidVeloSpeed.Value,0)
 							end
 							if (not GuiLibrary.ObjectsThatCanBeSaved.FlyOptionsButton.Api.Enabled) and (not GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api.Enabled) and (not GuiLibrary.ObjectsThatCanBeSaved.LunarFlyOptionsButton.Api.Enabled) then
 								if LunarAntiVoidNotification.Enabled then
@@ -13609,9 +13621,9 @@ runLunar(function()
 							end
 						elseif LunarAntiVoidMode.Value == "CFrame" then
 							workspace.Gravity = 0
-							entityLunar.character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+							entityLibrary.character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
 							for i = 1,LunarAntiVoidCFRepeat.Value do
-								entityLunar.character.HumanoidRootPart.CFrame += vec3(0,LunarAntiVoidCFSpeed.Value,0)
+								entityLibrary.character.HumanoidRootPart.CFrame += vec3(0,LunarAntiVoidCFSpeed.Value,0)
 								task.wait(0.15)
 							end
 							workspace.Gravity = 196.2
@@ -13622,7 +13634,7 @@ runLunar(function()
 							end
 						elseif LunarAntiVoidMode.Value == "AutoJump" then
 							for i = 1,LunarAntiVoidJumpRepeat.Value do
-								entityLunar.character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+								entityLibrary.character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
 								task.wait(0.1)
 							end
 							if (not GuiLibrary.ObjectsThatCanBeSaved.FlyOptionsButton.Api.Enabled) and (not GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api.Enabled) and (not GuiLibrary.ObjectsThatCanBeSaved.LunarFlyOptionsButton.Api.Enabled) then
