@@ -1,4 +1,7 @@
 return (function(ria) 
+	if shared == nil then -- delta is literal garbage looool
+		getgenv().shared = {}
+	end
 	local tweenService = game:GetService('TweenService')
 	local httpService = game:GetService('HttpService')
 	local maingui = Instance.new('ScreenGui') 
@@ -315,7 +318,7 @@ return (function(ria)
 	
 	repeat task.wait() until initiate
 	
-	if shared and type(shared.GuiLibrary) == 'table' then -- delta <3
+	if type(shared.GuiLibrary) == 'table' then -- delta <3
 		pcall(shared.GuiLibrary.SelfDestruct or function() end)
 	end
 	
