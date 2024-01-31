@@ -1,4 +1,7 @@
--- blackion look at this msg ur black + ur a nigger.
+if shared == nil then -- delta is literal garbage looool
+	getgenv().shared = {} 
+end
+
 local isfile = isfile or function(file)
     local success, filecontents = pcall(function() return readfile(file) end)
     return success and type(filecontents) == 'string'
