@@ -315,7 +315,7 @@ return (function(ria)
 	
 	repeat task.wait() until initiate
 	
-	if type(shared.GuiLibrary) == 'table' then
+	if shared and type(shared.GuiLibrary) == 'table' then -- delta <3
 		pcall(shared.GuiLibrary.SelfDestruct or function() end)
 	end
 	
