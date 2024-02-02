@@ -7,6 +7,7 @@ return (function(ria)
 	local maingui = Instance.new('ScreenGui') 
 	maingui.Name = "MainWindow"
 	local arceus = true
+	local executor = (identifyexecutor or getexecutorname or function() return 'your executor' end)()
     local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() end)
 	local initiate
 	local isfile = isfile or function(file)
@@ -272,15 +273,20 @@ return (function(ria)
 		for i,v in next, taskfunctions do 
 			pcall(function() progresstext.Text = v.Text end)
 			pcall(function() progresstext.TextColor3 = Color3.fromRGB(255, 255, 255) end)
-			local succeeded, res = pcall(v.Function)  
+			local succeeded = pcall(v.Function)  
 			if aborted then 
 				aborted = false
 				return 
 			end
+			if executor == 'Codex' then 
+				pcall(function() progresstext.Text = ('Render isn\'t supported for '..executor..'.') end)
+				pcall(function() tweenService:Create(progressbar2, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {BackgroundColor3 = Color3.fromRGB(138, 0, 0)}):Play() end)
+				pcall(function() progresstext.TextColor3 = Color3.fromRGB(255, 0, 0) end) 
+				return
+			end
 			if not succeeded then 
 				failures = (failures + 1)
 				pcall(function() tweenService:Create(progressbar2, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {BackgroundColor3 = Color3.fromRGB(138, 0, 0)}):Play() end)
-				pcall(function() progresstext.Text = (v.Text..' (FAILED)') end)
 				pcall(function() progresstext.TextColor3 = Color3.fromRGB(255, 0, 0) end)
 				task.delay(2, function()
 					pcall(function() tweenService:Create(progressbar2, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {BackgroundColor3 = Color3.fromRGB(42, 6, 103)}):Play() end)
