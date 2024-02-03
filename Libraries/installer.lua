@@ -277,12 +277,6 @@ return (function(ria)
 				aborted = false
 				return 
 			end
-			if executor == 'Codex' then 
-				pcall(function() progresstext.Text = ('Render isn\'t supported for '..executor..'.') end)
-				pcall(function() tweenService:Create(progressbar2, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {BackgroundColor3 = Color3.fromRGB(138, 0, 0)}):Play() end)
-				pcall(function() progresstext.TextColor3 = Color3.fromRGB(255, 0, 0) end) 
-				return
-			end
 			if not succeeded then 
 				failures = (failures + 1)
 				pcall(function() tweenService:Create(progressbar2, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {BackgroundColor3 = Color3.fromRGB(138, 0, 0)}):Play() end)
