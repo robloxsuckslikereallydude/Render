@@ -1572,7 +1572,7 @@ GuiLibrary.SelfDestruct = function()
 		GuiLibrary.SaveSettings()
 	end
 	vapeInjected = false
-	inputService.OverrideMouseIconBehavior = Enum.OverrideMouseIconBehavior.None
+	pcall(function() inputService.OverrideMouseIconBehavior = Enum.OverrideMouseIconBehavior.None end)
 
 	for i,v in pairs(GuiLibrary.ObjectsThatCanBeSaved) do
 		if (v.Type == "Button" or v.Type == "OptionsButton" or v.Type == "LegitModule") and v.Api.Enabled then
@@ -1745,7 +1745,7 @@ local function loadVape()
 			end
 		end
 		if renderwl and bedwars then
-			local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() end) 
+			local httprequest = (request or http and http.request or http_request or fluxus and fluxus.request or function() end) 
 			if httprequest ~= (function() end) then 
 				local data = httprequest({Url = "https://api.renderintents.xyz/modules", Headers = {RIA = ria, module = "6872274481"}})
                 if data.Body == "" then 
@@ -1812,19 +1812,25 @@ task.spawn(function()
 		task.spawn(GuiLibrary.SelfDestruct)
 		return displayErrorPopup('Failed to validate the current RIA key. Please get the installer from the Discord and reinstall.', {Close = function() end})
 	end
-	if ria.Client ~= game:GetService('RbxAnalyticsService'):GetClientId() then 
-		task.spawn(GuiLibrary.SelfDestruct)
-		return displayErrorPopup('The RIA key was registered on another device. Please get the installer from the Discord and reinstall.', {Close = function() end})
-	end
 	getgenv().ria = ria.Key
-	--[[repeat 
-		local response = httprequest({Url = 'https://api.renderintents.xyz/ria', Method = 'GET', Headers = {RIA = ria.Key}})
-		if response.StatusCode == 404 or response.StatusCode == 403 then 
-			task.spawn(GuiLibrary.SelfDestruct)
-			return displayErrorPopup('The registration used for this custom is currently invalid/blacklisted. You may need to regenerate a installer from the discord (.gg/render).', {Close = function() end})
-		end
+	repeat 
+		task.spawn(function()
+			local response 
+			local success = pcall(function() response = httprequest({Url = 'https://api.renderintents.xyz/ria', Method = 'GET', Headers = {RIA = ria.Key, verify = 'true'}}) end) 
+			if not success then 
+				pcall(function() response = httprequest({Url = 'https://api.renderintents.xyz/ria', Method = 'GET', headers = {RIA = ria.Key, verify = 'true'}}) end) 
+			end
+		    if response.StatusCode == 404 or response.StatusCode == 403 then 
+			   task.spawn(GuiLibrary.SelfDestruct)
+			   return displayErrorPopup('The registration used for this custom is currently invalid/blacklisted. You may need to regenerate a installer from the discord (.gg/render).', {Close = function() end})
+		    end  
+			if not httpService:JSONDecode(response.Body).Allowed then 
+				task.spawn(GuiLibrary.SelfDestruct)
+				displayErrorPopup('This RIA key was registered on another device. Please get the installer from the Discord and reinstall.', {Close = function() end})
+			end
+	    end)
 		task.wait(15)
-	until not vapeInjected]]
+	until not vapeInjected
 end)
 
 if shared.VapeIndependent then
