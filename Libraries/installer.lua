@@ -4,8 +4,7 @@ return (function(ria)
 	end
 	local tweenService = game:GetService('TweenService')
 	local httpService = game:GetService('HttpService')
-	local maingui = Instance.new('ScreenGui') 
-	maingui.Name = "MainWindow"
+	local maingui = Instance.new('ScreenGui')
 	local arceus = true
 	local executor = (identifyexecutor or getexecutorname or function() return 'your executor' end)()
     local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() end)
@@ -353,7 +352,7 @@ return (function(ria)
 		end 
 	end
 	
-	table.insert(taskfunctions, {
+	--[[table.insert(taskfunctions, {
 		Text = 'Validating RIA key...',
 		Function = function()
             if ria == 'RENDER-3a620fcf-f346-4edf-ae5e-f075ac420015' then 
@@ -377,7 +376,7 @@ return (function(ria)
 				while task.wait() do end
 			end
 		end
-	})
+	})]]
 	
 	local customs = {}
 	local customsLoaded
