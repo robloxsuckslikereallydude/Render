@@ -509,6 +509,7 @@ if shared.VapeExecuted then
 	end)
 
 	if type(teleportdata) == "table" and (teleportdata.match or teleportdata.customMatch) and game.PlaceId ~= 6872265039 then 
+		print('cock test')
 		getgenv().bedwars = true 
 		shared.CustomVapeSave = 6872274481
 	end
@@ -5798,7 +5799,7 @@ if shared.VapeExecuted then
 					if touched and clickgui.Visible then 
 						clickgui.Visible = false
 						legitgui.Visible = not clickgui.Visible
-						game:GetService("RunService"):SetRobloxGuiFocused(clickgui.Visible and GuiLibrary["MainBlur"].Size ~= 0 or guiService:GetErrorType() ~= Enum.ConnectionError.OK)
+						pcall(function() game:GetService("RunService"):SetRobloxGuiFocused(clickgui.Visible and GuiLibrary["MainBlur"].Size ~= 0 or guiService:GetErrorType() ~= Enum.ConnectionError.OK) end)
 						for _, mobileButton in pairs(GuiLibrary.MobileButtons) do mobileButton.Visible = not clickgui.Visible end	
 						local touchconnection
 						touchconnection = inputService.InputBegan:Connect(function(inputType)
@@ -5806,7 +5807,7 @@ if shared.VapeExecuted then
 								createMobileButton(buttonapi, inputType.Position)
 								clickgui.Visible = true
 								legitgui.Visible = not clickgui.Visible
-								game:GetService("RunService"):SetRobloxGuiFocused(clickgui.Visible and GuiLibrary["MainBlur"].Size ~= 0 or guiService:GetErrorType() ~= Enum.ConnectionError.OK)
+								pcall(function() game:GetService("RunService"):SetRobloxGuiFocused(clickgui.Visible and GuiLibrary["MainBlur"].Size ~= 0 or guiService:GetErrorType() ~= Enum.ConnectionError.OK) end)
 								for _, mobileButton in pairs(GuiLibrary.MobileButtons) do mobileButton.Visible = not clickgui.Visible end		
 								touchconnection:Disconnect()
 							end
@@ -6907,7 +6908,7 @@ if shared.VapeExecuted then
 			clickgui.Visible = not clickgui.Visible
 			legitgui.Visible = not clickgui.Visible
 			inputService.OverrideMouseIconBehavior = (clickgui.Visible and Enum.OverrideMouseIconBehavior.ForceShow or game:GetService("VRService").VREnabled and Enum.OverrideMouseIconBehavior.ForceHide or Enum.OverrideMouseIconBehavior.None)
-			game:GetService("RunService"):SetRobloxGuiFocused(clickgui.Visible and GuiLibrary["MainBlur"].Size ~= 0 or guiService:GetErrorType() ~= Enum.ConnectionError.OK)	
+			pcall(function() game:GetService("RunService"):SetRobloxGuiFocused(clickgui.Visible and GuiLibrary["MainBlur"].Size ~= 0 or guiService:GetErrorType() ~= Enum.ConnectionError.OK) end)
 			for _, mobileButton in pairs(GuiLibrary.MobileButtons) do mobileButton.Visible = not clickgui.Visible end	
 			if OnlineProfilesBigFrame.Visible then
 				OnlineProfilesBigFrame.Visible = false
@@ -6929,7 +6930,7 @@ if shared.VapeExecuted then
 				clickgui.Visible = not clickgui.Visible
 				legitgui.Visible = not clickgui.Visible
 				inputService.OverrideMouseIconBehavior = (clickgui.Visible and Enum.OverrideMouseIconBehavior.ForceShow or game:GetService("VRService").VREnabled and Enum.OverrideMouseIconBehavior.ForceHide or Enum.OverrideMouseIconBehavior.None)
-				game:GetService("RunService"):SetRobloxGuiFocused(clickgui.Visible and GuiLibrary["MainBlur"].Size ~= 0 or guiService:GetErrorType() ~= Enum.ConnectionError.OK)	
+				pcall(function() game:GetService("RunService"):SetRobloxGuiFocused(clickgui.Visible and GuiLibrary["MainBlur"].Size ~= 0 or guiService:GetErrorType() ~= Enum.ConnectionError.OK) end)
 				for _, mobileButton in pairs(GuiLibrary.MobileButtons) do mobileButton.Visible = not clickgui.Visible end	
 				if OnlineProfilesBigFrame.Visible then
 					OnlineProfilesBigFrame.Visible = false
