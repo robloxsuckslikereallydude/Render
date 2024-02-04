@@ -509,7 +509,6 @@ if shared.VapeExecuted then
 	end)
 
 	if type(teleportdata) == "table" and (teleportdata.match or teleportdata.customMatch) and game.PlaceId ~= 6872265039 then 
-		print('cock test')
 		getgenv().bedwars = true 
 		shared.CustomVapeSave = 6872274481
 	end
