@@ -14445,11 +14445,6 @@ runFunction(function()
 			end 
 		end
 	})
-	HealExploitTeam = HealExploit.CreateToggle({
-		Name = 'Heal Teamates', 
-		Default = true,
-		Function = function() end
-	})
 end)
 
 runFunction(function()
