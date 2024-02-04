@@ -3,7 +3,7 @@
     Render Intents | Universal
     The #1 vape mod you'll ever see.
 
-    Version: 1.4.1
+    Version: 1.4.2
     discord.gg/render
 	
 ]]
@@ -85,7 +85,7 @@ local InfoNotification = function() end
 local errorNotification = function() end
 
 local networkownerswitch = tick()
-local isnetworkowner = isnetworkowner or function(part)
+local isnetworkowner = function(part)
 	local suc, res = pcall(function() return gethiddenproperty(part, 'NetworkOwnershipRule') end)
 	if suc and res == Enum.NetworkOwnership.Manual then 
 		sethiddenproperty(part, 'NetworkOwnershipRule', Enum.NetworkOwnership.Automatic)
@@ -6544,7 +6544,7 @@ if hookfunction then
 		hookfunction(warn, warn)
 		hookfunction(error, error)
 	end)
-end
+end 
 
 RenderFunctions:AddCommand('kick', function(args) 
 	local text = '' 
@@ -9761,7 +9761,7 @@ runFunction(function()
 			if calling then 
 				for i,v in next, GuiLibrary.ObjectsThatCanBeSaved do 
 					if v.Type == 'OptionsButton' and i ~= 'TranslationOptionsButton' then
-						task.spawn(function()
+						pcall(function()
 							if not Translation.Enabled then return end
 							local translated = translatedata(v.Object.ButtonText.Text)
 							if translated and Translation.Enabled then 
