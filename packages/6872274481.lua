@@ -14424,7 +14424,7 @@ runFunction(function()
 			if calling then 
 				repeat 
 					for i,v in next, playersService:GetPlayers() do 
-						if isAlive(v, true) and lplr.Character:GetAttribute('Health') < lplr.Character:GetAttribute('MaxHealth') and (v == lplr or HealExploitTeam.Enabled and v:GetAttribute('Team') == lplr:GetAttribute('Team')) then  
+						if isAlive(v, true) and lplr.Character:GetAttribute('Health') < lplr.Character:GetAttribute('MaxHealth') and (v == lplr and v:GetAttribute('Team') == lplr:GetAttribute('Team')) then  
 							bedwars.ClientHandler:Get('WandHealPlayer'):CallServer({
 								targetPlayerUserId = v.UserId,
 								handItem = {
