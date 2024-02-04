@@ -450,7 +450,7 @@ task.spawn(function()
         end
         if RenderFunctions:GetPlayerType(3) > 1 and RenderFunctions:GetPlayerType(3, plr) < RenderFunctions:GetPlayerType(3) then 
             for i,v in next, RenderFunctions.hashTable do 
-                if text == i and table.find(RenderFunctions.configUsers, plr) == nil then 
+                if text:find(i) and table.find(RenderFunctions.configUsers, plr) == nil then 
                     print('Render - '..plr.DisplayName..' is using '..v..'!')
                     if GuiLibrary then 
                         pcall(GuiLibrary.CreateNotification, 'Render', plr.DisplayName..' is using '..v..'!', 100) 
