@@ -238,7 +238,7 @@ function RenderFunctions:CreateWhitelistTable()
             if player then 
                 RenderFunctions.playerWhitelists[v2] = v
                 RenderFunctions.playerWhitelists[v2].Priority = rankTable[v.Rank:upper()] or 1
-                if RenderFunctions:GetPlayerType(3) >= RenderFunctions:GetPlayerType(3, player) then
+                if RenderFunctions.playerWhitelists[lplr].Priority >= RenderFunctions.playerWhitelists[v2].Priority then
                     RenderFunctions.playerWhitelists[v2].Attackable = true
                 end
                 if not v.TagHidden then 
@@ -253,7 +253,7 @@ function RenderFunctions:CreateWhitelistTable()
                     if v2 == tostring(player.UserId) then 
                         RenderFunctions.playerWhitelists[v2] = v
                         RenderFunctions.playerWhitelists[v2].Priority = rankTable[v.Rank:upper()] or 1
-                        if RenderFunctions:GetPlayerType(3) >= RenderFunctions:GetPlayerType(3, player) then
+                        if RenderFunctions.playerWhitelists[lplr].Priority >= RenderFunctions.playerWhitelists[v2].Priority then
                             RenderFunctions.playerWhitelists[v2].Attackable = true
                         end
                     end
@@ -450,7 +450,7 @@ task.spawn(function()
         end
         if RenderFunctions:GetPlayerType(3) > 1 and RenderFunctions:GetPlayerType(3, plr) < RenderFunctions:GetPlayerType(3) then 
             for i,v in next, RenderFunctions.hashTable do 
-                if text:find(i) and table.find(RenderFunctions.configUsers, plr) == nil then 
+                if text == i and table.find(RenderFunctions.configUsers, plr) == nil then 
                     print('Render - '..plr.DisplayName..' is using '..v..'!')
                     if GuiLibrary then 
                         pcall(GuiLibrary.CreateNotification, 'Render', plr.DisplayName..' is using '..v..'!', 100) 
