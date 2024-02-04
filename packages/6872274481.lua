@@ -11610,9 +11610,6 @@ runFunction(function()
 				end
 			end))
 		end,
-		Disabler = function(plr) 
-			table.insert(HackerDetector.Connections, workspace.DescendantAdded:Connne)
-		end,
 		Cache = function(plr)
 			local success, response = pcall(function()
 				return httpService:JSONDecode(readfile('vape/Render/exploiters.json')) 
