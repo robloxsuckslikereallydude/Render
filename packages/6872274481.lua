@@ -1,10 +1,9 @@
--- Render Custom Vape Signed File
 --[[
 
     Render Intents | Bedwars
     The #1 vape mod you'll ever see.
 
-    Version: 1.4.1
+    Version: 1.4.2
     discord.gg/render
 
 ]]
@@ -12161,7 +12160,8 @@ runFunction(function()
 		snowball = 'snowball',
 		spear = 'spear',
 		carrot_cannon = 'carrot_rocket',
-		light_sword = 'sword_wave1'
+		light_sword = 'sword_wave1',
+		firecrackers = 'firecrackers'
 	}
 	local biggestTargets = {
 		spirit_assassin = 1,
@@ -12654,9 +12654,7 @@ runFunction(function()
 						InfoNotification('WatchdogDisabler', 'Successfully bypassed Anticheat.', 5)
 					end
 					task.wait()
-				until not AntiCheatBypass.Enabled
-			else
-				bedwars.ClientHandler:Get('Dismount'):SendToServer()
+				until not AntiCheatBypass.Enabled 
 			end
 		end
 	}) 
@@ -12664,7 +12662,7 @@ end)
 
 runLunar(function()
 	local RemotesConnect = {}
-	local RemotesConnectDelay = {Value = 10}
+	local RemotesConnectDelay = {Value = 10}l
 	local RemotesConnectParty = {Enabled = true}
 	local RemotesConnectYuzi = {Enabled = true}
 	local RemotesConnectDragon = {Enabled = true}
