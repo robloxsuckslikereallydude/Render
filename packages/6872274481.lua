@@ -12662,7 +12662,7 @@ end)
 
 runLunar(function()
 	local RemotesConnect = {}
-	local RemotesConnectDelay = {Value = 10}l
+	local RemotesConnectDelay = {Value = 10}
 	local RemotesConnectParty = {Enabled = true}
 	local RemotesConnectYuzi = {Enabled = true}
 	local RemotesConnectDragon = {Enabled = true}
