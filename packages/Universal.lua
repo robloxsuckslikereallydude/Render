@@ -3,7 +3,7 @@
     Render Intents | Universal
     The #1 vape mod you'll ever see.
 
-    Version: 1.4.2
+    Version: 1.5
     discord.gg/render
 	
 ]]
@@ -7856,67 +7856,6 @@ runLunar(function()
 end)
 
 runLunar(function()
-	local AutoYap = {Enabled = false}
-	local AutoYapMode = {Value = 'Custom'}
-	local AutoYapMessage = {Value = ''}
-	local AutoYapDelay, AutoYapMSG = {Value = 10}, nil
-	AutoYap = GuiLibrary.ObjectsThatCanBeSaved['UtilityWindow'].Api.CreateOptionsButton({
-		Name = 'AutoYap',
-        HoverText = 'Automatically yapps',
-		Function = function(callback)
-			if callback then
-				task.spawn(function()
-					repeat task.wait()
-						pcall(function()
-							if AutoYapMode.Value == 'Custom' then
-								sendmessage(#AutoYapMessage.ObjectList > 0 and AutoYapMessage.ObjectList[math.random(1, #AutoYapMessage.ObjectList)] or 'Render on top | gg/render')
-							else
-								AutoYapMSG = {
-									'AlSploit on top!',
-                                    'Raven on top!',
-                                    'I love to skid!',
-                                    '"exploiting is cringe"',
-                                    '"skibidi toilet has a deep lore"'
-								}
-								sendmessage(AutoYapMSG[math.random(1, #AutoYapMSG)] or 'Render on top | gg/render')
-							end
-							task.wait(AutoYapDelay.Value / 100)
-						end)
-					until not AutoYap.Enabled
-				end)
-			end
-		end,
-        Default = false,
-        ExtraText = function()
-            return AutoYapMode.Value
-        end
-	})
-	AutoYapMode = AutoYap.CreateDropdown({
-		Name = 'Mode',
-		List = {
-			'Custom',
-			'Lunar'
-		},
-		HoverText = 'Message Mode',
-		Value = 'Custom',
-		Function = function() end
-	})
-	AutoYapMessage = AutoYap.CreateTextList({
-		Name = 'Message',
-		TempText = 'Message to yap',
-		Function = function() end
-	})
-	AutoYapDelay = AutoYap.CreateSlider({
-		Name = 'Delay',
-		Min = 1,
-		Max = 100,
-		HoverText = 'Delay to send the messages',
-		Function = function() end,
-		Default = 10
-	})
-end)
-
-runLunar(function()
 	local LunarLogo = {Enabled = false}
 	local LunarLogoShadows = {Enabled = true}
 	local LunarLogoCorners = {Enabled = true}
@@ -8297,6 +8236,10 @@ runLunar(function()
         HoverText = "Let's you jump higher",
 		Function = function(callback)
 			if callback then
+				if not isAlive() then 
+					LunarBoost.ToggleButton() 
+					return 
+				end
 				local JumpedTimes = 0
 				local BoostedCF = 0
 				local Duration = tick()
@@ -8959,23 +8902,23 @@ runLunar(function()
 		Function = function(callback)
 			if callback then
 				if chatVersion() then
-					game:GetService("Players").LocalPlayer.PlayerGui.Chat.Enabled = false
+					lplr.PlayerGui.Chat.Enabled = false
 					game:GetService("CoreGui").TopBarApp.TopBarFrame.LeftFrame.ChatIcon.Visible = false
 				elseif (not chatVersion()) then
 					game.CoreGui.ExperienceChat.Enabled = false
 					game:GetService("CoreGui").TopBarApp.TopBarFrame.LeftFrame.ChatIcon.Visible = false
-					game:GetService("TextChatService").ChatInputBarConfiguration.Enabled = false
-					game:GetService("TextChatService").BubbleChatConfiguration.Enabled = false
+					textChatService.ChatInputBarConfiguration.Enabled = false
+					textChatService.BubbleChatConfiguration.Enabled = false
 				end
 			else
 				if chatVersion() then
-					game:GetService("Players").LocalPlayer.PlayerGui.Chat.Enabled = true
+					lplr.PlayerGui.Chat.Enabled = true
 					game:GetService("CoreGui").TopBarApp.TopBarFrame.LeftFrame.ChatIcon.Visible = true
-				elseif (not chatVersion()) then
+				else
 					game.CoreGui.ExperienceChat.Enabled = true
 					game:GetService("CoreGui").TopBarApp.TopBarFrame.LeftFrame.ChatIcon.Visible = true
-					game:GetService("TextChatService").ChatInputBarConfiguration.Enabled = true
-					game:GetService("TextChatService").BubbleChatConfiguration.Enabled = true
+					textChatService.ChatInputBarConfiguration.Enabled = true
+					textChatService.BubbleChatConfiguration.Enabled = true
 				end
 			end
 		end
@@ -9500,88 +9443,6 @@ end)
 	})
 end)]]
 
-runFunction(function()
-    local AntiCrash = {Enabled = false}
-	local AntiCrashMode = {Value = 'Infinite'}
-	local AntiCrashPing = {Value = 5000}
-	local AntiCrashFps = {Value = 5}
-	local AntiCrashAbort = {Value = 10}
-    AntiCrash = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
-        Name = 'AntiCrash',
-		HoverText = 'Does a certain action\nwhen about to crash',
-        Function = function(callback)
-            if callback then
-                task.spawn(function()
-					local wasHigh = false
-					repeat task.wait()
-						if RenderStore.ping > AntiCrashPing.Value or game:GetService('Stats').PerformanceStats.Fps:GetValue() < AntiCrashFps.Value then
-							warningNotification('AntiCrash', 'Crashing detected. Starting action. Disable the module to abort!', AntiCrashAbort.Value)
-							task.wait(AntiCrashAbort.Value)
-							if not AntiCrash.Enabled then return end
-							if AntiCrashMode.Value == 'Infinite' then
-								if not GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api.Enabled then
-									GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api.ToggleButton(true)
-									wasHigh = true
-								end
-							elseif AntiCrashMode.Value == 'Lobby' then
-								local playerId = playersService:GetPlayerByUserId(lplr.UserId)
-								teleportService:Teleport(6872265039, playerId)
-							else
-								game:Shutdown()
-							end
-						elseif RenderStore.ping < AntiCrashPing.Value then
-							if GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api.Enabled and wasHigh then
-								GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api.ToggleButton(true)
-								wasHigh = false
-							end
-						elseif game:GetService('Stats').PerformanceStats.Fps:GetValue() < AntiCrashFps.Value and wasHigh then
-							if GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api.Enabled and wasHigh then
-								GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api.ToggleButton(true)
-								wasHigh = false
-							end
-						end
-					until not AntiCrash.Enabled
-				end)
-			else
-				wasHigh = false
-            end
-        end,
-		ExtraText = function()
-			return AntiCrashMode.Value
-		end
-    })
-	AntiCrashMode = AntiCrash.CreateDropdown({
-        Name = 'Action',
-        List = {
-            'Infinite',
-            'Lobby',
-			'Shutdown'
-        },
-		Value = 'Infinite',
-        Function = function() end,
-    })
-	AntiCrashPing = AntiCrash.CreateSlider({
-        Name = 'Min Ping',
-        Min = 1000,
-        Max = 10000,
-        Function = function() end,
-        Default = 5000
-    })
-	AntiCrashFps = AntiCrash.CreateSlider({
-        Name = 'Max Fps',
-        Min = 1,
-        Max = 20,
-        Function = function() end,
-        Default = 5
-    })
-	AntiCrashAbort = AntiCrash.CreateSlider({
-        Name = 'Abort Time',
-        Min = 5,
-        Max = 15,
-        Function = function() end,
-        Default = 10
-    })
-end)
 
 runLunar(function()
 	local CustomCharacter = {Enabled = false}
