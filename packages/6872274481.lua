@@ -14557,3 +14557,66 @@ runFunction(function()
         Function = function() end
     })
 end)
+
+runFunction(function()
+	local HealExploit = {}
+	HealExploit = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
+		Name = 'HealExploit',
+		HoverText = 'Fast healing.',
+		Function = function(calling)
+			if calling then 
+				repeat 
+					if isAlive() and lplr.Character:GetAttribute('Health') > lplr.Character:GetAttribute('MaxHealth') then 
+						bedwars.ClientHandler:Get('WandHealPlayer'):CallServer({
+							targetPlayerUserId = lplr.UserId,
+							handItem = {
+								itemSkin = '',
+								itemType = 'villain_protector_wand',
+								amount = 1,
+								addedToBackpackTime = 1,
+								tool = replicatedStorageService.Items.villain_protector_wand
+							}
+						}) 
+					end 
+					task.wait() 
+				until not HealExploit.Enabled
+			end 
+		end
+	})
+end)
+
+
+runFunction(function()
+	local BubbleExploit = {}
+	local BubbleExploitTeam = {}
+	BubbleExploit = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
+		Name = 'BubbleExploit',
+		HoverText = 'godmode exploit.',
+		Function = function(calling)
+			if calling then 
+				repeat 
+					for i,v in next, playersService:GetPlayers() do 
+						if isAlive(v, true) and v.Character:FindFirstChild('Bubble') == nil and (v == lplr or BubbleExploitTeam.Enabled and v:GetAttribute('Team') == lplr:GetAttribute('Team')) then 
+							bedwars.ClientHandler:Get('WandBubbleProtection'):CallServer({
+								targetPlayerUserId = v.UserId,
+								handItem = {
+									itemSkin = '',
+									itemType = 'villain_protector_wand',
+									amount = 9e9,
+									addedToBackpackTime = 1,
+									tool = replicatedStorageService.Items.villain_protector_wand
+								}
+							}) 
+						end  
+					end
+					task.wait()
+				until not BubbleExploit.Enabled
+			end
+		end
+	})
+	BubbleExploitTeam = BubbleExploit.CreateToggle({
+		Name = 'Protect Teamates',
+		Default = true,
+		Function = function() end
+	})
+end)
