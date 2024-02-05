@@ -14423,30 +14423,24 @@ runFunction(function()
 		Function = function(calling)
 			if calling then 
 				repeat 
-					if HealExploitTeam.Enabled then
-						bedwars.AbilityController:useAbility('hero_wand_heal')
-					end
-					if isAlive and lplr.Character:GetAttribute('Health') < lplr.Character:GetAttribute('MaxHealth') then
-						bedwars.ClientHandler:Get('WandHealPlayer'):CallServer({
-							targetPlayerUserId = lplr.UserId,
-							handItem = {
-								itemSkin = '',
-								itemType = 'villain_protector_wand',
-								amount = 1,
-								addedToBackpackTime = 1,
-								tool = replicatedStorageService.Items.villain_protector_wand
-							}
-						})
+					for i,v in next, playersService:GetPlayers() do 
+						if isAlive(v, true) and lplr.Character:GetAttribute('Health') < lplr.Character:GetAttribute('MaxHealth') and (v == lplr or HealExploitTeam.Enabled and v:GetAttribute('Team') == lplr:GetAttribute('Team')) then  
+							bedwars.ClientHandler:Get('WandHealPlayer'):CallServer({
+								targetPlayerUserId = v.UserId,
+								handItem = {
+									itemSkin = '',
+									itemType = 'villain_protector_wand',
+									amount = 1,
+									addedToBackpackTime = 1,
+									tool = replicatedStorageService.Items.villain_protector_wand
+								}
+							})
+						end
 					end
 					task.wait() 
 				until not HealExploit.Enabled
 			end 
 		end
-	})
-	HealExploitTeam = HealExploit.CreateToggle({
-	Name = 'Protect Teamates',
-	Default = true,
-	Function = function() end
 	})
 end)
 
@@ -14478,9 +14472,9 @@ runFunction(function()
 			end
 		end
 	})
-	HealExploitTeam = HealExploit.CreateToggle({
-	Name = 'Protect Teamates',
-	Default = true,
-	Function = function() end
-	}}
+	BubbleExploitTeam = BubbleExploit.CreateToggle({
+		Name = 'Protect Teamates',
+		Default = true,
+		Function = function() end
+	})
 end)
