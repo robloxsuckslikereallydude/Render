@@ -3,7 +3,7 @@
     Render Intents | Bedwars lobby
     The #1 vape mod you'll ever see.
 
-    Version: 1.4.1
+    Version: 1.5.1
     discord.gg/render
 
 ]]
