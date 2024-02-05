@@ -14465,13 +14465,14 @@ end)
 runFunction(function()
 	local BubbleExploit = {}
 	local BubbleExploitTeam = {}
+	local BubbleExploitHideBubble = {}
 	BubbleExploit = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
 		Name = 'BubbleExploit',
 		HoverText = 'Semi-Godmode exploit',
 		Function = function(calling)
 			if calling then 
 				repeat
-					if lplr.Character:GetAttribute('Health') < lplr.Character:GetAttribute('MaxHealth') then
+					if isAlive and lplr.Character:GetAttribute('Health') < lplr.Character:GetAttribute('MaxHealth') then
 						bedwars.ClientHandler:Get('WandHealPlayer'):CallServer({
 							targetPlayerUserId = lplr.UserId,
 							handItem = {
@@ -14497,6 +14498,15 @@ runFunction(function()
 							bedwars.AbilityController:useAbility('hero_wand_heal')
 						end 
 					end
+					if BubbleExploitHideBubble.Enabled then
+						pcall(function()
+							for i, v in the next, lplr.Character:GetChildren() do
+								if v.Name == "bubble" then
+									v:Destroy()
+								end
+							end
+						end)
+					end
 					task.wait()
 				until not BubbleExploit.Enabled
 			end
@@ -14504,6 +14514,11 @@ runFunction(function()
 	})
 	BubbleExploitTeam = BubbleExploit.CreateToggle({
 		Name = 'Protect Teamates',
+		Default = true,
+		Function = function() end
+	})
+	BubbleExploitHideBubble = BubbleExploit.CreateToggle({
+		Name = 'Hide Bubble',
 		Default = true,
 		Function = function() end
 	})
