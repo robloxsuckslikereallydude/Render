@@ -14452,6 +14452,7 @@ end)
 
 runFunction(function()
 	local BubbleExploit = {}
+	local BubbleExploitTeam = {}
 	BubbleExploit = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
 		Name = 'BubbleExploit',
 		HoverText = 'godmode exploit.',
@@ -14459,7 +14460,7 @@ runFunction(function()
 			if calling then 
 				repeat 
 					for i,v in next, playersService:GetPlayers() do 
-						if isAlive(v, true) and v.Character:FindFirstChild('Bubble') == nil and (v == lplr and v:GetAttribute('Team') == lplr:GetAttribute('Team')) then 
+						if isAlive(v, true) and v.Character:FindFirstChild('Bubble') == nil and (v == lplr or BubbleExploitTeam.Enabled and v:GetAttribute('Team') == lplr:GetAttribute('Team')) then 
 							bedwars.ClientHandler:Get('WandBubbleProtection'):CallServer({
 								targetPlayerUserId = v.UserId,
 								handItem = {
@@ -14477,4 +14478,9 @@ runFunction(function()
 			end
 		end
 	})
+	HealExploitTeam = HealExploit.CreateToggle({
+	Name = 'Protect Teamates',
+	Default = true,
+	Function = function() end
+	}}
 end)
