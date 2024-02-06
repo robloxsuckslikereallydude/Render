@@ -3,7 +3,7 @@
     Render Intents | Bedwars
     The #1 vape mod you'll ever see.
 
-    Version: 1.5.1
+    Version: 1.5
     discord.gg/render
 
 ]]
@@ -14419,24 +14419,12 @@ runFunction(function()
 	local HealExploitTeam = {}
 	HealExploit = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
 		Name = 'HealExploit',
-		HoverText = 'Quicker healing',
+		HoverText = 'Fast healing.',
 		Function = function(calling)
 			if calling then 
 				repeat 
-					if lplr.Character:GetAttribute('Health') < lplr.Character:GetAttribute('MaxHealth') then
-						bedwars.ClientHandler:Get('WandHealPlayer'):CallServer({
-							targetPlayerUserId = lplr.UserId,
-							handItem = {
-								itemSkin = '',
-								itemType = 'villain_protector_wand',
-								amount = 1,
-								addedToBackpackTime = 1,
-								tool = replicatedStorageService.Items.villain_protector_wand
-							}
-						})
-					end
 					for i,v in next, playersService:GetPlayers() do 
-						if isAlive(v, true) and (HealExploitTeam.Enabled and v:GetAttribute('Team') == lplr:GetAttribute('Team')) then  
+						if isAlive(v, true) and lplr.Character:GetAttribute('Health') < lplr.Character:GetAttribute('MaxHealth') and (v == lplr or HealExploitTeam.Enabled and v:GetAttribute('Team') == lplr:GetAttribute('Team')) then  
 							bedwars.ClientHandler:Get('WandHealPlayer'):CallServer({
 								targetPlayerUserId = v.UserId,
 								handItem = {
@@ -14447,7 +14435,6 @@ runFunction(function()
 									tool = replicatedStorageService.Items.villain_protector_wand
 								}
 							})
-							bedwars.AbilityController:useAbility('hero_wand_heal')
 						end
 					end
 					task.wait() 
@@ -14455,34 +14442,17 @@ runFunction(function()
 			end 
 		end
 	})
-	HealExploitTeam = HealExploit.CreateToggle({
-		Name = 'Protect Teamates',
-		Default = true,
-		Function = function() end
-	})
 end)
 
 runFunction(function()
 	local BubbleExploit = {}
 	local BubbleExploitTeam = {}
-	local BubbleExploitHideBubble = {}
 	BubbleExploit = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
 		Name = 'BubbleExploit',
-		HoverText = 'Semi-Godmode exploit',
+		HoverText = 'godmode exploit.',
 		Function = function(calling)
 			if calling then 
-				repeat
-					if isAlive and lplr.Character:GetAttribute('Health') < lplr.Character:GetAttribute('MaxHealth') then
-						bedwars.ClientHandler:Get('WandHealPlayer'):CallServer({
-							targetPlayerUserId = lplr.UserId,
-							handItem = {
-								itemSkin = '',
-								itemType = 'villain_protector_wand',
-								amount = 9e9,
-								addedToBackpackTime = 1,
-								tool = replicatedStorageService.Items.villain_protector_wand
-							}
-					end
+				repeat 
 					for i,v in next, playersService:GetPlayers() do 
 						if isAlive(v, true) and v.Character:FindFirstChild('Bubble') == nil and (v == lplr or BubbleExploitTeam.Enabled and v:GetAttribute('Team') == lplr:GetAttribute('Team')) then 
 							bedwars.ClientHandler:Get('WandBubbleProtection'):CallServer({
@@ -14494,18 +14464,8 @@ runFunction(function()
 									addedToBackpackTime = 1,
 									tool = replicatedStorageService.Items.villain_protector_wand
 								}
-							})
-							bedwars.AbilityController:useAbility('hero_wand_heal')
-						end 
-					end
-					if BubbleExploitHideBubble.Enabled then
-						pcall(function()
-							for i, v in the next, lplr.Character:GetChildren() do
-								if v.Name == "bubble" then
-									v:Destroy()
-								end
-							end
-						end)
+							}) 
+						end  
 					end
 					task.wait()
 				until not BubbleExploit.Enabled
@@ -14514,11 +14474,6 @@ runFunction(function()
 	})
 	BubbleExploitTeam = BubbleExploit.CreateToggle({
 		Name = 'Protect Teamates',
-		Default = true,
-		Function = function() end
-	})
-	BubbleExploitHideBubble = BubbleExploit.CreateToggle({
-		Name = 'Hide Bubble',
 		Default = true,
 		Function = function() end
 	})
