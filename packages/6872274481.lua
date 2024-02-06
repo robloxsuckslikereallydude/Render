@@ -12631,51 +12631,6 @@ runFunction(function()
 	end)
 end)
 
-runFunction(function() 
-	local AntiCheatBypass = {}
-	local DisablerHideElk = {}
-	local oldhip
-	AntiCheatBypass = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
-		Name = 'Disabler',
-		ExtraText = function() return 'Taz 🔥' end,
-		HoverText = 'Allows movement up to 40 speed alone. (Thank you Taz)',
-		Function = function(calling)
-			if calling then 
-				if not isAlive() then
-					repeat task.wait() until isAlive() or not AntiCheatBypass.Enabled  
-				end
-				if not AntiCheatBypass.Enabled then
-					return 
-				end
-				for i,v in next, bedwars.SoundList do 
-					if i:lower():find('elk') then 
-						bedwars.SoundList[i] = '' 
-					end 
-				end
-				oldhip = lplr.Character.Humanoid.HipHeight
-				repeat 
-					if DisablerHideElk.Enabled then  
-						pcall(function() lplr.Character.elk:FindFirstChild('body_mesh'):Destroy() end)
-						pcall(function() lplr.Character.elk.PrimaryPart:Destroy() end) 
-						pcall(function() lplr.Character.Humanoid.HipHeight = oldhip end) 
-					end
-					if isAlive() and bedwars.AbilityController:canUseAbility('elk_summon') and lplr.Character:FindFirstChild('elk') == nil then 
-						bedwars.AbilityController:useAbility('elk_summon')
-						lplr.Character.Humanoid.HipHeight = oldhip
-						InfoNotification('WatchdogDisabler', 'Successfully bypassed Anticheat.', 5)
-					end
-					task.wait()
-				until not AntiCheatBypass.Enabled 
-			end
-		end
-	}) 
-	DisablerHideElk = AntiCheatBypass.CreateToggle({
-		Name = 'Hide Elk',
-		Default = true,
-		Function = function() end
-	})
-end)
-
 runLunar(function()
 	local RemotesConnect = {}
 	local RemotesConnectDelay = {Value = 10}
@@ -14414,67 +14369,4 @@ runFunction(function()
     })
 end)
 
-runFunction(function()
-	local HealExploit = {}
-	local HealExploitTeam = {}
-	HealExploit = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
-		Name = 'HealExploit',
-		HoverText = 'Fast healing.',
-		Function = function(calling)
-			if calling then 
-				repeat 
-					for i,v in next, playersService:GetPlayers() do 
-						if isAlive(v, true) and lplr.Character:GetAttribute('Health') < lplr.Character:GetAttribute('MaxHealth') and (v == lplr or HealExploitTeam.Enabled and v:GetAttribute('Team') == lplr:GetAttribute('Team')) then  
-							bedwars.ClientHandler:Get('WandHealPlayer'):CallServer({
-								targetPlayerUserId = v.UserId,
-								handItem = {
-									itemSkin = '',
-									itemType = 'villain_protector_wand',
-									amount = 1,
-									addedToBackpackTime = 1,
-									tool = replicatedStorageService.Items.villain_protector_wand
-								}
-							})
-						end
-					end
-					task.wait() 
-				until not HealExploit.Enabled
-			end 
-		end
-	})
-end)
 
-runFunction(function()
-	local BubbleExploit = {}
-	local BubbleExploitTeam = {}
-	BubbleExploit = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
-		Name = 'BubbleExploit',
-		HoverText = 'godmode exploit.',
-		Function = function(calling)
-			if calling then 
-				repeat 
-					for i,v in next, playersService:GetPlayers() do 
-						if isAlive(v, true) and v.Character:FindFirstChild('Bubble') == nil and (v == lplr or BubbleExploitTeam.Enabled and v:GetAttribute('Team') == lplr:GetAttribute('Team')) then 
-							bedwars.ClientHandler:Get('WandBubbleProtection'):CallServer({
-								targetPlayerUserId = v.UserId,
-								handItem = {
-									itemSkin = '',
-									itemType = 'villain_protector_wand',
-									amount = 9e9,
-									addedToBackpackTime = 1,
-									tool = replicatedStorageService.Items.villain_protector_wand
-								}
-							}) 
-						end  
-					end
-					task.wait()
-				until not BubbleExploit.Enabled
-			end
-		end
-	})
-	BubbleExploitTeam = BubbleExploit.CreateToggle({
-		Name = 'Protect Teamates',
-		Default = true,
-		Function = function() end
-	})
-end)
