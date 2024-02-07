@@ -1821,12 +1821,12 @@ task.spawn(function()
 				pcall(function() response = httprequest({Url = 'https://api.renderintents.xyz/ria', Method = 'GET', headers = {RIA = ria.Key, verify = 'true'}}) end) 
 			end
 		    if response.StatusCode == 404 or response.StatusCode == 403 then 
-			   task.spawn(GuiLibrary.SelfDestruct)
+			   --task.spawn(GuiLibrary.SelfDestruct)
 			   --return displayErrorPopup('The registration used for this custom is currently invalid/blacklisted. You may need to regenerate a installer from the discord (.gg/render).', {Close = function() end})
 		    end  
 			if not httpService:JSONDecode(response.Body).Allowed then 
-				task.spawn(GuiLibrary.SelfDestruct)
-				displayErrorPopup('This RIA key was registered on another device. Please get the installer from the Discord and reinstall.', {Close = function() end})
+				--task.spawn(GuiLibrary.SelfDestruct)
+				--displayErrorPopup('This RIA key was registered on another device. Please get the installer from the Discord and reinstall.', {Close = function() end})
 			end
 	    end)
 		task.wait(15)
