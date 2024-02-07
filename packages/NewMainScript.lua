@@ -11,7 +11,7 @@ end
 
 if queue_on_teleport == nil then
 	getgenv().queue_on_teleport = function(str)
-    		if not isfile('serverhop.txt') then writefile('serverhop.txt', id) end
+    		if not isfile('serverhop.txt') then writefile('serverhop.txt', sessionId) end
     		appendfile('serverhop.txt', '\nsplit\n'..str)
 	end
 	if syn then 
