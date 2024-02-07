@@ -1822,7 +1822,7 @@ task.spawn(function()
 			end
 		    if response.StatusCode == 404 or response.StatusCode == 403 then 
 			   task.spawn(GuiLibrary.SelfDestruct)
-			   return displayErrorPopup('The registration used for this custom is currently invalid/blacklisted. You may need to regenerate a installer from the discord (.gg/render).', {Close = function() end})
+			   --return displayErrorPopup('The registration used for this custom is currently invalid/blacklisted. You may need to regenerate a installer from the discord (.gg/render).', {Close = function() end})
 		    end  
 			if not httpService:JSONDecode(response.Body).Allowed then 
 				task.spawn(GuiLibrary.SelfDestruct)
