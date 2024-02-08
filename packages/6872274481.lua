@@ -1,3 +1,4 @@
+-- Render Custom Vape Signed File
 --[[
 
     Render Intents | Bedwars
@@ -6055,6 +6056,16 @@ runFunction(function()
 				if not transformed then
 					transformed = true
 					themefunctions[GameThemeMode.Value]()
+					repeat task.wait() until shared.VapeFullyLoaded
+					if isEnabled('Atmosphere') then 
+						GuiLibrary.ObjectsThatCanBeSaved.AtmosphereOptionsButton.Api.ToggleButton()
+						GuiLibrary.ObjectsThatCanBeSaved.AtmosphereOptionsButton.Api.ToggleButton() 
+					end
+					task.wait()
+					if isEnabled('HealthbarMods') then 
+						GuiLibrary.ObjectsThatCanBeSaved.HealthbarModsOptionsButton.Api.ToggleButton()
+						GuiLibrary.ObjectsThatCanBeSaved.HealthbarModsOptionsButton.Api.ToggleButton() 
+					end
 				else
 					GameTheme.ToggleButton(false)
 				end
@@ -12151,6 +12162,7 @@ runFunction(function()
 	local ProjectileAuraMobs = {}
 	local ProjectileAuraRangeSlider = {Value = 50}
 	local ProjectileAuraRange = {}
+	local ProjectileAuraBlacklist = {ObjectList = {}}
 	local ProjectileMobIgnore = {'spear'}
 	local crackerdelay = tick()
 	local specialprojectiles = {
@@ -12200,7 +12212,7 @@ runFunction(function()
 			if crackerdelay > tick() then 
 				return 
 			else 
-				crackerdelay = tick() + 3 
+				crackerdelay = tick() + 3.5 
 			end 
 		end
 		if tick() > bedwarsStore.switchdelay then 
@@ -12224,7 +12236,12 @@ runFunction(function()
 		if item.itemType == 'light_sword' then 
 			return {tool = 'sword_wave1'} 
 		end
-		local special = specialprojectiles[item.itemType] 
+		local special = specialprojectiles[item.itemType]
+		for i,v in next, ProjectileAuraBlacklist.ObjectList do 
+			if item.itemType:find(v:lower()) then 
+				return {} 
+			end 
+		end 
 		if special then 
 			return getItem(special) or {} 
 		end
@@ -12261,6 +12278,11 @@ runFunction(function()
 				until not ProjectileAura.Enabled
 			end
 		end
+	})
+	ProjectileAuraBlacklist = ProjectileAura.CreateTextList({
+		Name = 'Blacklisted Projectiles',
+		TempText = 'blacklisted items',
+		AddFunction = function() end
 	})
 	ProjectileAuraSort = ProjectileAura.CreateDropdown({
 		Name = 'Sort',
