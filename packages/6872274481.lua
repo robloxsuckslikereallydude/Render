@@ -1,4 +1,3 @@
--- Render Custom Vape Signed File
 --[[
 
     Render Intents | Bedwars
