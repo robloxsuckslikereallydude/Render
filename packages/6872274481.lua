@@ -7945,6 +7945,7 @@ runFunction(function()
 	local AutoKit = {}
 	local HannahExploitCheck = {}
 	local HannahExploitRange = {Value = 50}
+	local EvelynnExploitRange = {Value = 50}
 	local AutoKitToggles = {}
 	local healtick = tick()
 	local function lowestTeamate()
@@ -7989,7 +7990,9 @@ runFunction(function()
 		hannah = 'Hannah',
 		jailor = 'Warden',
 		warlock = 'Eldric',
-		necromancer = 'Crypt'
+		necromancer = 'Crypt',
+		pinata = 'Lucia',
+		spirit_assassin = 'Evelynn'
 	}
 	local autokitstuff = {
 		melody = function()
@@ -8211,6 +8214,29 @@ runFunction(function()
 					end
 				end 
 				task.wait(0.1) 
+			until not AutoKit.Enabled
+		end,
+		pinata = function()
+			repeat 
+				for i,v in next, collectionService:GetTagged(lplr.Name..':pinata') do 
+					if getItem('candy') then 
+						bedwars.ClientHandler:Get('DepositCoins'):CallServer(v)
+					end
+				end
+				task.wait(0.1)
+			until not AutoKit.Enabled
+		end,
+		spirit_assassin = function()
+			repeat 
+				for i,v in next, collectionService:GetTagged('EvelynnSoul') do 
+					if isAlive(lplr, true) and isEnabled('InfiniteFly') then 
+						if bedwars.ClientHandler:Get('UseSpirit'):CallServer({secret = v:GetAttribute('SpiritSecret')}) then 
+							collectionService:RemoveTag(v, 'EvelynnSoul') 
+							v:Destroy()
+						end
+					end
+				end
+				task.wait(0.1)
 			until not AutoKit.Enabled
 		end
 	}
