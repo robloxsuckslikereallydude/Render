@@ -8050,7 +8050,7 @@ runFunction(function()
 			repeat
 				task.wait()
 				for i,v in next, bedwars.GrimReaperController.soulsByPosition do
-					if isAlive(lplr, true) and lplr.Character:GetAttribute('Health') <= (lplr.Character:GetAttribute('MaxHealth') - 10) and v.PrimaryPart and (lplr.Character.HumanoidRootPart.Position - v.PrimaryPart.Position).Magnitude <= 120 and (not lplr.Character:GetAttribute('GrimReaperChannel')) then
+					if isAlive(lplr, true) and lplr.Character:GetAttribute('Health') <= (lplr.Character:GetAttribute('MaxHealth') - 10) and v.PrimaryPart and (lplr.Character.HumanoidRootPart.Position - v.PrimaryPart.Position).Magnitude <= 120 and (not lplr.Character:GetAttribute('GrimReaperChannel')) and not isEnabled('InfiniteFly') then
 						bedwars.ClientHandler:Get(bedwars.ConsumeSoulRemote):CallServer({
 							secret = v:GetAttribute('GrimReaperSoulSecret')
 						})
@@ -8196,7 +8196,7 @@ runFunction(function()
 		necromancer = function()
 			repeat 
 				for i,v in next, collectionService:GetTagged('Gravestone') do
-					if v.PrimaryPart and isAlive() then
+					if v.PrimaryPart and isAlive() and not isEnabled('InfiniteFly') then
 						local magnitude = (lplr.Character.HumanoidRootPart.Position - v.PrimaryPart.Position).Magnitude 
 						local plr = playersService:GetPlayerByUserId(v:GetAttribute('GravestonePlayerUserId')) 
 						if plr and not RenderFunctions:GetPlayerType(2, plr) or magnitude > 17 then 
@@ -8229,7 +8229,7 @@ runFunction(function()
 		spirit_assassin = function()
 			repeat 
 				for i,v in next, collectionService:GetTagged('EvelynnSoul') do 
-					if isAlive(lplr, true) and isEnabled('InfiniteFly') then 
+					if isAlive(lplr, true) and not isEnabled('InfiniteFly') then 
 						if bedwars.ClientHandler:Get('UseSpirit'):CallServer({secret = v:GetAttribute('SpiritSecret')}) then 
 							collectionService:RemoveTag(v, 'EvelynnSoul') 
 							v:Destroy()
