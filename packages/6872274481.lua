@@ -8050,7 +8050,7 @@ runFunction(function()
 			repeat
 				task.wait()
 				for i,v in next, bedwars.GrimReaperController.soulsByPosition do
-					if isAlive(lplr, true) and lplr.Character:GetAttribute('Health') <= (lplr.Character:GetAttribute('MaxHealth') / 4) and v.PrimaryPart and (lplr.Character.HumanoidRootPart.Position - v.PrimaryPart.Position).Magnitude <= 120 and (not lplr.Character:GetAttribute('GrimReaperChannel')) then
+					if isAlive(lplr, true) and lplr.Character:GetAttribute('Health') <= (lplr.Character:GetAttribute('MaxHealth') - 10) and v.PrimaryPart and (lplr.Character.HumanoidRootPart.Position - v.PrimaryPart.Position).Magnitude <= 120 and (not lplr.Character:GetAttribute('GrimReaperChannel')) then
 						bedwars.ClientHandler:Get(bedwars.ConsumeSoulRemote):CallServer({
 							secret = v:GetAttribute('GrimReaperSoulSecret')
 						})
