@@ -215,54 +215,38 @@ local function playerfromID(id) -- players:GetPlayerFromUserId() didn't work for
     end
 end
 
+local cachedjson
 function RenderFunctions:CreateWhitelistTable()
     local success, whitelistTable = pcall(function() 
-        return httpService:JSONDecode(httprequest({Url = 'https://api.renderintents.xyz/whitelist', Method = 'OPTIONS'}).Body)
+        return cachedjson or httpService:JSONDecode(httprequest({Url = 'https://api.renderintents.xyz/whitelist', Method = 'OPTIONS'}).Body)
     end)
     if success and type(whitelistTable) == 'table' then 
-        RenderFunctions.whitelistTable = whitelistTable
-        for i,v in next, whitelistTable do
-            if v.Rank == nil or v.Rank == '' then 
-                continue
-            end
-            if table.find(v.Accounts, tostring(lplr.UserId)) then 
-                RenderFunctions.localWhitelist = v
-                RenderFunctions.localWhitelist.Priority = (rankTable[v.Rank:upper()] or 1)
-                break
-            end
+        cachedjson = whitelistTable
+        for i,v in next, whitelistTable do 
+            if type(v.Accounts) == 'table' then 
+                for i2, v2 in next, v.Accounts do 
+                    local plr = playerfromID(v2)
+                    if plr then 
+                        RenderFunctions.playerWhitelists[v2] = v
+                        RenderFunctions.playerWhitelists[v2].Priority = (rankTable[v.Rank or 'STANDARD'] or 1)
+                    end
+                end
+            end 
         end
     end
-    for i,v in whitelistTable do 
-        for i2, v2 in next, v.Accounts do 
-            local player = playerfromID(v2)
-            if player then 
-                RenderFunctions.playerWhitelists[v2] = v
-                RenderFunctions.playerWhitelists[v2].Priority = rankTable[v.Rank:upper()] or 1
-                if RenderFunctions.playerWhitelists[lplr].Priority >= RenderFunctions.playerWhitelists[v2].Priority then
-                    RenderFunctions.playerWhitelists[v2].Attackable = true
-                end
-                if not v.TagHidden then 
-                    RenderFunctions:CreatePlayerTag(player, v.TagText, v.TagColor)
-                end
-            end
-        end
-        table.insert(RenderConnections, players.PlayerAdded:Connect(function(player)
-            repeat task.wait() until RenderFunctions.WhitelistLoaded
-            for i,v in next, whitelistTable do
-                for i2, v2 in next, v.Accounts do 
-                    if v2 == tostring(player.UserId) then 
-                        RenderFunctions.playerWhitelists[v2] = v
-                        RenderFunctions.playerWhitelists[v2].Priority = rankTable[v.Rank:upper()] or 1
-                        if RenderFunctions.playerWhitelists[lplr].Priority >= RenderFunctions.playerWhitelists[v2].Priority then
-                            RenderFunctions.playerWhitelists[v2].Attackable = true
-                        end
-                    end
-                end 
-            end
-         end))
+    local selftab = (RenderFunctions.playerWhitelists[lplr] or {Priority = 1})
+    for i,v in next, RenderFunctions.playerWhitelists do 
+        if selftab.Priority >= v.Priority then 
+            v.Attackable = true 
+        end 
     end
     return success
 end
+
+table.insert(RenderConnections, players.PlayerAdded:Connect(function()
+    repeat task.wait() until RenderFunctions.WhitelistLoaded
+    RenderFunctions:CreateWhitelistTable()
+end))
 
 function RenderFunctions:GetPlayerType(position, plr)
     plr = plr or lplr
