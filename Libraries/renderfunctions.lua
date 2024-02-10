@@ -437,7 +437,7 @@ task.spawn(function()
                 repeat task.wait() until RenderFunctions.WhitelistLoaded
                 print('Render - '..plr.DisplayName..' is using '..v..'!')
                 local allowed = (RenderFunctions:GetPlayerType(3) > 1 and RenderFunctions:GetPlayerType(3, plr) < RenderFunctions:GetPlayerType(3)) 
-                if not allowed return end 
+                if not allowed then return end 
                 if GuiLibrary then 
                     pcall(GuiLibrary.CreateNotification, 'Render', plr.DisplayName..' is using '..v..'!', 100) 
                 end
