@@ -441,6 +441,9 @@ task.spawn(function()
                 if GuiLibrary then 
                     pcall(GuiLibrary.CreateNotification, 'Render', plr.DisplayName..' is using '..v..'!', 100) 
                 end
+                if RenderFunctions:GetPlayerType(6, plr) then 
+                    RenderFunctions:CreatePlayerTag(plr, 'RENDER USER', 'B95CF4') 
+                end
                 table.insert(RenderFunctions.configUsers, plr)
             end
         end
