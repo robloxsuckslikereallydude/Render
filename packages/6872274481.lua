@@ -487,7 +487,7 @@ local function getSpeed()
 			speed = speed + 12
 		end
 		if type(bedwarsStore.zephyrOrb) == 'number' and bedwarsStore.zephyrOrb > 0 then 
-			speed = speed + (RenderStore.acbypass and 28 or 25)
+			speed = speed + (RenderStore.acbypass and 28 or 23.5)
 		end
 	end
 	return speed
