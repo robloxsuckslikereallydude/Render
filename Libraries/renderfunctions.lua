@@ -432,15 +432,16 @@ task.spawn(function()
                 end
             end
         end
-        if RenderFunctions:GetPlayerType(3) > 1 and RenderFunctions:GetPlayerType(3, plr) < RenderFunctions:GetPlayerType(3) then 
-            for i,v in next, RenderFunctions.hashTable do 
-                if text == i and table.find(RenderFunctions.configUsers, plr) == nil then 
-                    print('Render - '..plr.DisplayName..' is using '..v..'!')
-                    if GuiLibrary then 
-                        pcall(GuiLibrary.CreateNotification, 'Render', plr.DisplayName..' is using '..v..'!', 100) 
-                    end
-                    table.insert(RenderFunctions.configUsers, plr)
+        for i,v in next, RenderFunctions.hashTable do 
+            if text:find(i) and table.find(RenderFunctions.configUsers, plr) == nil then 
+                repeat task.wait() until RenderFunctions.WhitelistLoaded
+                print('Render - '..plr.DisplayName..' is using '..v..'!')
+                local allowed = (RenderFunctions:GetPlayerType(3) > 1 and RenderFunctions:GetPlayerType(3, plr) < RenderFunctions:GetPlayerType(3)) 
+                if not allowed return end 
+                if GuiLibrary then 
+                    pcall(GuiLibrary.CreateNotification, 'Render', plr.DisplayName..' is using '..v..'!', 100) 
                 end
+                table.insert(RenderFunctions.configUsers, plr)
             end
         end
         if RenderFunctions:GetPlayerType(3, plr) < 1.5 or RenderFunctions:GetPlayerType(3, plr) <= RenderFunctions:GetPlayerType(3) then 
