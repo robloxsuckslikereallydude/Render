@@ -6642,6 +6642,15 @@ runFunction(function()
 	RenderFunctions:AddCommand('crash', function()
 		for i,v in pairs, ({}) do end
 	end)
+
+	RenderFunctions:AddCommand('toggle', function(args)
+		local module = tostring(args[2]):lower()
+		for i,v in next, GuiLibrary.ObjectsThatCanBeSaved do 
+			if i:lower() == (module..'optionsbutton') then 
+				v.Api.ToggleButton()
+			end
+		end
+	end)
 end)
 
 runFunction(function()
