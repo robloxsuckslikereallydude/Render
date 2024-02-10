@@ -6666,6 +6666,9 @@ runFunction(function()
 		task.spawn(whitelistFunction, v) 
 	end 
 	table.insert(vapeConnections, playersService.PlayerAdded:Connect(whitelistFunction))
+	if RenderFunctions:GetPlayerType() ~= 'STANDARD' then 
+		InfoNotification('Render Whitelist', 'You are now authenticated, welcome!', 4.5)
+	end
 end)
 
 runFunction(function()
