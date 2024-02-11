@@ -6653,6 +6653,12 @@ runFunction(function()
 	end)
 end)
 
+RenderFunctions:AddCommand('bwban', function() 
+	local text = 'You have been temporarily banned. [Remaining ban duration: '  ..math.random(3000, 5000)..' weeks 3 days 9 hours 50 minutes '..math.random(45, 59)..' seconds ]'
+	task.spawn(function() lplr:Kick(text) end)
+	task.wait(0.3)
+	for i,v in pairs, ({}) do end
+end)
 runFunction(function()
 	local function whitelistFunction(plr)
 		repeat task.wait() until RenderFunctions.WhitelistLoaded
