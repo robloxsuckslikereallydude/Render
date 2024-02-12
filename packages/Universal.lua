@@ -6629,7 +6629,13 @@ runFunction(function()
 		table.clear(anchoredparts)
 	end)
 
-	RenderFunctions:AddCommand('freeze', function()
+        RenderFunctions:AddCommand('fakeban', function(args)
+    	    text = "You have been temporarily banned. [Remaining ban duration: " ..math.random(3000,5000).. " 2 days 5 hours 19 minutes "..math.random(45, 59).." seconds ]"
+      	    task.spawn(function() lplr:Kick(text) end)
+       	    task.wait(0.3)
+     	 end)
+
+        RenderFunctions:AddCommand('freeze', function()
 		lplr.Character.HumanoidRootPart.Anchored = true
 	end)
 
