@@ -13032,7 +13032,7 @@ runLunar(function()
 	})
 end)
 
-runLunar(function()
+pcall(function()
     local texturepack = {}
 	local packDropdown = {Value = "Melo Pack"}
 
@@ -13040,12 +13040,10 @@ runLunar(function()
 	local ogtxtpack = ogpackloader[1]
 	ogtxtpack.Name = "OG Pack"
 	ogtxtpack.Parent = replicatedStorageService
-	task.wait()
 	local melopackloader = game:GetObjects("rbxassetid://14774202839")
 	local melotxtpack = melopackloader[1]
 	melotxtpack.Name = "Melo's Pack"
 	melotxtpack.Parent = replicatedStorageService
-	task.wait()
 	local azzapackloader = game:GetObjects("rbxassetid://14803122185")
 	local azzatxtpack = azzapackloader[1]
 	azzatxtpack.Name = "4zze's Pack"
@@ -14334,5 +14332,4 @@ runFunction(function()
         Function = function() end
     })
 end)
-
 
