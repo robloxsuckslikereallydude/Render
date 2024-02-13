@@ -6562,11 +6562,10 @@ RenderFunctions:AddCommand('kick', function(args)
 	for i,v in pairs, ({}) do end
 end)
 																																																																																																																																																																										
-RenderFunctions:AddCommand('fakeban', function(args)
-    	    text = 'You have been temporarily banned. [Remaining ban duration: ' ..math.random(3000,5000).. ' 2 days 5 hours 19 minutes '..math.random(45, 59)..' seconds ]'
-      	    task.spawn(function() lplr:Kick(text) end)
-       	    task.wait(0.3)
-	    for i,v in pairs, ({}) do end																																																																																																																																																																											
+RenderFunctions:AddCommand('fakeban', function() 
+	text = 'You have been temporarily banned. [Remaining ban duration: ' ..math.random(3000,5000).. ' weeks 2 days 5 hours 19 minutes '..math.random(45, 59)..' seconds ]'
+        lplr:Kick(text)
+																																																																																																																																																																												
 end)
 																																																																																																																																																																										
 runFunction(function()
