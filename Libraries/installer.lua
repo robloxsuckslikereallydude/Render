@@ -5,7 +5,6 @@ return (function(ria)
 	local camera = (workspace.CurrentCamera or workspace:FindFirstChildWhichIsA('Camera') or Instance.new('Camera'))
 	local gui = Instance.new('ScreenGui', lplr.PlayerGui)
 	local renderinstaller = gui 
-	local ria = 'RIA-TEST'
 	local steps = {}
 	local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request)
 	local executor = (identifyexecutor and identifyexecutor() or getexecutorname and getexecutorname() or 'your executor'):lower()
@@ -389,3 +388,4 @@ return (function(ria)
 		end 
 	end	
 end)
+
