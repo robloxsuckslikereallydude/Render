@@ -373,7 +373,7 @@ return (function(ria)
 	
 	if profiles.Enabled then 
 		steps['Fetching Profiles...'] = function()
-			local res = httprequest({Url = 'https://api.github.com/repos/SystemXVoid/Render/contents/Libraries/assets', Method = 'GET'})
+			local res = httprequest({Url = 'https://api.github.com/repos/SystemXVoid/Render/contents/Libraries/Settings', Method = 'GET'})
 			for i,v in next, httpservice:JSONDecode(res.Body) do 
 				table.insert(profiles, v.name)
 			end
@@ -382,10 +382,9 @@ return (function(ria)
 		repeat task.wait() until profilesfetched 
 		for i,v in next, profiles do 
 			steps['Downloading vape/Profiles/'..v] = function()
-				local res = httprequest({Url = 'https://raw.githubusercontent.com/SystemXVoid/Render/source/Libraries/assets/'..v, Method = 'GET'}) 
+				local res = httprequest({Url = 'https://raw.githubusercontent.com/SystemXVoid/Render/source/Libraries/Settings/'..v, Method = 'GET'}) 
 				writevapefile('Profiles/'..v, res.Body)
 			end
 		end 
 	end	
 end)
-
