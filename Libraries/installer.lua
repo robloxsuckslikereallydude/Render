@@ -281,7 +281,7 @@ task.spawn(function()
 	until not gui.Parent
 end)
 
-local profiles = createbutton({Name = 'Install Settings'})
+local profiles = createbutton({Name = 'Install Settings', Default = not isfile('ria.json')})
 
 if getgenv then 
     getgenv().renderinstaller = gui 
