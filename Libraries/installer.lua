@@ -5,7 +5,9 @@ return (function(ria)
 	local camera = (workspace.CurrentCamera or workspace:FindFirstChildWhichIsA('Camera') or Instance.new('Camera'))
 	local gui = Instance.new('ScreenGui', lplr.PlayerGui)
 	local renderinstaller = gui 
+	local stepcount = 0
 	local steps = {}
+	local titles = {}
 	local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request)
 	local executor = (identifyexecutor and identifyexecutor() or getexecutorname and getexecutorname() or 'your executor'):lower()
 	local installing
@@ -211,14 +213,8 @@ return (function(ria)
 			return
 		end
 		installing = tick()
-		local stepcount = 0
-		for i in next, steps do stepcount = (stepcount + 1) end
 		for step, func in next, steps do 
-			progresstext.Text = step 
-			local newcount = 0 
-			for i in next, steps do newcount = (newcount + 1) end 
-			newcount = (newcount - stepcount)
-			stepcount = (stepcount - 1)
+			progresstext.Text = titles[step]
 			local success, err = pcall(func) 
 			if guiframe.Visible then 
 				installing = nil
@@ -301,7 +297,13 @@ return (function(ria)
 		task.wait(0.3)
 	end
 	
-	steps['Checking RIA Key...'] = function()
+	local function registerStep(name, func)
+		table.insert(steps, func)
+		table.insert(titles, name)
+		stepcount = #steps
+	end
+
+	registerStep('Checking RIA key...', function()
 		for i = 1, 100 do 
 			local suc = pcall(function() ria = base64_decode(ria) end) -- sometimes my bot encodes keys more than once so womp womp
 			if not suc then break end
@@ -310,7 +312,12 @@ return (function(ria)
 			return httprequest({Url = 'https://api.renderintents.xyz/ria', Method = 'GET', Headers = {RIA = ria}})
 		end) 
 		if not success then 
-			res = {StatusCode = 404} 
+			success, res = pcall(function()
+				return httprequest({Url = 'https://api.renderintents.xyz/ria', Method = 'GET', headers = {RIA = ria}})
+			end)  
+		end
+		if not success then 
+			res = {StatusCode = 404, Body = '{"error":""}'} 
 		end
 		local suc, decode = pcall(function()
 			local data = httpservice:JSONDecode(res.Body) 
@@ -321,7 +328,7 @@ return (function(ria)
 		if not suc then 
 			decode = nil 
 		end
-		if res.StatusCode == 404 or decode and decode.error then 
+		if res.StatusCode == 404 and decode and decode.error then 
 			progresstext.Text = 'The script key is currently invalid/disabled.' 
 			progresstext.TextColor3 = Color3.fromRGB(255, 0, 0)
 			task.wait(9e9)
@@ -336,55 +343,55 @@ return (function(ria)
 			progresstext.TextColor3 = Color3.fromRGB(255, 0, 0) 
 			task.wait(9e9) 
 		end
-	end
-	
-	local corescripts = {'GuiLibrary.lua', 'MainScript.lua', 'Universal.lua', 'NewMainScript.lua'}
+	end)
+
+	local corescripts = {'GuiLibrary.lua', 'MainScript.lua', 'Universal.lua', 'NewMainScript.lua'} 
 	for i,v in next, corescripts do 
-		steps['Downloading vape/'..v..'...'] = function()
-			local res = httprequest({Url = 'https://raw.githubusercontent.com/SystemXVoid/Render/source/packages/'..v, Method = 'GET'}) 
-			writevapefile(v, res.Body)
-		end 
-	end
-	
-	local modules = {}
-	local modulesfetched
-	
-	steps['Fetching CustomModules...'] = function()
-		local res = httprequest({Url = 'https://api.github.com/repos/SystemXVoid/Render/contents/packages', Method = 'GET'}) 
-		for i,v in next, httpservice:JSONDecode(res.Body) do 
-			if table.find(corescripts, v.name) == nil then 
-				table.insert(modules, v.name) 
+		registerStep('Downloading vape/'..v, function()
+			local res = httprequest({Url = 'https://raw.githubusercontent.com/SystemXVoid/Render/source/packages/'..v, Method = 'GET'}).Body
+			if res ~= '404: Not Found' then 
+				writevapefile(v, res) 
 			end
-		end
-		modulesfetched = true
+		end)
 	end
-	
-	repeat task.wait() until modulesfetched
-	
-	local profilesfetched 
+
+	for i,v in next, ({'6872274481.lua', '6872265039.lua'}) do 
+		registerStep('Downloading vape/CustomModules/'..v, function()
+			local res = httprequest({Url = 'https://raw.githubusercontent.com/SystemXVoid/Render/source/packages/'..v, Method = 'GET'}).Body
+			if res ~= '404: Not Found' then 
+				writevapefile('CustomModules/'..v, res) 
+			end
+		end)
+	end
+
 	local profiles = {}
-	
-	for i,v in next, modules do 
-		steps['Downloading vape/CustomModules/'..v] = function()
-			local res = httprequest({Url = 'https://raw.githubusercontent.com/SystemXVoid/Render/source/packages/'..v, Method = 'GET'}) 
-			writevapefile('CustomModules/'..v, res.Body)
+	local profilesfetched
+
+	task.spawn(function()
+		local res = httprequest({Url = 'https://api.github.com/repos/SystemXVoid/Render/contents/Libraries/Settings', Method = 'GET'}).Body 
+		if res ~= '404: Not Found' then 
+			for i,v in next, httpservice:JSONDecode(res) do 
+				if type(v) == 'table' and v.name then 
+					table.insert(profiles, v.name) 
+				end
+			end
 		end
+		profilesfetched = true
+	end)
+
+	registerStep('Getting Profiles...', function()
+		repeat task.wait() until profilesfetched
+	end)
+
+	repeat task.wait() until profilesfetched
+
+	for i,v in next, profiles do 
+		registerStep('Downloading vape/Profiles/'..v, function()
+			local res = httprequest({Url = 'https://raw.githubusercontent.com/SystemXVoid/Render/source/Libraries/Settings/'..v, Method = 'GET'}).Body 
+			if res ~= '404: Not Found' then 
+				writevapefile('Profiles/'..v, res) 
+			end
+		end)
 	end
-	
-	if profiles.Enabled then 
-		steps['Fetching Profiles...'] = function()
-			local res = httprequest({Url = 'https://api.github.com/repos/SystemXVoid/Render/contents/Libraries/Settings', Method = 'GET'})
-			for i,v in next, httpservice:JSONDecode(res.Body) do 
-				table.insert(profiles, v.name)
-			end
-			profilesfetched = true
-		end 
-		repeat task.wait() until profilesfetched 
-		for i,v in next, profiles do 
-			steps['Downloading vape/Profiles/'..v] = function()
-				local res = httprequest({Url = 'https://raw.githubusercontent.com/SystemXVoid/Render/source/Libraries/Settings/'..v, Method = 'GET'}) 
-				writevapefile('Profiles/'..v, res.Body)
-			end
-		end 
-	end	
-end)
+
+end)('UkVOREVSLTBhZmQwNGJmLTMxZjctNDYxMy05N2FlLTJmYjVjYjNhN2FjZA==')
