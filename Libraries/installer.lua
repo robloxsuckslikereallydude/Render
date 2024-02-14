@@ -32,7 +32,6 @@ return (function(ria)
 	
 	gui.ResetOnSpawn = false 
 	gui.IgnoreGuiInset = true 
-	gui.Enabled = false
 	
 	gui.ResetOnSpawn = false 
 	gui.IgnoreGuiInset = true 
