@@ -154,6 +154,7 @@ return (function(ria)
 		button.BackgroundColor3 = Color3.fromRGB(18, 3, 77)
 		button.AutoButtonColor = false
 		local buttontext = guitopbartext:Clone()
+		buttontext.Text = args.Name
 		buttontext.ZIndex = 8e8
 		buttontext.Parent = button
 		buttontext.Position = UDim2.new(3.5, 0, 0.5, 0) -- I will add auto positioning once more toggles just got lazy
@@ -280,7 +281,7 @@ return (function(ria)
 		until not gui.Parent
 	end)
 	
-	local profiles = createbutton({Name = 'Install Settings', Default = not isfile('ria.json')})
+	local profiles = createbutton({Name = 'Install Settings', Default = isfile and not isfile('ria.json') or isfile == nil})
 	
 	if getgenv then 
 		getgenv().renderinstaller = gui 
