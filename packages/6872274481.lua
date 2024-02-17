@@ -1988,6 +1988,7 @@ runFunction(function()
 	local autoclicker = {}
 	local noclickdelay = {}
 	local autoclickercps = {GetRandomValue = function() return 1 end}
+	local verifastcik = {Value = 1}
 	local autoclickerblocks = {}
 	local autoclickertimed = {}
 	local autoclickermousedown = false
@@ -2009,6 +2010,43 @@ runFunction(function()
 		return true
 	end
 
+	local function clickAction()
+		if entityLibrary.isAlive then
+			if not autoclicker.Enabled or not autoclickermousedown then return end
+			if not isNotHoveringOverGui() then return end
+			if getOpenApps() > (bedwarsStore.equippedKit == 'hannah' and 4 or 3) then return end
+			if GuiLibrary.ObjectsThatCanBeSaved['Lobby CheckToggle'].Api.Enabled then
+				if bedwarsStore.matchState == 0 then return end
+			end
+			if bedwarsStore.localHand.Type == 'sword' then
+				if bedwars.KatanaController.chargingMaid == nil then
+					task.spawn(function()
+						while autoclickermousedown do
+							bedwars.SwordController:swingSwordAtMouse()
+							task.wait(math.max((verifastcik.Value / autoclickercps.GetRandomValue()), noclickdelay.Enabled and 0 or (autoclickertimed.Enabled and 0.38 or 0)))
+						end
+					end)
+				end
+			elseif bedwarsStore.localHand.Type == 'block' then 
+				if autoclickerblocks.Enabled and bedwars.BlockPlacementController.blockPlacer then
+					task.spawn(function()
+						while autoclickermousedown do
+							if (workspace:GetServerTimeNow() - bedwars.BlockCpsController.lastPlaceTimestamp) > ((1 / 12) * 0.5) then
+								local mouseinfo = bedwars.BlockPlacementController.blockPlacer.clientManager:getBlockSelector():getMouseInfo(0)
+								if mouseinfo then
+									if mouseinfo.placementPosition == mouseinfo.placementPosition then
+										bedwars.BlockPlacementController.blockPlacer:placeBlock(mouseinfo.placementPosition)
+									end
+								end
+								task.wait(verifastcik.Value / autoclickercps.GetRandomValue())
+							end
+						end
+					end)
+				end
+			end
+		end
+	end
+
 	autoclicker = GuiLibrary.ObjectsThatCanBeSaved.CombatWindow.Api.CreateOptionsButton({
 		Name = 'AutoClicker',
 		Function = function(calling)
@@ -2016,50 +2054,28 @@ runFunction(function()
 				table.insert(autoclicker.Connections, inputService.InputBegan:Connect(function(input, gameProcessed)
 					if input.UserInputType == Enum.UserInputType.MouseButton1 then
 						autoclickermousedown = true
-						local firstClick = tick() + 0.1
-						task.spawn(function()
-							repeat
-								task.wait()
-								if entityLibrary.isAlive then
-									if not autoclicker.Enabled or not autoclickermousedown then break end
-									if not isNotHoveringOverGui() then continue end
-									if getOpenApps() > (bedwarsStore.equippedKit == 'hannah' and 4 or 3) then continue end
-									if GuiLibrary.ObjectsThatCanBeSaved['Lobby CheckToggle'].Api.Enabled then
-										if bedwarsStore.matchState == 0 then continue end
-									end
-									if bedwarsStore.localHand.Type == 'sword' then
-										if bedwars.KatanaController.chargingMaid == nil then
-											task.spawn(function()
-												if firstClick <= tick() then
-													bedwars.SwordController:swingSwordAtMouse()
-												else
-													firstClick = tick()
-												end
-											end)
-											task.wait(math.max((1 / autoclickercps.GetRandomValue()), noclickdelay.Enabled and 0 or (autoclickertimed.Enabled and 0.38 or 0)))
-										end
-									elseif bedwarsStore.localHand.Type == 'block' then 
-										if autoclickerblocks.Enabled and bedwars.BlockPlacementController.blockPlacer and firstClick <= tick() then
-											if (workspace:GetServerTimeNow() - bedwars.BlockCpsController.lastPlaceTimestamp) > ((1 / 12) * 0.5) then
-												local mouseinfo = bedwars.BlockPlacementController.blockPlacer.clientManager:getBlockSelector():getMouseInfo(0)
-												if mouseinfo then
-													task.spawn(function()
-														if mouseinfo.placementPosition == mouseinfo.placementPosition then
-															bedwars.BlockPlacementController.blockPlacer:placeBlock(mouseinfo.placementPosition)
-														end
-													end)
-												end
-												task.wait((1 / autoclickercps.GetRandomValue()))
-											end
-										end
-									end
-								end
-							until not autoclicker.Enabled or not autoclickermousedown
-						end)
+						clickAction()
+					elseif input.UserInputType == Enum.UserInputType.Touch then
+						autoclickermousedown = true
+						clickAction()
 					end
 				end))
+
 				table.insert(autoclicker.Connections, inputService.InputEnded:Connect(function(input)
-					if input.UserInputType == Enum.UserInputType.MouseButton1 then
+					if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+						autoclickermousedown = false
+					end
+				end))
+
+				table.insert(autoclicker.Connections, inputService.TouchStarted:Connect(function(touch, gameProcessed)
+					if touch.UserInputType == Enum.UserInputType.Touch then
+						autoclickermousedown = true
+						clickAction()
+					end
+				end))
+
+				table.insert(autoclicker.Connections, inputService.TouchEnded:Connect(function(touch)
+					if touch.UserInputType == Enum.UserInputType.Touch then
 						autoclickermousedown = false
 					end
 				end))
@@ -2070,7 +2086,7 @@ runFunction(function()
 	autoclickercps = autoclicker.CreateTwoSlider({
 		Name = 'CPS',
 		Min = 1,
-		Max = 20,
+		Max = 50,
 		Function = function(val) end,
 		Default = 8,
 		Default2 = 12
@@ -2078,6 +2094,14 @@ runFunction(function()
 	autoclickertimed = autoclicker.CreateToggle({
 		Name = 'Timed',
 		Function = function() end
+	})
+	verifastcik = autoclicker.CreateSlider({
+	  Name = 'Faster(less value)',
+	  Min = 1,
+	  Max = 10,
+	  Default = 1,
+	  Function = function() end,
+	  HoverText = 'less value = more edging'
 	})
 	autoclickerblocks = autoclicker.CreateToggle({
 		Name = 'Place Blocks', 
