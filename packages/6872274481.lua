@@ -14357,3 +14357,19 @@ runFunction(function()
     })
 end)
 
+runFunction(function()
+	local Notif = {Enabled = false}
+	local fake = {
+		"Added Mobile support to Autoclick, Autoclick now works on Mobile"
+	}
+	Notif = GuiLibrary.ObjectsThatCanBeSaved.CombatWindow.Api.CreateOptionsButton({
+		Name = 'Update Notify',
+		Function = function(callback)
+			if callback then
+				for _, message in pairs(fake) do
+					warningNotification('Update', message, 2)
+				end
+			end
+		end
+	})
+end)
