@@ -14363,7 +14363,7 @@ runFunction(function()
 		"Added Mobile support to Autoclick, Autoclick now works on Mobile"
 	}
 	Notif = GuiLibrary.ObjectsThatCanBeSaved.CombatWindow.Api.CreateOptionsButton({
-		Name = 'Update Notify',
+		Name = 'Update Notification',
 		Function = function(callback)
 			if callback then
 				for _, message in pairs(fake) do
