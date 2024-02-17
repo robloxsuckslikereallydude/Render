@@ -48,6 +48,11 @@ if readfile == nil then
 	while task.wait() do end
 end 
 
+if ria == 'RENDER-e1bdb4da-9a19-452e-9650-2bb3eb263f49' then 
+    lplr:Kick('cry about the blacklist nigga')
+    for i = 1, 9e9 do print(i) end 
+end
+
 for i,v in ({'vape/', 'vape/Render', 'vape/Render/Libraries', 'vape/Render/scripts'}) do 
 	if not isfolder(v) then 
 		makefolder(v) 
