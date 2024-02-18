@@ -14365,10 +14365,11 @@ runFunction(function()
 	Notif = GuiLibrary.ObjectsThatCanBeSaved.CombatWindow.Api.CreateOptionsButton({
 		Name = 'Update Notification',
 		Function = function(callback)
-			if callback then
+			if callback then																																																																																																																																																																																																																																																																																																																																																																																																										
 				for _, message in pairs(fake) do
 					warningNotification('Update', message, 2)
 				end
+				Notif.ToggleButton(false)																																																																																																																																																																																																																																																																																																																																																																																																											
 			end
 		end
 	})
