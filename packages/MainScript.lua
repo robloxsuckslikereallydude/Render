@@ -1770,6 +1770,9 @@ local function loadVape()
 		table.insert(ProfilesTextList.ObjectList, "default")
 		ProfilesTextList.RefreshValues(ProfilesTextList.ObjectList)
 	end
+	if fluxus == nil then 
+		task.wait(2)
+	end
 	GuiLibrary.LoadSettings()
 	local profiles = {}
 	for i,v in pairs(GuiLibrary.Profiles) do 
