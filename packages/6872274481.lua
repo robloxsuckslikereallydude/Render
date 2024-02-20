@@ -13406,8 +13406,8 @@ end)
 runFunction(function()
   local la = {Enabled = false}
   local katframe = {Players = {}}
-  local range = {Value = 14}
-  local laAngle = {Value = 180}
+  local range = {Value = 13.5}
+  local laAngle = {Value = 145}
   local Nearest = {Enabled = true}
   local norender = {}
   local laremote = bedwars.ClientHandler:Get(bedwars.AttackRemote).instance
