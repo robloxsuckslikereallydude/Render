@@ -759,7 +759,7 @@ local function AllNearPosition(distance, amount, sortfunction, prediction)
 				local playerPosition = v.RootPart.Position
 				local mag = (entityLibrary.character.HumanoidRootPart.Position - playerPosition).magnitude
 				if prediction and mag > distance then
-					mag = (RenderStore.LocalPosition - playerPosition).magnitude
+					mag = (entityLibrary.LocalPosition - playerPosition).magnitude
 				end
                 if mag <= distance then
 					table.insert(sortedentities, v)
@@ -770,7 +770,7 @@ local function AllNearPosition(distance, amount, sortfunction, prediction)
 			if v.PrimaryPart then
 				local mag = (entityLibrary.character.HumanoidRootPart.Position - v.PrimaryPart.Position).magnitude
 				if prediction and mag > distance then
-					mag = (RenderStore.LocalPosition - v.PrimaryPart.Position).magnitude
+					mag = (entityLibrary.LocalPosition - v.PrimaryPart.Position).magnitude
 				end
                 if mag <= distance then
 					if v:GetAttribute('Team') == lplr:GetAttribute('Team') then continue end
@@ -782,7 +782,7 @@ local function AllNearPosition(distance, amount, sortfunction, prediction)
 			if v.PrimaryPart then
 				local mag = (entityLibrary.character.HumanoidRootPart.Position - v.PrimaryPart.Position).magnitude
 				if prediction and mag > distance then
-					mag = (RenderStore.LocalPosition - v.PrimaryPart.Position).magnitude
+					mag = (entityLibrary.LocalPosition - v.PrimaryPart.Position).magnitude
 				end
                 if mag <= distance then
                     table.insert(sortedentities, {Player = {Name = 'DiamondGuardian', UserId = 1443379645, GetAttribute = function() return 'none' end}, Character = v, RootPart = v.PrimaryPart, Humanoid = v.Humanoid})
@@ -793,7 +793,7 @@ local function AllNearPosition(distance, amount, sortfunction, prediction)
 			if v.PrimaryPart then
 				local mag = (entityLibrary.character.HumanoidRootPart.Position - v.PrimaryPart.Position).magnitude
 				if prediction and mag > distance then
-					mag = (RenderStore.LocalPosition - v.PrimaryPart.Position).magnitude
+					mag = (entityLibrary.LocalPosition - v.PrimaryPart.Position).magnitude
 				end
                 if mag <= distance then
                     table.insert(sortedentities, {Player = {Name = 'GolemBoss', UserId = 1443379645, GetAttribute = function() return 'none' end}, Character = v, RootPart = v.PrimaryPart, Humanoid = v.Humanoid})
@@ -804,7 +804,7 @@ local function AllNearPosition(distance, amount, sortfunction, prediction)
 			if v.PrimaryPart then
 				local mag = (entityLibrary.character.HumanoidRootPart.Position - v.PrimaryPart.Position).magnitude
 				if prediction and mag > distance then
-					mag = (RenderStore.LocalPosition - v.PrimaryPart.Position).magnitude
+					mag = (entityLibrary.LocalPosition - v.PrimaryPart.Position).magnitude
 				end
                 if mag <= distance then
 					if tonumber(v:GetAttribute('PlayerUserId')) == lplr.UserId then continue end
@@ -818,7 +818,7 @@ local function AllNearPosition(distance, amount, sortfunction, prediction)
 			if v.PrimaryPart then
 				local mag = (entityLibrary.character.HumanoidRootPart.Position - v.PrimaryPart.Position).magnitude
 				if prediction and mag > distance then
-					mag = (RenderStore.LocalPosition - v.PrimaryPart.Position).magnitude
+					mag = (entityLibrary.LocalPosition - v.PrimaryPart.Position).magnitude
 				end
                 if mag <= distance then
                     table.insert(sortedentities, {Player = {Name = 'Pot', UserId = 1443379645, GetAttribute = function() return 'none' end}, Character = v, RootPart = v.PrimaryPart, Humanoid = {Health = 100, MaxHealth = 100}})
@@ -829,7 +829,7 @@ local function AllNearPosition(distance, amount, sortfunction, prediction)
 			if v.PrimaryPart then
 				local mag = (entityLibrary.character.HumanoidRootPart.Position - v.PrimaryPart.Position).magnitude
 				if prediction and mag > distance then
-					mag = (RenderStore.LocalPosition - v.PrimaryPart.Position).magnitude
+					mag = (entityLibrary.LocalPosition - v.PrimaryPart.Position).magnitude
 				end
                 if mag <= distance then
                     table.insert(sortedentities, {Player = {Name = 'GooseBoss', UserId = 1443379645}, GetAttribute = function() return 'none' end, Character = v, RootPart = v.PrimaryPart, Humanoid = v.Humanoid})
@@ -1299,7 +1299,7 @@ runFunction(function()
 							return nil 
 						end
 						if Reach.Enabled then
-							local attackMagnitude = ((RenderStore.LocalPosition or entityLibrary.character.HumanoidRootPart.Position) - attackTable.validate.targetPosition.value).magnitude
+							local attackMagnitude = ((entityLibrary.LocalPosition or entityLibrary.character.HumanoidRootPart.Position) - attackTable.validate.targetPosition.value).magnitude
 							if attackMagnitude > 18 then
 								return nil 
 							end
@@ -1486,7 +1486,7 @@ runFunction(function()
 			local blockhealthbarpos = {blockPosition = Vector3.zero}
 			local blockdmg = 0
 			if block and block.Parent ~= nil then
-				if ((RenderStore.LocalPosition or entityLibrary.character.HumanoidRootPart.Position) - (blockpos * 3)).magnitude > 30 then return end
+				if ((entityLibrary.LocalPosition or entityLibrary.character.HumanoidRootPart.Position) - (blockpos * 3)).magnitude > 30 then return end
 				bedwarsStore.blockPlace = tick() + 0.1
 				switchToAndUseTool(block)
 				blockhealthbarpos = {
@@ -7087,14 +7087,14 @@ runFunction(function()
 				table.insert(enchanttab, v)
 			end
 			for i,v in next, (enchanttab) do 
-				if ((RenderStore.LocalPosition or entityLibrary.character.HumanoidRootPart.Position) - v.Position).magnitude <= 6 then
+				if ((entityLibrary.LocalPosition or entityLibrary.character.HumanoidRootPart.Position) - v.Position).magnitude <= 6 then
 					if ((not v:GetAttribute('Team')) or v:GetAttribute('Team') == lplr:GetAttribute('Team')) then
 						npc, npccheck, enchant = true, true, true
 					end
 				end
 			end
 			for i, v in next, (bedwarsshopnpcs) do
-				if ((RenderStore.LocalPosition or entityLibrary.character.HumanoidRootPart.Position) - v.Position).magnitude <= (range or 20) then
+				if ((entityLibrary.LocalPosition or entityLibrary.character.HumanoidRootPart.Position) - v.Position).magnitude <= (range or 20) then
 					npc, npccheck, enchant = true, (v.TeamUpgradeNPC or npccheck), false
 					newid = v.TeamUpgradeNPC and v.Id or newid
 				end
@@ -8669,7 +8669,7 @@ runFunction(function()
 		end,
 		Closed = function()
 			for i, v in next, (collectionService:GetTagged('chest')) do
-				if ((RenderStore.LocalPosition or entityLibrary.character.HumanoidRootPart.Position) - v.Position).magnitude <= ChestStealerDistance.Value then
+				if ((entityLibrary.LocalPosition or entityLibrary.character.HumanoidRootPart.Position) - v.Position).magnitude <= ChestStealerDistance.Value then
 					local chest = v:FindFirstChild('ChestFolderValue')
 					chest = chest and chest.Value or nil
 					local chestitems = chest and chest:GetChildren() or {}
@@ -8840,7 +8840,7 @@ runFunction(function()
 						local itemdrops = collectionService:GetTagged('ItemDrop')
 						for i,v in next, (itemdrops) do
 							if entityLibrary.isAlive and (v:GetAttribute('ClientDropTime') and tick() - v:GetAttribute('ClientDropTime') > 2 or v:GetAttribute('ClientDropTime') == nil) then
-								if ((RenderStore.LocalPosition or entityLibrary.character.HumanoidRootPart.Position) - v.Position).magnitude <= PickupRangeRange.Value and (pickedup[v] == nil or pickedup[v] <= tick()) then
+								if ((entityLibrary.LocalPosition or entityLibrary.character.HumanoidRootPart.Position) - v.Position).magnitude <= PickupRangeRange.Value and (pickedup[v] == nil or pickedup[v] <= tick()) then
 									task.spawn(function()
 										pickedup[v] = tick() + 0.2
 										bedwars.ClientHandler:Get(bedwars.PickupRemote):CallServerAsync({
@@ -9416,7 +9416,7 @@ runFunction(function()
 										if obj:GetAttribute('BedShieldEndTime') then 
 											if obj:GetAttribute('BedShieldEndTime') > workspace:GetServerTimeNow() then continue end
 										end
-										if ((RenderStore.LocalPosition or entityLibrary.character.HumanoidRootPart.Position) - obj.Position).magnitude <= nukerrange.Value then
+										if ((entityLibrary.LocalPosition or entityLibrary.character.HumanoidRootPart.Position) - obj.Position).magnitude <= nukerrange.Value then
 											if tool and bedwars.ItemTable[tool.Name].breakBlock and bedwars.BlockController:isBlockBreakable({blockPosition = obj.Position / 3}, lplr) then
 												local res, amount = getBestBreakSide(obj.Position)
 												local res2, amount2 = getBestBreakSide(obj.Position + Vector3.new(0, 0, 3))
@@ -9433,7 +9433,7 @@ runFunction(function()
 								if broke then break end
 								if entityLibrary.isAlive then
 									if obj and obj.Parent ~= nil then
-										if ((RenderStore.LocalPosition or entityLibrary.character.HumanoidRootPart.Position) - obj.Position).magnitude <= nukerrange.Value and (nukerown.Enabled or obj:GetAttribute('PlacedByUserId') ~= lplr.UserId) then
+										if ((entityLibrary.LocalPosition or entityLibrary.character.HumanoidRootPart.Position) - obj.Position).magnitude <= nukerrange.Value and (nukerown.Enabled or obj:GetAttribute('PlacedByUserId') ~= lplr.UserId) then
 											if tool and bedwars.ItemTable[tool.Name].breakBlock and bedwars.BlockController:isBlockBreakable({blockPosition = obj.Position / 3}, lplr) then
 												bedwars.breakBlock(obj.Position, nukereffects.Enabled, getBestBreakSide(obj.Position), true, nukeranimation.Enabled)
 												break
@@ -10168,10 +10168,10 @@ sendmessage = function(text)
 end
 
 getTweenSpeed = function(part)
-	if not isAlive(lplr, true) and not RenderStore.LocalPosition then 
+	if not isAlive(lplr, true) and not entityLibrary.LocalPosition then 
 		return 0.49 
 	end
-	local localpos = (isAlive(lplr, true) and lplr.Character.HumanoidRootPart.Position or RenderStore.LocalPosition or Vector3.zero) 
+	local localpos = (isAlive(lplr, true) and lplr.Character.HumanoidRootPart.Position or entityLibrary.LocalPosition or Vector3.zero) 
 	return ((part.Position - localpos).Magnitude / 690) + 0.001
 end
 
@@ -10216,13 +10216,13 @@ end
 
 getEnemyBed = function(range, skiphighest, noshield)
 	local magnitude, bed = (range or math.huge), nil
-	if not isAlive(lplr, true) and not RenderStore.LocalPosition then 
+	if not isAlive(lplr, true) and not entityLibrary.LocalPosition then 
 		return nil 
 	end
 	local beds = collectionService:GetTagged('bed')
 	for i,v in next, beds do 
 		if not RenderFunctions:WhitelistBed(v) and v:GetAttribute('PlacedByUserId') == 0 then 
-			local localpos = (isAlive(lplr, true) and lplr.Character.HumanoidRootPart.Position or RenderStore.LocalPosition or Vector3.zero)
+			local localpos = (isAlive(lplr, true) and lplr.Character.HumanoidRootPart.Position or entityLibrary.LocalPosition or Vector3.zero)
 			local bedmagnitude = (localpos - v.Position).Magnitude 
 			local bedteam = v:GetAttribute('id'):sub(1, 1)
 			if bedteam == lplr:GetAttribute('Team') then 
@@ -10284,7 +10284,7 @@ GetTarget = function(distance, healthmethod, raycast, npc, mouse, bypass)
 	local mousepos = inputService:GetMouseLocation()
 	local entcalculate = function(v, name)
 		if v.PrimaryPart and v:FindFirstChildWhichIsA('Humanoid') then 
-			local localpos = (isAlive(lplr, true) and lplr.Character.HumanoidRootPart.Position or RenderStore.LocalPosition or Vector3.zero)
+			local localpos = (isAlive(lplr, true) and lplr.Character.HumanoidRootPart.Position or entityLibrary.LocalPosition or Vector3.zero)
 			local vec, screen = worldtoscreenpoint(v.PrimaryPart.Position)
 			local distance = (healthmethod and v.Humanoid.Health or mouse and (mousepos - Vector2.new(vec.X, vec.Y)).Magnitude or (localpos - v.PrimaryPart.Position).Magnitude)
 			local raycast = (playerRaycasted({Character = v}) or not raycast)
@@ -10301,11 +10301,11 @@ GetTarget = function(distance, healthmethod, raycast, npc, mouse, bypass)
 			end
 		end
 	end
-	if not isAlive(lplr, true) and not RenderStore.LocalPosition then 
+	if not isAlive(lplr, true) and not entityLibrary.LocalPosition then 
 		return target 
 	end
 	for i,v in next, playersService:GetPlayers() do 
-		local localpos = (isAlive(lplr, true) and lplr.Character.HumanoidRootPart.Position or RenderStore.LocalPosition or Vector3.zero)
+		local localpos = (isAlive(lplr, true) and lplr.Character.HumanoidRootPart.Position or entityLibrary.LocalPosition or Vector3.zero)
 		if v ~= lplr and isAlive(v) and isAlive(lplr, true) then 
 			if not RenderFunctions:GetPlayerType(2, v) then 
 				continue
