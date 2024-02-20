@@ -268,6 +268,11 @@ local Matchmaking = GuiLibrary.CreateWindow({
 	Icon = "vape/assets/SliderArrow1.png", 
 	IconSize = 16
 })
+local TargetHUD = GuiLibrary.CreateWindow({
+	Name = "TargetHUD", 
+	Icon = "vape/assets/OnlineProfilesButton.png", 
+	IconSize = 16
+})
 local Friends = GuiLibrary.CreateWindow2({
 	Name = "Friends", 
 	Icon = "vape/assets/FriendsIcon.png", 
@@ -312,6 +317,13 @@ GUI.CreateButton({
 	Name = "World", 
 	Function = function(callback) World.SetVisible(callback) end, 
 	Icon = "vape/assets/WorldIcon.png", 
+	IconSize = 16
+})
+GUI.CreateDivider("Custom")
+GUI.CreateButton({
+	Name = "Target HUD",
+	Function = function(calling) TargetHUD.SetVisible(calling) end,
+	Icon = "vape/assets/OnlineProfilesButton.png", 
 	IconSize = 16
 })
 GUI.CreateButton({
