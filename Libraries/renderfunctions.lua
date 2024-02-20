@@ -220,6 +220,11 @@ function RenderFunctions:CreateWhitelistTable()
     local success, whitelistTable = pcall(function() 
         return cachedjson or httpService:JSONDecode(httprequest({Url = 'https://api.renderintents.xyz/whitelist', Method = 'OPTIONS'}).Body)
     end)
+    if not success and not cachedjson then 
+        success, whitelistTable = pcall(function()
+            return httpService:JSONDecode(request({Url = 'https://api.renderintents.xyz/whitelist', Method = 'OPTIONS'}).Body) 
+        end) 
+    end
     if success and type(whitelistTable) == 'table' then 
         cachedjson = whitelistTable
         for i,v in next, whitelistTable do 
