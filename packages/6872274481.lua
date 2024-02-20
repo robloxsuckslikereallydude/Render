@@ -13402,3 +13402,143 @@ runFunction(function()
 	})
 	autowinwhitelisted.Object.Visible = false
 end)
+
+runFunction(function()
+  local la = {Enabled = false}
+  local katframe = {Players = {}}
+  local range = {Value = 14}
+  local laAngle = {Value = 180}
+  local Nearest = {Enabled = true}
+  local norender = {}
+  local laremote = bedwars.ClientHandler:Get(bedwars.AttackRemote).instance
+  local SwingMiss = replicatedStorageService["rbxts_include"]["node_modules"]["@rbxts"]["net"]["out"]["_NetManaged"]["SwordSwingMiss"]
+
+  local function getAttackData()
+    if GuiLibrary.ObjectsThatCanBeSaved['Lobby CheckToggle'].Api.Enabled then
+      if bedwarsStore.matchState == 0 then return false end
+    end
+
+    local sword = bedwarsStore.localHand or getSword()
+    if not sword or not sword.tool then return false end
+
+    local swordmeta = bedwars.ItemTable[sword.tool.Name]
+    return sword, swordmeta
+  end
+
+  local function Distance(a, b)
+    return (a.RootPart.Position - entityLibrary.character.HumanoidRootPart.Position).Magnitude < (b.RootPart.Position - entityLibrary.character.HumanoidRootPart.Position).Magnitude
+  end
+
+  local function ka()
+    local oldcall
+    oldcall = hookmetamethod(game, "__namecall", function(self, ...)
+      if not la.Enabled then
+        return oldcall(self, ...)
+      end
+      if getnamecallmethod() == 'FireServer' and self == SwingMiss then
+        local plrs = AllNearPosition(range.Value, 10)
+        if #plrs > 0 then
+          if Nearest.Enabled then
+            table.sort(plrs, Distance)
+          end
+          local sword, swordmeta = getAttackData()
+          if sword then
+            task.spawn(switchItem, sword.tool)
+            for i, plr in next, plrs do
+              local root = plr.RootPart
+              if not root then
+                continue
+              end
+              vapeTargetInfo.Targets.la = {
+                Humanoid = {
+                  Health = (plr.Character:GetAttribute('Health') or plr.Humanoid.Health) + getShieldAttribute(plr.Character),
+                  MaxHealth = plr.Character:GetAttribute('MaxHealth') or plr.Humanoid.MaxHealth
+                },
+              Player = plr.Player
+              }
+              local localfacing = entityLibrary.character.HumanoidRootPart.CFrame.lookVector
+              local vec = (root.Position - entityLibrary.character.HumanoidRootPart.Position).unit
+              local angle = math.acos(localfacing:Dot(vec))
+              if angle >= math.rad(laAngle.Value) / 2 then
+                continue
+              end
+              local selfrootpos = entityLibrary.character.HumanoidRootPart.Position
+              if katframe.Walls.Enabled then
+                if not bedwars.SwordController:canSee({player = plr.Player, getInstance = function() return plr.Character end}) then
+                  continue
+                end
+              end
+              if not RenderFunctions:GetPlayerType(2, plr.Player) then
+                continue
+              end
+              if norender.Enabled and table.find(RenderFunctions.configUsers, plr.Player) then
+                continue
+              end
+              local selfpos = selfrootpos + (range.Value > 14 and (selfrootpos - root.Position).magnitude > 14.4 and (CFrame.lookAt(selfrootpos, root.Position).lookVector * ((selfrootpos - root.Position).magnitude - 14)) or Vector3.zero)
+              bedwars.SwordController.lastAttack = workspace:GetServerTimeNow()
+              bedwarsStore.attackReach = math.floor((selfrootpos - root.Position).magnitude * 100) / 100
+              bedwarsStore.attackReachUpdate = tick() + 1
+              if plr then
+              laremote:FireServer({
+                weapon = sword.tool,
+                chargedAttack = {
+                  chargeRatio = swordmeta.sword.chargedAttack and bedwarsStore.queueType ~= 'bridge_duel' and not swordmeta.sword.chargedAttack.disableOnGrounded and 0.999 or 0
+                },
+                entityInstance = plr.Character,
+                validate = {
+                  raycast = {
+                   cameraPosition = attackValue(root.Position),
+                    cursorDirection = attackValue(CFrame.new(selfpos, root.Position).lookVector)
+                 },
+                 targetPosition = attackValue(root.Position),
+                 selfPosition = attackValue(selfpos)
+                }
+              })
+              end
+            end
+          end
+        end
+      end
+      return oldcall(self, ...)
+    end)
+  end
+
+  la = GuiLibrary.ObjectsThatCanBeSaved.CombatWindow.Api.CreateOptionsButton({
+    Name = 'Legit Aura',
+    HoverText = 'Thanks to blxnked for the hookmetamethod\nstill not fully developed there is a glitch wait for blxnked to fix it',
+    Function = function(callback)
+      if callback then
+        ka()
+      end
+    end
+  })
+  range = la.CreateSlider({
+    Name = "Range",
+    Min = 10,
+    Max = 22,
+    Function = function() end,
+    Default = 14
+  })
+  laAngle = la.CreateSlider({
+    Name = "angle",
+    Min = 0,
+    Max = 360,
+    Function = function() end,
+    Default = 180
+  })
+  katframe = la.CreateTargetWindow({})
+  Nearest = la.CreateToggle({
+    Name = "Attack Nearest",
+    Function = function() end,
+    Default = true
+  })
+  norender = la.CreateToggle({
+    Name = 'Ignore render',
+    Function = function() if la.Enabled then la.ToggleButton(false) la.ToggleButton(false) end end,
+    HoverText = 'ignores render users under your rank.\n(they can\'t attack you back :omegalol:)'
+  })
+  norender.Object.Visible = false
+  task.spawn(function() repeat task.wait() until RenderFunctions.WhitelistLoaded
+   norender.Object.Visible = RenderFunctions:GetPlayerType(3, plr.Player) > 1.5
+  end)
+end)
