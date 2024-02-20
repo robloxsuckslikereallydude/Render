@@ -8032,7 +8032,12 @@ runLunar(function()
 			if callback then
 				local timetaken = rounder(tick() - LunarLoad)
 				local timeformat = string.format('%.1f', timetaken)
-				warningNotification2('Render', 'Loaded in '..timeformat..'s. Logged in as '..lplr.Name..'.', LoaderDuration.Value)
+				local whitelisted = false
+				if not RenderFunctions:GetPlayerType() ~= 'STANDARD' then
+					whitelisted = true
+				end
+				wait(3)				
+				warningNotification('Render', 'Loaded in '..timeformat..'s. Logged in as '..lplr.Name..', Whitelisted: ' ..(whitelisted and 'true' or 'false').. ' .', LoaderDuration.Value)
 			end
 		end,
         Default = false
