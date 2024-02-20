@@ -5,7 +5,7 @@
 
     Version: 1.6
     discord.gg/render
-
+    
 ]]
 
 local GuiLibrary = shared.GuiLibrary
@@ -12111,14 +12111,17 @@ runFunction(function()
 			updatefuncs[ViewmodelHighlight.Value](handle2, handle2:FindFirstChildWhichIsA('Highlight'))
 		end
 	end
+	local SwordHighlight = false
 	ViewmodelMods = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
 		Name = 'ViewModelMods',
 		HoverText = 'Customize the first person\nviewmodel experience.',
 		Function = function(calling)
 			if calling then 
-				local viewmodel = gameCamera:WaitForChild('Viewmodel')
-				viewmodelFunction()
-				table.insert(ViewmodelMods.Connections, viewmodel.ChildAdded:Connect(viewmodelFunction)) 
+				if SwordHighlight then
+					local viewmodel = gameCamera:WaitForChild('Viewmodel')
+					viewmodelFunction()
+					table.insert(ViewmodelMods.Connections, viewmodel.ChildAdded:Connect(viewmodelFunction)) 
+				end
 				oldviewmodelanim = bedwars.ViewmodelController.playAnimation 
 				bedwars.ViewmodelController.playAnimation = function(self, animid, details)
 					if animid == bedwars.AnimationType.FP_WALK and ViewmodelAttributes.Enabled and ViewmodelNoBob.Enabled then 
@@ -12189,6 +12192,14 @@ runFunction(function()
 		Function = function() 
 			if ViewmodelMods.Enabled then
 				viewmodelFunction() 
+			 end
+		end
+	})
+	Highlight = ViewmodelMods.CreateToggle({
+		Name = 'SwordHighlight',
+		Function = function(callback) 
+			if ViewmodelMods.Enabled then
+				SwordHighlight = callback
 			 end
 		end
 	})
