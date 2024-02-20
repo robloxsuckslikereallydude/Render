@@ -233,7 +233,7 @@ return (function(ria)
 		end
 		tween:Create(progressbarmain, TweenInfo.new(0.3, Enum.EasingStyle.Linear), {Size = UDim2.new(0.552, 0, 0.021, 0)}):Play()
 		progresstext.Text = 'The installation has finished.'
-		actionbutton.Text = 'Close'
+		actionbutton.Text = 'Close The Installer'
 		installing = nil 
 		installed = true
 	end)
