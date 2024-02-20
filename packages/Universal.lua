@@ -3,7 +3,7 @@
     Render Intents | Universal
     The #1 vape mod you'll ever see.
 
-    Version: 1.5.1
+    Version: 1.6
     discord.gg/render
 	
 ]]
@@ -34,7 +34,7 @@ local vapeTargetInfo = shared.VapeTargetInfo
 local vapeInjected = true
 local RenderFunctions = {}
 local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() end)
-local RenderStore = {Bindable = {}, raycast = RaycastParams.new(), MessageReceived = Instance.new('BindableEvent'), tweens = {}, ping = 0, platform = inputService:GetPlatform()}
+local RenderStore = {Bindable = {}, raycast = RaycastParams.new(), MessageReceived = Instance.new('BindableEvent'), tweens = {}, ping = 0, platform = inputService:GetPlatform(), LocalPosition = Vector3.zero}
 getgenv().RenderStore = RenderStore
 local vec3 = Vector3.new
 local vec2 = Vector2.new
@@ -47,11 +47,6 @@ if readfile == nil then
 	task.spawn(error, 'Render - Exploit not supported. Your exploit doesn\'t have filesystem support.')
 	while task.wait() do end
 end 
-
-if ria == 'RENDER-e1bdb4da-9a19-452e-9650-2bb3eb263f49' then 
-    lplr:Kick('cry about the blacklist nigga')
-    for i = 1, 9e9 do print(i) end 
-end
 
 for i,v in ({'vape/', 'vape/Render', 'vape/Render/Libraries', 'vape/Render/scripts'}) do 
 	if not isfolder(v) then 
@@ -658,7 +653,7 @@ local RunLoops = {RenderStepTable = {}, StepTable = {}, HeartTable = {}}
 do
 	function RunLoops:BindToRenderStep(name, func)
 		if RunLoops.RenderStepTable[name] == nil then
-			RunLoops.RenderStepTable[name] = runService.RenderStepped:Connect(func)
+			RunLoops.RenderStepTable[name] = runService.RenderStepped:Connect(function(...) pcall(func, unpack({...})) end)
 		end
 	end
 
@@ -671,7 +666,7 @@ do
 
 	function RunLoops:BindToStepped(name, func)
 		if RunLoops.StepTable[name] == nil then
-			RunLoops.StepTable[name] = runService.Stepped:Connect(func)
+			RunLoops.StepTable[name] = runService.Stepped:Connect(function(...) pcall(func, unpack({...})) end)
 		end
 	end
 
@@ -684,7 +679,7 @@ do
 
 	function RunLoops:BindToHeartbeat(name, func)
 		if RunLoops.HeartTable[name] == nil then
-			RunLoops.HeartTable[name] = runService.Heartbeat:Connect(func)
+			RunLoops.HeartTable[name] = runService.Heartbeat:Connect(function(...) pcall(func, unpack({...})) end)
 		end
 	end
 
@@ -3748,7 +3743,7 @@ runFunction(function()
 			thing.BackgroundTransparency = NameTagsBackground.Enabled and 0.5 or 1
 			nametagstrs[plr.Player] = WhitelistFunctions:GetTag(plr.Player)..(NameTagsDisplayName.Enabled and plr.Player.DisplayName or plr.Player.Name)
 			if rendertag then 
-				nametagstrs[plr.Player] = nametagstrs[plr.Player].."["..rendertag.Text.."]"
+				nametagstrs[plr.Player] = '['..rendertag.Text..'] '..nametagstrs[plr.Player]
 			end
 			if NameTagsHealth.Enabled then
 				local color = Color3.fromHSV(math.clamp(plr.Humanoid.Health / plr.Humanoid.MaxHealth, 0, 1) / 2.5, 0.89, 1)
@@ -3780,7 +3775,7 @@ runFunction(function()
 			thing.Main.BG.ZIndex = 1
 			nametagstrs[plr.Player] = WhitelistFunctions:GetTag(plr.Player)..(NameTagsDisplayName.Enabled and plr.Player.DisplayName or plr.Player.Name)
 			if rendertag then 
-				nametagstrs[plr.Player] = nametagstrs[plr.Player].."["..rendertag.Text.."]"
+				nametagstrs[plr.Player] = '['..rendertag.Text..'] '..nametagstrs[plr.Player]
 			end
 			if NameTagsHealth.Enabled then
 				local color = Color3.fromHSV(math.clamp(plr.Humanoid.Health / plr.Humanoid.MaxHealth, 0, 1) / 2.5, 0.89, 1)
@@ -3822,7 +3817,7 @@ runFunction(function()
 			if v then 
 				nametagstrs[ent.Player] = WhitelistFunctions:GetTag(ent.Player)..(NameTagsDisplayName.Enabled and ent.Player.DisplayName or ent.Player.Name)
 				if rendertag then 
-					nametagstrs[plr.Player] = nametagstrs[ent.Player].."["..rendertag.Text.."]"
+					nametagstrs[plr.Player] = '['..rendertag.Text..'] '..nametagstrs[plr.Player]
 				end
 				if NameTagsHealth.Enabled then
 					local color = Color3.fromHSV(math.clamp(ent.Humanoid.Health / ent.Humanoid.MaxHealth, 0, 1) / 2.5, 0.89, 1)
@@ -3842,7 +3837,7 @@ runFunction(function()
 			if v then 
 				nametagstrs[ent.Player] = WhitelistFunctions:GetTag(ent.Player)..(NameTagsDisplayName.Enabled and ent.Player.DisplayName or ent.Player.Name)
 				if rendertag then 
-					nametagstrs[plr.Player] = nametagstrs[ent.Player].."["..rendertag.Text.."]"
+					nametagstrs[plr.Player] = '['..rendertag.Text..'] '..nametagstrs[plr.Player]
 				end
 				if NameTagsHealth.Enabled then
 					nametagstrs[ent.Player] = nametagstrs[ent.Player]..' '..math.round(ent.Humanoid.Health)
@@ -6395,7 +6390,7 @@ runFunction(function()
 			if callback then 
 				task.spawn(function()
 					repeat 
-						PingLabel.Text = math.floor(tonumber(game:GetService('Stats'):FindFirstChild('PerformanceStats').Ping:GetValue()))..' ms'
+						PingLabel.Text = math.floor(RenderStore.ping)..' ms'
 						task.wait(1)
 					until false
 				end)
@@ -6501,6 +6496,59 @@ task.spawn(function()
 	until not vapeInjected
 end)
 
+table.insert(vapeConnections, runService.Stepped:Connect(function()
+	if isAlive() then 
+		RenderStore.LocalPosition = lplr.Character.HumanoidRootPart.Position
+	end
+end))
+
+textChatService.OnIncomingMessage = function(message) 
+	local properties = Instance.new('TextChatMessageProperties')
+	if message.TextSource then 
+		local player = playersService:GetPlayerByUserId(message.TextSource.UserId) 
+		local rendertag = (player and RenderFunctions.playerTags[player])
+		if rendertag then 
+			properties.PrefixText = "<font color='#"..rendertag.Color.."'>["..rendertag.Text.."] </font> " ..message.PrefixText or message.PrefixText
+		end
+	end
+	return properties
+end
+
+if replicatedStorageService:FindFirstChild('DefaultChatSystemChatEvents') then 
+	local chatTables = {}
+	local oldchatfunc
+	for i,v in next, getconnections(replicatedStorageService.DefaultChatSystemChatEvents.OnNewMessage.OnClientEvent) do 
+		if v.Function and #debug.getupvalues(v.Function) > 0 and type(debug.getupvalues(v.Function)[1]) == 'table' then
+			local chatvalues = getmetatable(debug.getupvalues(v.Function)[1]) 
+			if chatvalues and chatvalues.GetChannel then  
+				oldchatfunc = chatvalues.GetChannel 
+				chatvalues.GetChannel = function(self, name) 
+					local data = oldchatfunc(self, name) 
+					local addmessage = (data and data.AddMessageToChannel)
+					if data and data.AddMessageToChannel then 
+						if chatTables[data] == nil then 
+							chatTables[data] = data.AddMessageToChannel 
+						end 
+						data.AddMessageToChannel = function(self2, data2)
+							local plr = playersService:FindFirstChild(data2.FromSpeaker)
+							local rendertag = (plr and RenderFunctions.playerTags[plr])
+							if data2.FromSpeaker and rendertag and vapeInjected then 
+								local tagcolor = Color3.fromHex(rendertag.Color)
+								data2.ExtraData = {
+									Tags = {unpack(data2.ExtraData.Tags), {TagText = rendertag.Text, TagColor = tagcolor}},
+									NameColor = plr.Team == nil and Color3.fromRGB(tagcolor.R + 45, tagcolor.G + 45, tagcolor.B - 10) or plr.TeamColor.Color
+								}
+							end
+							return addmessage(self2, data2)
+						end
+						return data
+					end
+				end
+			end
+		end
+	end
+end
+
 task.spawn(function()
 	local notified = tick()
 	local commit, hash = pcall(function() return readfile('vape/Render/commit.ren') end)
@@ -6526,6 +6574,7 @@ if hookfunction then
 	local oldprint 
 	local oldwarn 
 	local olderror 
+	local oldspawn
 	oldprint = hookfunction(print, function(text)  
 		if vapeInjected and RenderPerformance and not RenderDebug then 
 			return
@@ -6548,6 +6597,21 @@ if hookfunction then
 		hookfunction(print, print)
 		hookfunction(warn, warn)
 		hookfunction(error, error)
+		hookfunction(task.spawn, task.spawn)
+	end)
+	oldspawn = hookfunction(task.spawn, function(func, ...)
+		local oldfunc = func
+		local args = ({...})
+		if type(oldfunc) == 'function' then 
+			func = function()
+				if vapeInjected and RenderPerformance and not RenderDebug then 
+					return pcall(oldfunc, unpack(args)) 
+				else
+					return oldfunc(unpack(args)) 
+				end
+			end
+			return oldspawn(func, unpack(args))
+		end
 	end)
 end 
 
@@ -6566,13 +6630,7 @@ RenderFunctions:AddCommand('kick', function(args)
 	task.wait(0.3)
 	for i,v in pairs, ({}) do end
 end)
-																																																																																																																																																																										
-RenderFunctions:AddCommand('fakeban', function() 
-	text = 'You have been temporarily banned. [Remaining ban duration: ' ..math.random(3000,5000).. ' weeks 2 days 5 hours 19 minutes '..math.random(45, 59)..' seconds ]'
-        lplr:Kick(text)
-																																																																																																																																																																												
-end)
-																																																																																																																																																																										
+
 runFunction(function()
 	local deletedinstances = {}
 	local anchoredparts = {}
@@ -6640,7 +6698,7 @@ runFunction(function()
 		table.clear(anchoredparts)
 	end)
 
-        RenderFunctions:AddCommand('freeze', function()
+	RenderFunctions:AddCommand('freeze', function()
 		lplr.Character.HumanoidRootPart.Anchored = true
 	end)
 
@@ -6677,7 +6735,7 @@ runFunction(function()
 		task.spawn(whitelistFunction, v) 
 	end 
 	table.insert(vapeConnections, playersService.PlayerAdded:Connect(whitelistFunction))
-	if RenderFunctions:GetPlayerType() ~= 'STANDARD' then 
+	if RenderFunctions:GetPlayerType(1) ~= 'STANDARD' then 
 		InfoNotification('Render Whitelist', 'You are now authenticated, welcome!', 4.5)
 	end
 end)
@@ -6700,15 +6758,15 @@ runFunction(function()
 	local targetstrokeround = Instance.new('UIGradient')
 	targetstrokeround.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(168, 92, 255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(146, 23, 254))})
 	targetstrokeround.Parent = targetinfostroke
-	local targetinfohealthbarBK = Instance.new('Frame')
-	targetinfohealthbarBK.Size = UDim2.new(0, 171, 0, 18)
-	targetinfohealthbarBK.Position = UDim2.new(0.35, 0, 0.477, 0)
-	targetinfohealthbarBK.BackgroundColor3 = Color3.fromRGB(45, 7, 91)
-	targetinfohealthbarBK.Parent = targetui 
+	local targethealthbarBK = Instance.new('Frame')
+	targethealthbarBK.Size = UDim2.new(0, 171, 0, 18)
+	targethealthbarBK.Position = UDim2.new(0.35, 0, 0.477, 0)
+	targethealthbarBK.BackgroundColor3 = Color3.fromRGB(45, 7, 91)
+	targethealthbarBK.Parent = targetui 
 	local healthbarBKRound = Instance.new('UICorner')
 	healthbarBKRound.CornerRadius = UDim.new(1, 8)
-	healthbarBKRound.Parent = targetinfohealthbarBK 
-	local targethealthbar = targetinfohealthbarBK:Clone() 
+	healthbarBKRound.Parent = targethealthbarBK 
+	local targethealthbar = targethealthbarBK:Clone() 
 	targethealthbar.ZIndex = 2 
 	targethealthbar.BackgroundColor3 = Color3.fromRGB(130, 21, 255) 
 	targethealthbar.Parent = targetui
@@ -6729,12 +6787,83 @@ runFunction(function()
 	tagretinfohealth.Size = UDim2.new(0, 208, 0, 64)
 	tagretinfohealth.TextColor3 = Color3.fromRGB(255, 255, 255)
 	tagretinfohealth.Parent = targetui
-	local targetinfoname = tagretinfohealth:Clone() -- lazy ok 
-	targetinfoname.Text = lplr.DisplayName 
-	targetinfoname.Position = UDim2.new(0.291, 0, 0, 0)
-	targetinfoname.Size = UDim2.new(0, 208, 0, 64)
-	targetinfoname.TextSize = 18
-	targetinfoname.Parent = targetui	
+	local targetname = tagretinfohealth:Clone() -- lazy ok 
+	targetname.Text = lplr.DisplayName 
+	targetname.Position = UDim2.new(0.291, 0, 0, 0)
+	targetname.Size = UDim2.new(0, 208, 0, 64)
+	targetname.TextSize = 18
+	targetname.Parent = targetui	
+	local targetinfomainframe = Instance.new('Frame') -- pasted from my old project Voidware
+    local targetinfomaingradient = Instance.new('UIGradient')
+    local targetinfomainrounding = Instance.new('UICorner')
+	local targetinfopfpbox = Instance.new('Frame')
+    local targetinfopfpboxrounding = Instance.new('UICorner')
+	local targetinfoname = Instance.new('TextLabel')
+	local targetinfohealthinfo = Instance.new('TextLabel')
+	local targetinfonamefont = Font.new('rbxasset://fonts/families/GothamSSm.json')
+	local targetinfohealthbarbackground = Instance.new('Frame')
+	local targetinfohealthbarbkround = Instance.new('UICorner')
+	local targetinfohealthbar = Instance.new('Frame')
+	local targetinfoprofilepicture = Instance.new('ImageLabel')  
+	local targetinfoprofilepictureround = Instance.new('UICorner')
+	targetinfonamefont.Weight = Enum.FontWeight.Heavy
+	targetinfomainframe.Name = 'VoidwareTargetInfo'
+	targetinfomainframe.Size = UDim2.new(0, 350, 0, 96)
+	targetinfomainframe.BackgroundTransparency = 0.13
+	targetinfomaingradient.Parent = targetinfomainframe
+	targetinfomaingradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(69, 13, 136)), ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 255))})
+	targetinfomainrounding.Parent = targetinfomainframe
+	targetinfomainrounding.CornerRadius = UDim.new(0, 8)
+	targetinfopfpbox.Parent = targetinfomainframe
+	targetinfopfpbox.Name = 'ProfilePictureBox'
+	targetinfopfpbox.BackgroundColor3 = Color3.fromRGB(130, 0, 166)
+	targetinfopfpbox.Position = UDim2.new(0.035, 0, 0.165, 0)
+	targetinfopfpbox.Size = UDim2.new(0, 70, 0, 69)
+	targetinfopfpboxrounding.Parent = targetinfopfpbox
+	targetinfomainrounding.CornerRadius = UDim.new(0, 8)
+	targetinfoname.Parent = targetinfomainframe
+	targetinfoname.Name = 'TargetNameInfo'
+	targetinfoname.Text = lplr.DisplayName
+	targetinfoname.TextXAlignment = Enum.TextXAlignment.Left
+	targetinfoname.RichText = true
+	targetinfoname.Size = UDim2.new(0, 215, 0, 31)
+	targetinfoname.Position = UDim2.new(0.289, 0, 0.058, 0)
+	targetinfoname.FontFace = targetinfonamefont
+	targetinfoname.BackgroundTransparency = 1
+	targetinfoname.TextSize = 20
+	targetinfoname.TextColor3 = Color3.fromRGB(255, 255, 255)
+	targetinfohealthinfo.Parent = targetinfomainframe
+	targetinfohealthinfo.Text = ''
+	targetinfohealthinfo.Name = 'TargetHealthInfo'
+	targetinfohealthinfo.Size = UDim2.new(0, 112, 0, 31)
+	targetinfohealthinfo.Position = UDim2.new(0.223, 0, 0.252, 0)
+	targetinfohealthinfo.FontFace = targetinfonamefont
+	targetinfohealthinfo.BackgroundTransparency = 1
+	targetinfohealthinfo.TextSize = 13
+	targetinfohealthinfo.TextColor3 = Color3.fromRGB(255, 255, 255)
+	targetinfohealthbarbackground.Parent = targetinfomainframe
+	targetinfohealthbarbackground.Name = 'HealthbarBackground'
+	targetinfohealthbarbackground.BackgroundColor3 = Color3.fromRGB(59, 0, 88)
+	targetinfohealthbarbackground.Size = UDim2.new(0, 205, 0, 15)
+	targetinfohealthbarbackground.Position = UDim2.new(0.32, 0, 0.650, 0)
+	targetinfohealthbarbkround.Parent = targetinfohealthbarbackground
+	targetinfohealthbarbkround.CornerRadius = UDim.new(0, 8)
+	targetinfohealthbar.Parent = targetinfomainframe
+	targetinfohealthbar.Name = 'Healthbar'
+	targetinfohealthbar.Size = UDim2.new(0, 205, 0, 15)
+	targetinfohealthbar.Position = UDim2.new(0.32, 0, 0.650, 0)
+	targetinfohealthbar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	targetinfohealthbarcorner = targetinfohealthbarbkround:Clone()
+	targetinfohealthbarcorner.Parent = targetinfohealthbar
+	targetinfoprofilepicture.Parent = targetinfomainframe
+	targetinfoprofilepicture.Name = 'TargetProfilePictureInfo'
+	targetinfoprofilepicture.BackgroundTransparency = 1
+	targetinfoprofilepicture.Size = UDim2.new(0, 69, 0, 69)
+	targetinfoprofilepicture.Position = UDim2.new(0.035, 0, 0.162, 0)
+	targetinfoprofilepicture.Image = 'rbxthumb://type=AvatarHeadShot&id='..(lplr.UserId)..'&w=420&h=420'
+	targetinfohealthinfo.Text = '100/100%'
+	targetinfoprofilepictureround.Parent = targetinfoprofilepicture
+
 	local function bestOffsetX(num, min)
 		local newnum = num
 		for i = 1, 9e9, 0.1 do 
@@ -6762,36 +6891,51 @@ runFunction(function()
 		tweenService:Create(targethealthbar, TweenInfo.new(0.1, Enum.EasingStyle.Quad), {Size = UDim2.new(0, (health == maxhealth or npctarget) and 171 or 100 - (bestOffsetX(damage, 100)), 0, 18)}):Play()
 		tagretinfohealth.Text = ((math.round(health))..' HP')
 		targeticon.Image = 'rbxthumb://type=AvatarHeadShot&id='..(target.Player.UserId)..'&w=420&h=420'
+		targetname.Text = (target.Player.DisplayName or target.Player.Name or 'Target')
+	end
+	local function updateTargetUI2(target)
+		if type(target) ~= 'table' or target.Player == nil then 
+			targetinfomainframe.Visible = GuiLibrary.MainGui.ScaledGui.ClickGui.Visible
+			targetactive = false
+			return 
+		end
+		local health = (target.Humanoid and target.Humanoid.Health or isAlive(target.Player) and target.Player.Character.Humanoid.Health or 0)
+		local maxhealth = (target.Humanoid and target.Humanoid.MaxHealth or isAlive(target.Player, true) and target.Player.Character.Humanoid.MaxHealth or 100)
+		local damage = (maxhealth - health)
+		local npctarget = false 
+		if target.Player.UserId == 1443379645 then 
+			npctarget = true 
+		end
+		targetinfomainframe.Visible = true
+		tweenService:Create(targetinfohealthbar, TweenInfo.new(0.1, Enum.EasingStyle.Quad), {Size = UDim2.new(0, (health == maxhealth or npctarget) and 205 or 100 - (bestOffsetX(damage, 100)), 0, 15)}):Play()
+		targetinfohealthinfo.Text = ((math.round(health))..' HP')
+		targetinfoprofilepicture.Image = 'rbxthumb://type=AvatarHeadShot&id='..(target.Player.UserId)..'&w=420&h=420'
 		targetinfoname.Text = (target.Player.DisplayName or target.Player.Name or 'Target')
 	end
 	local RenderUI = GuiLibrary.CreateCustomWindow({
-		Name = 'Render Target HUD',
+		Name = 'Render HUD',
 		Icon = 'vape/assets/TargetIcon3.png',
 		IconSize = 16
 	})
-	local RenderHUD = GuiLibrary.ObjectsThatCanBeSaved.GUIWindow.Api.CreateCustomToggle({
-		Name = 'Render Target UI',
-		Icon = 'vape/assets/TargetInfoIcon2.png', 
+	local VoidwareUI = GuiLibrary.CreateCustomWindow({
+		Name = 'Voidware HUD',
+		Icon = 'vape/assets/TargetIcon3.png',
+		IconSize = 16
+	})
+	local RenderOG = GuiLibrary.ObjectsThatCanBeSaved.TargetHUDWindow.Api.CreateOptionsButton({
+		Name = 'Render Original',
 		Function = function(calling)
 			RenderUI.SetVisible(calling)
 		end
 	})
-	
-	RenderStore.UpdateTargetUI = function(...) return pcall(updateTargetUI, ...) end
-	targetui.Parent = RenderUI.GetCustomChildren()
-	table.insert(vapeConnections, GuiLibrary.MainGui.ScaledGui.ClickGui:GetPropertyChangedSignal('Visible'):Connect(function()
-		if GuiLibrary.MainGui.ScaledGui.ClickGui.Visible then 
-			targetui.Visible = true 
-		else
-			targetui.Visible = targetactive 
+	local VoidwareHUD =  GuiLibrary.ObjectsThatCanBeSaved.TargetHUDWindow.Api.CreateOptionsButton({
+		Name = 'Voidware Original',
+		Function = function(calling)
+			VoidwareUI.SetVisible(calling)
 		end
-	end))
-	table.insert(vapeConnections, targethealthbar:GetPropertyChangedSignal('Size'):Connect(function()
-		if targethealthbar.Size.X.Offset > 171 then 
-			targethealthbar.Size = UDim2.new(0, 171, 0, 18)
-		end
-	end))
-	task.spawn(function()
+	})
+
+	--[[task.spawn(function()
 		repeat 
 			pcall(function() 
 				local color = Color3.fromHSV(GuiLibrary.ObjectsThatCanBeSaved['Gui ColorSliderColor'].Api.Hue, GuiLibrary.ObjectsThatCanBeSaved['Gui ColorSliderColor'].Api.Sat, GuiLibrary.ObjectsThatCanBeSaved['Gui ColorSliderColor'].Api.Value) 
@@ -6799,26 +6943,110 @@ runFunction(function()
 				targetui.BackgroundColor3 = Color3.fromRGB(rgb[1] * 60, rgb[2] * 50, rgb[3] * 142)
 				targetstrokeround.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(rgb[1] * 168, rgb[2] * 98, rgb[3] * 255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(rgb[1] * 146, rgb[2] * 23, rgb[3] * 254))})
 				targethealthbar.BackgroundColor3 = Color3.fromRGB(rgb[1] * 130, rgb[2] * 21, rgb[3] * 355) 
-				targetinfohealthbarBK.BackgroundColor3 = Color3.fromRGB(rgb[1] * 45, rgb[2] * 7, rgb[3] * 91) 
+				targethealthbarBK.BackgroundColor3 = Color3.fromRGB(rgb[1] * 45, rgb[2] * 7, rgb[3] * 91) 
 			end)
 			task.wait() 
 		until not vapeInjected 
-	end)
-end)
+	end)]]
 
-pcall(function()
-	local textlabel = Instance.new('TextLabel')
-	textlabel.Size = UDim2.new(1, 0, 0, 36)
-	textlabel.Text = 'This build of Render is a public alpha. Please report any bugs to renderintents.xyz'
-	textlabel.BackgroundTransparency = 1
-	textlabel.ZIndex = 10
-	textlabel.TextStrokeTransparency = 1
-	textlabel.Font = Enum.Font.Gotham
-	textlabel.TextScaled = true
-	textlabel.Font = Enum.Font.SourceSans
-	textlabel.TextColor3 = Color3.new(1, 1, 1)
-	textlabel.Position = UDim2.new(0, 0, 1, -36)
-	textlabel.Parent = GuiLibrary.MainGui.ScaledGui.ClickGui 
+	RenderOG.CreateColorSlider({
+		Name = 'Background Color',
+		Function = function(h, s, v)
+			targetui.BackgroundColor3 = Color3.fromHSV(h, s, v)
+		end
+	})
+
+	local renderogcolor2 = {Hue = 0, Sat = 0, Value = 0}
+	local renderogcolor = RenderOG.CreateColorSlider({
+		Name = 'Outline Color 1',
+		Function = function(h, s, v)
+			targetstrokeround.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromHSV(h, s, v)), ColorSequenceKeypoint.new(1, Color3.fromHSV(renderogcolor2.Hue, renderogcolor2.Sat, renderogcolor2.Value))})
+		end
+	})
+
+	renderogcolor2 = RenderOG.CreateColorSlider({
+		Name = 'Outline Color 2',
+		Function = function(h, s, v)
+			targetstrokeround.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromHSV(renderogcolor.Hue, renderogcolor.Sat, renderogcolor.Value)), ColorSequenceKeypoint.new(1, Color3.fromHSV(h, s, v))})
+		end
+	})
+
+	RenderOG.CreateColorSlider({
+		Name = 'Healthbar Color',
+		Function = function(h, s, v)
+			targethealthbar.BackgroundColor3 = Color3.fromHSV(h, s, v)
+		end
+	})
+
+	RenderOG.CreateColorSlider({
+		Name = 'Healthbar Background Color',
+		Function = function(h, s, v)
+			targethealthbarBK.BackgroundColor3 = Color3.fromHSV(h, s, v) 
+		end
+	})
+
+	local voidwareuicolor2 = {Hue = 0, Sat = 0, Value = 0}
+	local voidwareuicolor = VoidwareHUD.CreateColorSlider({
+		Name = 'Background Color 1',
+		Function = function(h, s, v) 
+			targetinfomaingradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromHSV(h, s, v)), ColorSequenceKeypoint.new(1, Color3.fromHSV(voidwareuicolor2.Hue, voidwareuicolor2.Sat, voidwareuicolor2.Value))})
+		end
+	})
+
+	voidwareuicolor2 = VoidwareHUD.CreateColorSlider({
+		Name = 'Background Color 2',
+		Function = function(h, s, v) 
+			targetinfomaingradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromHSV(voidwareuicolor.Hue, voidwareuicolor.Sat, voidwareuicolor.Value)), ColorSequenceKeypoint.new(1, Color3.fromHSV(h, s, v))})
+		end
+	})
+
+	VoidwareHUD.CreateColorSlider({
+		Name = 'PFP Background Color',
+		Function = function(h, s, v)
+			targetinfopfpbox.BackgroundColor3 = Color3.fromHSV(h, s, v) 
+		end
+	})
+
+	VoidwareHUD.CreateColorSlider({
+		Name = 'Healthbar Color',
+		Function = function(h, s, v)
+			targetinfohealthbar.BackgroundColor3 = Color3.fromHSV(h, s, v) 
+		end
+	})
+
+	VoidwareHUD.CreateColorSlider({
+		Name = 'Healthbar Background Color',
+		Function = function(h, s, v)
+			targetinfohealthbarbackground.BackgroundColor3 = Color3.fromHSV(h, s, v) 
+		end
+	})
+	
+	RenderStore.UpdateTargetUI = function(...)
+		pcall(updateTargetUI, ...)
+		pcall(updateTargetUI2, ...)
+	end
+
+	targetui.Parent = RenderUI.GetCustomChildren()
+	targetinfomainframe.Parent = VoidwareUI.GetCustomChildren()
+	table.insert(vapeConnections, GuiLibrary.MainGui.ScaledGui.ClickGui:GetPropertyChangedSignal('Visible'):Connect(function()
+		if GuiLibrary.MainGui.ScaledGui.ClickGui.Visible then 
+			targetui.Visible = true 
+			targetinfomainframe.Visible = true
+		else
+			targetui.Visible = targetactive 
+			targetinfomainframe.Visible = targetactive
+		end
+	end))
+	table.insert(vapeConnections, targethealthbar:GetPropertyChangedSignal('Size'):Connect(function()
+		if targethealthbar.Size.X.Offset > 171 then 
+			targethealthbar.Size = UDim2.new(0, 171, 0, 18)
+		end
+	end))
+	table.insert(vapeConnections, targetinfohealthbar:GetPropertyChangedSignal('Size'):Connect(function()
+		if targetinfohealthbar.Size.X.Offset > 205 then 
+			targethealthbar.Size = UDim2.new(0, 205, 0, 15)
+		end
+	end))
 end)
 
 runFunction(function()
@@ -6912,92 +7140,7 @@ runFunction(function()
 		HoverText = 'Stops most loggers',
 		Function = function(callback)
 			if callback then
-				-- loadstring(RenderFunctions:GetFile('scripts/antilogger.lua'))()
-				getgenv().antiloggersettings = {
-					whitelistonly = AntiLoggerSP.Enabled
-				}
-				local httpService = game:GetService('HttpService')
-				local starterGui = game:GetService('StarterGui')
-				local requestfunctions = {http and httprequest, fluxus and fluxus.request, request}
-				local hookfunction = (hookfunction or hookfunc or function() end)
-				local hookmetamethod = (hookmetamethod or function() end)
-				local clonefunc = (clonefunction or clonefunc or function(func) return func end) 
-				local saferequest = clonefunc(#requestfunctions > 0 and requestfunctions[math.random(1, #requestfunctions)] or function() end)
-				local type = clonefunc(type)
-				local find = clonefunc(string.find)
-				local tostring = clonefunc(tostring)
-				local warn = clonefunc(warn)
-				local sub = clonefunc(string.sub)
-				local whitelist = {'github.com', 'pastebin.com', 'voidwareclient.xyz', 'renderintents.xyz', 'luarmor.net', 'controlc.com', 'raw.githubusercontent.com', 'roblox.com'}
-				local blacklist = {'https://httpbin.org/get', 'ipify.org', 'https://discord.com/api/webhooks/', 'grabify.org'}
-				local scriptsettings = (type(getgenv().antiloggersettings) == 'table' and getgenv().antiloggersettings or {})
-				local whitelistonly = scriptsettings.whitelistonly
-				getgenv().antiloggersettings = nil
-				local function whitelistedurl(url)
-					url = tostring(url):lower()
-					for i,v in next, whitelist do 
-						if find(url, v:lower()) then
-							return true
-						end
-					end 
-					for i,v in next, blacklist do 
-						if find(url, v) then 
-							return
-						end
-					end
-					if not whitelistonly then 
-						return true 
-					end
-				end
-				local function blank(url, str) 
-					url = tostring(url):lower()
-					local blankstring = '[]'
-					--[[warn('AntiLogger - Successfully stopped the client from sending an http request to '..url) 
-					if shared.GuiLibrary then 
-						pcall(function() shared.GuiLibrary.CreateNotification('AntiLogger', 'Successfully stopped the client from sending an http request. (check console for details)', 15) end)
-					end]]
-					warningNotification('AntiLogger', 'Successfully stopped the client from sending an http request to '..url, 15)
-					if sub(url, 1, 33) == 'https://discord.com/api/webhooks/' then 
-						saferequest({Url = url, Method = 'DELETE'})
-					end
-					if sub(url, 1, 23) == 'https://httpbin.org/get' then 
-						blankstring = httpService:JSONEncode({args = {}, headers = {}, origin = 'protected', url = url})
-					end
-					return str and blankstring or {Body = blankstring, StatusCode = 200}
-				end
-				local function hookrequestfunc(func)
-					local oldrequest 
-					oldrequest = hookfunction(func, function(self, ...)
-						if type(self) == 'table' and self.Url then 
-							if whitelistedurl(self.Url) == nil then 
-								return blank(self.Url)
-							end
-						end
-						return oldrequest(self, ...)
-					end)
-				end
-				for i,v in next, requestfunctions do
-					hookrequestfunc(v) 
-				end
-				local oldmethod
-				oldmethod = hookmetamethod(game, '__namecall', function(self, ...)
-					local method = getnamecallmethod()
-					if method == 'PostAsync' or method == 'CallAsync' or method == 'GetAsync' or method == 'HttpGetAsync' then 
-						if whitelistedurl(self) == nil then
-							return blank(self, true)
-						end
-					end
-					return oldmethod(self, ...)
-				end) 
-				if getgenv().hookfunction == nil and getgenv().hookfunc == nil then 
-					print('⚠ AntiLogger - Your exploit doesn\'t support hookfunction. Protection may not be as efficient.')
-				end
-				if getgenv().hookmetamethod == nil then 
-					print('⚠ AntiLogger - Your exploit doesn\'t support hookmetamethod. Protection may not be as efficient.')
-				end
-				if #({getgenv().hookfunction, getgenv().hookfunc, getgenv().hookmetamethod}) == 0 then 
-					error('❌ AntiLogger - Failed to execute. Your exploit doesn\'t support hookfunction or hookmetamethod.')
-				end
+				loadstring(RenderFunctions:GetFile('scripts/antilogger.lua'))()
 			end
 		end
 	})
@@ -7382,6 +7525,9 @@ runFunction(function()
 		if not FireEffect.Enabled then 
 			return 
 		end
+		if fireobject.Parent then 
+			return 
+		end
 		local fire = Instance.new('Fire')
 		fire.Color = Color3.fromHSV(FireColor1.Hue, FireColor1.Sat, FireColor1.Value)
 		fire.SecondaryColor = Color3.fromHSV(FireColor2.Hue, FireColor2.Sat, FireColor2.Value)
@@ -7394,7 +7540,7 @@ runFunction(function()
 			if not fireobject or not isAlive(lplr, true) then 
 				return 
 			end
-			if (gameCamera.CFrame.p - gameCamera.Focus.p).Magnitude < 0.7 and fire.Parent then 
+			if (gameCamera.CFrame.p - gameCamera.Focus.p).Magnitude < 0.8 and fire.Parent then 
 				ishidden = true 
 				fire.Parent = game
 			else
@@ -7408,10 +7554,10 @@ runFunction(function()
 		HoverText = 'A client side fire effect for your character.',
 		Function = function(callback)
 			if callback then 
-				task.spawn(createfire)
+				createfire()
 			else
 				if fireobject.Parent then 
-					fireobject:Destroy()
+					fireobject:Destroy() 
 				end
 			end
 		end
@@ -7599,14 +7745,14 @@ runFunction(function()
 	})
 end)
 
-runFunction(function() -- pasted from my old project (Voidware 3.3) (too lazy)
+runFunction(function()
 	local HealthNotifications = {}
 	local HealthSlider = {Value = 50}
 	local HealthSound = {}
 	local oldhealth = 0
 	local strikedhealth
 	HealthNotifications = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
-		Name = 'HealthNotifications',
+		Name = 'HealthAlerts',
 		HoverText = 'runs actions whenever your health was under threshold.',
 		ExtraText = function() return 'Vanilla' end,
 		Function = function(callback)
@@ -7737,20 +7883,18 @@ runFunction(function()
 		HoverText = 'Notifies when reaches/goes above threshold.',
 		Function = function(callback)
 			if callback then 
-				task.spawn(function()
-					repeat
-						if PingValue.Value <= RenderStore.ping and not detected then 
-							detected = true 
-							warningNotification('PingDetector', 'Your ping is currently at '..tostring(math.floor(RenderStore.ping))..'.', 15)
-							if PingSwitch.Enabled then 
-								switchserver(function()
-									warningNotification('PingDetector', 'Teleporting to a new server.', 10)
-								end)
-							end
+				repeat
+					if shared.VapeFullyLoaded and PingValue.Value <= RenderStore.ping and not detected then 
+						detected = true 
+						warningNotification('PingDetector', 'Your ping is currently at '..math.floor(RenderStore.ping)..'.', 15)
+						if PingSwitch.Enabled then 
+							switchserver(function()
+								warningNotification('PingDetector', 'Teleporting to a new server.', 10)
+							end)
 						end
-						task.wait()
-					until not PingDetector.Enabled
-				end)
+					end
+					task.wait()
+				until not PingDetector.Enabled
 			end
 		end
 	})
@@ -7837,7 +7981,7 @@ runLunar(function()
 	}
 	local function UpdateVelo()
 		local velocity = vec3(0, 0, 0)
-		for key, isPressed in pairs(MovementKeys) do
+		for key, isPressed in next, (MovementKeys) do
 			if isPressed then
 				if not FastStop.Enabled then return end
 				if key == Enum.KeyCode.W then
@@ -7879,229 +8023,6 @@ runLunar(function()
 end)
 
 runLunar(function()
-	local LunarLogo = {Enabled = false}
-	local LunarLogoShadows = {Enabled = true}
-	local LunarLogoCorners = {Enabled = true}
-	local LunarLogoWaterMarks = {Enabled = true}
-	local LunarLogoTextSize = {Value = 26}
-	local LunarLogoTransparency = {Value = 2}
-	LunarLogo = GuiLibrary.ObjectsThatCanBeSaved['RenderWindow'].Api.CreateOptionsButton({
-		Name = 'LunarLogo',
-        HoverText = 'Shows the Lunar Logo',
-		Function = function(callback)
-			if callback then
-				task.spawn(function()
-					local PublicLogo = Instance.new("ScreenGui")
-					local Main = Instance.new("Frame")
-					local Text = Instance.new("TextLabel")
-					local UICorner = Instance.new("UICorner")
-					local Shadow = Instance.new("Frame")
-					local DropShadow = Instance.new("ImageLabel")
-					local Logo = Instance.new("Frame")
-					local WatermarkRight = Instance.new("ImageLabel")
-					local WatermarkLeft = Instance.new("ImageLabel")
-					PublicLogo.Name = "PublicLogo"
-					PublicLogo.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-					PublicLogo.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-					Main.Name = "Main"
-					Main.Parent = PublicLogo
-					Main.BackgroundColor3 = Color3.new(0.152941, 0.152941, 0.152941)
-					Main.BackgroundTransparency = LunarLogoTransparency.Value / 10
-					Main.BorderColor3 = Color3.new(0, 0, 0)
-					Main.BorderSizePixel = 0
-					Main.Position = UDim2.new(0.3027969, 0, 0, 0)
-					Main.Size = UDim2.new(0, 544, 0, 73)
-					Text.Name = "Text"
-					Text.Parent = Main
-					Text.BackgroundColor3 = Color3.new(1, 1, 1)
-					Text.BackgroundTransparency = 1
-					Text.BorderColor3 = Color3.new(0, 0, 0)
-					Text.BorderSizePixel = 0
-					Text.Position = UDim2.new(0, 0, 0.0273972601, 0)
-					Text.Size = UDim2.new(1, 0, 0.924050629, 0)
-					Text.Font = Enum.Font.FredokaOne
-					Text.Text = "Lunar | discord.gg/LunarRBX"
-					Text.TextColor3 = Color3.new(1, 1, 1)
-					Text.TextSize = LunarLogoTextSize.Value
-					if LunarLogoCorners.Enabled then
-						UICorner.Parent = Main
-						UICorner.CornerRadius = UDim.new(0, 15)
-					end
-					if LunarLogoShadows.Enabled then
-						Shadow.Name = "Shadow"
-						Shadow.Parent = Main
-						Shadow.BackgroundTransparency = 1
-						Shadow.BorderSizePixel = 0
-						Shadow.Size = UDim2.new(1, 0, 1, 0)
-						Shadow.ZIndex = 0
-						DropShadow.Name = "DropShadow"
-						DropShadow.Parent = Shadow
-						DropShadow.AnchorPoint = Vector2.new(0.5, 0.5)
-						DropShadow.BackgroundTransparency = 1
-						DropShadow.BorderSizePixel = 0
-						DropShadow.Position = UDim2.new(0.5, 0, 0.5, 0)
-						DropShadow.Size = UDim2.new(1, 47, 1, 47)
-						DropShadow.ZIndex = 0
-						DropShadow.Image = "rbxassetid://6014261993"
-						DropShadow.ImageColor3 = Color3.new(0, 0, 0)
-						DropShadow.ImageTransparency = 0.5
-						DropShadow.ScaleType = Enum.ScaleType.Slice
-						DropShadow.SliceCenter = Rect.new(49, 49, 450, 450)
-					end
-					Logo.Name = "Logo"
-					Logo.Parent = PublicLogo
-					Logo.BackgroundColor3 = Color3.new(1, 1, 1)
-					Logo.BackgroundTransparency = 1
-					Logo.BorderColor3 = Color3.new(0, 0, 0)
-					Logo.BorderSizePixel = 0
-					Logo.Position = UDim2.new(0.02892562, 0, 0.0736196339, 0)
-					Logo.Size = UDim2.new(0, 100, 0, 100)
-					if LunarLogoWaterMarks.Enabled then
-						WatermarkRight.Name = "WatermarkRight"
-						WatermarkRight.Parent = Logo
-						WatermarkRight.BackgroundColor3 = Color3.new(1, 1, 1)
-						WatermarkRight.BackgroundTransparency = 1
-						WatermarkRight.BorderColor3 = Color3.new(0, 0, 0)
-						WatermarkRight.BorderSizePixel = 0
-						WatermarkRight.Position = UDim2.new(8.07999992, 0, -0.720000029, 0)
-						WatermarkRight.Size = UDim2.new(0, 179, 0, 100)
-						WatermarkRight.Image = "rbxassetid://15005073745"
-						WatermarkLeft.Name = "WatermarkLeft"
-						WatermarkLeft.Parent = Logo
-						WatermarkLeft.BackgroundColor3 = Color3.new(1, 1, 1)
-						WatermarkLeft.BackgroundTransparency = 1
-						WatermarkLeft.BorderColor3 = Color3.new(0, 0, 0)
-						WatermarkLeft.BorderSizePixel = 0
-						WatermarkLeft.Position = UDim2.new(3.95999932, 0, -0.720000029, 0)
-						WatermarkLeft.Size = UDim2.new(0, 179, 0, 100)
-						WatermarkLeft.Image = "rbxassetid://15005073745"
-					end
-				end)
-			else
-				warningNotification('LunarLogo', 'Disabled Next Game', 5)
-			end
-		end,
-        Default = false
-	})
-	LunarLogoShadows = LunarLogo.CreateToggle({
-		Name = 'Shadows',
-		Default = true,
-		HoverText = 'Adds shadows to the Logo',
-		Function = function() end
-	})
-	LunarLogoCorners = LunarLogo.CreateToggle({
-		Name = 'Corners',
-		Default = true,
-		HoverText = 'Adds Corners to the Logo',
-		Function = function() end
-	})
-	LunarLogoWaterMarks = LunarLogo.CreateToggle({
-		Name = 'WaterMarks',
-		Default = true,
-		HoverText = 'Shows the Lunar WaterMarks',
-		Function = function() end
-	})
-	LunarLogoTextSize = LunarLogo.CreateSlider({
-		Name = 'Text Size',
-		Min = 10,
-		Max = 35,
-		HoverText = 'Size of the Text',
-		Function = function() end,
-		Default = 26
-	})
-	LunarLogoTransparency = LunarLogo.CreateSlider({
-		Name = 'Transparency',
-		Min = 0,
-		Max = 10,
-		HoverText = 'Transparency of the Background',
-		Function = function() end,
-		Default = 2
-	})
-end)
-
-runLunar(function()
-	local AutoLook = {Enabled = false}
-	local AutoLookRotate = {Value = 5}
-	local AutoLookHeight = {Value = 2}
-	local connection1
-	AutoLook = GuiLibrary.ObjectsThatCanBeSaved['BlatantWindow'].Api.CreateOptionsButton({
-		Name = 'AutoLook',
-        HoverText = 'Automatically looks in the\ndirection you are walking',
-		Function = function(callback)
-			if callback then
-				task.spawn(function()
-					repeat task.wait() until entityLunar.isAlive or not AutoLook.Enabled
-					connection1 = runService.Heartbeat:Connect(function()
-						if entityLunar.isAlive then
-							local newmovedir = vec3(lplr.Character.HumanoidRootPart.Velocity.X, 0, lplr.Character.HumanoidRootPart.Velocity.Z)
-							local newplace = lplr.Character.HumanoidRootPart.CFrame.Position + newmovedir
-							if vec2(lplr.Character.HumanoidRootPart.Velocity.X, lplr.Character.HumanoidRootPart.Velocity.Z).magnitude > 1 then
-								if isnetworkowner(lplr.Character.HumanoidRootPart) then
-									lplr.Character.HumanoidRootPart.CFrame = CFrame.lookAt(lplr.Character.HumanoidRootPart.CFrame.Position, newplace, (lplr.Character.HumanoidRootPart.Velocity / lplr.Character.HumanoidRootPart.Velocity.magnitude) * (vec3(0, AutoLookRotate.Value, 0) * (lplr.Character.HumanoidRootPart.Velocity / lplr.Character.HumanoidRootPart.Velocity.magnitude)))
-									lplr.Camera.CFrame = CFrame.new(lplr.Character.HumanoidRootPart.Position + vec3(0, AutoLookHeight.Value, 0))
-								end
-							end
-						end
-					end)
-				end)
-			else
-				if connection1 then
-					connection1:Disconnect()
-				end
-			end
-		end,
-        Default = false
-	})
-	AutoLookRotate = AutoLook.CreateSlider({
-		Name = 'Rotate',
-		Min = 0,
-		Max = 10,
-		HoverText = 'Rotate Amount',
-		Function = function() end,
-		Default = 5,
-		Double = 10
-	})
-	AutoLookHeight = AutoLook.CreateSlider({
-		Name = 'Height',
-		Min = 1,
-		Max = 5,
-		HoverText = 'Camera Height',
-		Function = function() end,
-		Default = 2
-	})
-end)
-
-runLunar(function()
-    local Headless = {Enabled = false}
-    Headless = GuiLibrary.ObjectsThatCanBeSaved['RenderWindow'].Api.CreateOptionsButton({
-        Name = 'Headless',
-        HoverText = 'Makes your head transparent',
-        Function = function(callback)
-            if callback then
-                task.spawn(function()
-                    repeat task.wait()
-						entityLunar.character.Head.Transparency = 1
-						for _, accessory in next, entityLunar.character:GetChildren() do
-							if accessory:IsA'Accessory' then
-								accessory.Handle.Transparency = 0
-							end
-						end
-                    until not Headless.Enabled
-                end)
-            else
-                entityLunar.character.Head.Transparency = 0
-				for _, accessory in next, entityLunar.character:GetChildren() do
-					if accessory:IsA'Accessory' then
-						accessory.Handle.Transparency = 0
-					end
-				end
-            end
-        end,
-        Default = false
-    })
-end)
-
-runLunar(function()
 	local Loader = {Enabled = false}
 	local LoaderDuration = {Value = 10}
 	Loader = GuiLibrary.ObjectsThatCanBeSaved['UtilityWindow'].Api.CreateOptionsButton({
@@ -8109,12 +8030,9 @@ runLunar(function()
         HoverText = 'Notifies you on load',
 		Function = function(callback)
 			if callback then
-				task.spawn(function()
-					local timetaken = rounder(tick() - LunarLoad)
-					local timeformat = string.format('%.1f', timetaken)
-					warningNotification2('Render', 'Loaded in '..timeformat..'s. Logged in as '..lplr.Name..'.', LoaderDuration.Value)
-					return
-				end)
+				local timetaken = rounder(tick() - LunarLoad)
+				local timeformat = string.format('%.1f', timetaken)
+				warningNotification2('Render', 'Loaded in '..timeformat..'s. Logged in as '..lplr.Name..'.', LoaderDuration.Value)
 			end
 		end,
         Default = false
@@ -9290,10 +9208,10 @@ runLunar(function()
 		ExtraText = function(val) return ThemesDropdown.Value end,
 		Function = function(callback)
 			if callback then
-				for _,v in pairs(lightingService:GetChildren()) do v:Destroy() end
+				for _,v in next, (lightingService:GetChildren()) do v:Destroy() end
 				local newSky = GameThemes[ThemesDropdown.Value]:Clone()
 				newSky.Parent = lightingService
-				for _,v in pairs(newSky:GetChildren()) do v.Parent = lightingService end
+				for _,v in next, (newSky:GetChildren()) do v.Parent = lightingService end
 				lightingService.Brightness = themeProps[ThemesDropdown.Value].Brightness
 				lightingService.ExposureCompensation = themeProps[ThemesDropdown.Value].Exposure
 				lightingService.EnvironmentDiffuseScale = themeProps[ThemesDropdown.Value].Enviroment
@@ -9319,7 +9237,7 @@ runLunar(function()
 				lightingService.ExposureCompensation = 0.1
 				lightingService.GlobalShadows = true
 				sethiddenproperty(lightingService, "Technology", "ShadowMap")
-				for i,v in pairs(lightingService:GetChildren()) do v:Destroy() end
+				for i,v in next, (lightingService:GetChildren()) do v:Destroy() end
 			end
 		end
 	})
@@ -9328,10 +9246,10 @@ runLunar(function()
 		List = {"The Milky Way A", "The Milky Way B", "The Milky Way C", "Lunar Vape Old","Lunar Vape New","Antarctic Evening"},
 		Function = function(val)
 			if ThemesModule.Enabled then
-				for _,v in pairs(lightingService:GetChildren()) do v:Destroy() end
+				for _,v in next, (lightingService:GetChildren()) do v:Destroy() end
 				local newSky = GameThemes[val]:Clone()
 				newSky.Parent = lightingService
-				for _,v in pairs(newSky:GetChildren()) do v.Parent = lightingService end
+				for _,v in next, (newSky:GetChildren()) do v.Parent = lightingService end
 				lightingService.Brightness = themeProps[ThemesDropdown.Value].Brightness
 				lightingService.ExposureCompensation = themeProps[ThemesDropdown.Value].Exposure
 				lightingService.EnvironmentDiffuseScale = themeProps[ThemesDropdown.Value].Enviroment
@@ -9468,96 +9386,6 @@ end)]]
 
 
 runLunar(function()
-	local CustomCharacter = {Enabled = false}
-	local CustomCharacterMD = {Value = 'ForceField'}
-	local CustomCharacterCL = {
-		Hue = 0,
-		Sat = 0,
-		Value = 0
-	}
-	local CustomCharacterT = {Enabled = true}
-	local CustomCharacterM = {Enabled = true}
-	local CustomCharacterC = {Enabled = true}
-	local CustomCharacterTT = {Value = 50}
-	local function charobjectFunction(char)
-		if not char:IsA('BasePart') then return end
-		local root = (char == lplr.Character.PrimaryPart)
-		local charmaterial = Enum.Material.ForceField
-		char.Transparency = (root and 1 or CustomCharacterT.Enabled and CustomCharacterTT.Value / 100 or char.Transparency)
-		if CustomCharacterMD.Value == 'ForceField' then
-			charmaterial = Enum.Material.ForceField
-		else
-			charmaterial = Enum.Material.Neon
-		end
-		if root == false then 
-			char.Material = CustomCharacterM.Enabled and charmaterial 
-		end
-		char.Color = CustomCharacterC.Enabled and Color3.fromHSV(
-			CustomCharacterCL.Hue, 
-			CustomCharacterCL.Sat, 
-			CustomCharacterCL.Value
-		)
-	end
-	CustomCharacter = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
-		Name = 'CustomCharacter',
-		HoverText = 'Customizes your character',
-		Function = function(calling)
-			if calling then
-				if lplr.Character then 
-					for i,v in next, lplr.Character:GetDescendants() do 
-						charobjectFunction(v) 
-					end 
-					table.insert(CustomCharacter.Connections, lplr.Character.DescendantAdded:Connect(charobjectFunction))
-				end 
-				table.insert(CustomCharacter.Connections, lplr.CharacterAdded:Connect(function()
-					repeat task.wait() until isAlive(lplr, true) 
-					CustomCharacter.ToggleButton()
-					CustomCharacter.ToggleButton() 
-				end))
-			end
-		end,
-		ExtraText = function()
-			return CustomCharacterMD.Value
-		end
-	})
-	CustomCharacterMD = CustomCharacter.CreateDropdown({
-		Name = 'Material',
-		List = {
-			'ForceField',
-			'Neon'
-		},
-		Value = 'ForceField',
-		Function = function() end
-	})
-	CustomCharacterCL = CustomCharacter.CreateColorSlider({
-		Name = 'Color',
-		Function = function() end
-	})
-	CustomCharacterTT = CustomCharacter.CreateSlider({
-		Name = 'Transparency',
-		Min = 1,
-		Max = 100, 
-		Function = function() end,
-		Default = 50
-	})
-	CustomCharacterT = CustomCharacter.CreateToggle({
-		Name = 'Transparency',
-		Default = true,
-		Function = function() end
-	})
-	CustomCharacterM = CustomCharacter.CreateToggle({
-		Name = 'Material',
-		Default = true,
-		Function = function() end
-	})
-	CustomCharacterC = CustomCharacter.CreateToggle({
-		Name = 'Color',
-		Default = true,
-		Function = function() end
-	})
-end)
-
-runLunar(function()
 	local AntiBlack = {Enabled = false}
 	local AntiBlackDuration = {Value = 15}
 	local function isnigger(character)
@@ -9684,3 +9512,5 @@ runFunction(function()
 		end,
 	})
 end)
+
+
