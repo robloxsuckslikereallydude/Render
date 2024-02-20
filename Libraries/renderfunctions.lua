@@ -10,7 +10,7 @@ local GuiLibrary = shared.GuiLibrary
 local rankTable = {DEFAULT = 0, STANDARD = 1, BOOSTER = 1.5, BETA = 1.6, INF = 2, OWNER = 3}
 local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() return {Body = '[]', StatusCode = 404, StatusText = 'bad exploit'} end)
 
-RenderFunctions.hashTable = {rendermoment = 'Render', renderlitemoment = 'Render Lite'}
+RenderFunctions.hashTable = {rendermoment = 'Render', renderlitemoment = 'Render Lite', redrendermoment = 'Render Red'}
 
 local isfile = isfile or function(file)
     local success, filecontents = pcall(function() return readfile(file) end)
@@ -229,6 +229,9 @@ function RenderFunctions:CreateWhitelistTable()
                     if plr then 
                         RenderFunctions.playerWhitelists[v2] = v
                         RenderFunctions.playerWhitelists[v2].Priority = (rankTable[v.Rank or 'STANDARD'] or 1)
+                        if not v.TagHidden then 
+                            RenderFunctions:CreatePlayerTag(plr, v.TagText, v.TagColor)
+                        end
                     end
                 end
             end 
@@ -458,6 +461,7 @@ task.spawn(function()
         end
     end))
 end)
+
 
 getgenv().RenderFunctions = RenderFunctions
 return RenderFunctions
