@@ -598,7 +598,7 @@ runFunction(function()
 		Function = function(calling)
 			if calling then
 				task.spawn(function()
-					repeat task.wait(10)
+					repeat task.wait(4)
 						Gamble(GambleVal["Value"])
 						print("AutoGamble: Start Gambling!")
 					until (not AutoGamble.Enabled)
