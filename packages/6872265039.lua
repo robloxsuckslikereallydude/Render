@@ -573,6 +573,38 @@ JoinQueueDelay = JoinQueue.CreateSlider({
 })
 
 runFunction(function()
+	local GambleVal = {Value = 2}
+	local Gamble = function(val)
+		for i = 1, val do
+			local args = {
+				[1] = {
+					["crateType"] = "level_up_crate",
+					["altarId"] = i
+				}
+			}
+			
+			game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("node_modules"):WaitForChild("@rbxts"):WaitForChild("net"):WaitForChild("out"):WaitForChild("_NetManaged"):WaitForChild("RewardCrate/SpawnRewardCrate"):FireServer(unpack(args))
+			
+		end
+	end
+	local AutoGamble = {Enabled = false}
+	AutoGamble = GuiLibrary['ObjectsThatCanBeSaved']['BlatantWindow']['Api'].CreateOptionsButton({
+		Name = 'AutoGamble',
+		Function = function(calling)
+			if calling then
+				task.spawn(function()
+					repeat task.wait(6)
+						Gamble(GambleVal["Value"])
+						print("AutoGamble: Start Gambling!")
+					until (not AutoGamble.Enabled)
+				end)
+			end
+		end, 
+		HoverText = 'Auto Open Lucky Crate'
+	})
+end)
+
+runFunction(function()
 	local AutoKitTextList = {['ObjectList'] = {}, ['RefreshValues'] = function() end}
 
 	local function betterfindkit()
