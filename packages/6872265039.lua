@@ -573,19 +573,24 @@ JoinQueueDelay = JoinQueue.CreateSlider({
 })
 
 runFunction(function()
-	local GambleVal = {Value = 2}
-	local Gamble = function(val)
-		for i = 1, val do
-			local args = {
-				[1] = {
-					["crateType"] = "level_up_crate",
-					["altarId"] = i
-				}
+	local GambleVal = {Value = 1}
+	local Gamble = function(Id)
+		local args = {
+			[1] = {
+				["crateType"] = "level_up_crate",
+				["altarId"] = 0
 			}
-			
-			game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("node_modules"):WaitForChild("@rbxts"):WaitForChild("net"):WaitForChild("out"):WaitForChild("_NetManaged"):WaitForChild("RewardCrate/SpawnRewardCrate"):FireServer(unpack(args))
-			
-		end
+		}
+		
+		game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("node_modules"):WaitForChild("@rbxts"):WaitForChild("net"):WaitForChild("out"):WaitForChild("_NetManaged"):WaitForChild("RewardCrate/SpawnRewardCrate"):FireServer(unpack(args))
+		local args = {
+			[1] = {
+				["crateType"] = "level_up_crate",
+				["altarId"] = val
+			}
+		}
+		
+		game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("node_modules"):WaitForChild("@rbxts"):WaitForChild("net"):WaitForChild("out"):WaitForChild("_NetManaged"):WaitForChild("RewardCrate/SpawnRewardCrate"):FireServer(unpack(args))
 	end
 	local AutoGamble = {Enabled = false}
 	AutoGamble = GuiLibrary['ObjectsThatCanBeSaved']['BlatantWindow']['Api'].CreateOptionsButton({
@@ -593,7 +598,7 @@ runFunction(function()
 		Function = function(calling)
 			if calling then
 				task.spawn(function()
-					repeat task.wait(6)
+					repeat task.wait(10)
 						Gamble(GambleVal["Value"])
 						print("AutoGamble: Start Gambling!")
 					until (not AutoGamble.Enabled)
