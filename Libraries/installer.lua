@@ -8,7 +8,7 @@ return (function(ria)
 	local stepcount = 0
 	local steps = {}
 	local titles = {}
-	local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request)
+	local httprequest = (request and http and http.request or http_request or fluxus and fluxus.request)
 	local executor = (identifyexecutor and identifyexecutor() or getexecutorname and getexecutorname() or 'your executor'):lower()
 	local installing
 	local activated
@@ -295,7 +295,7 @@ return (function(ria)
 		end
 		writefile('ria.json', httpservice:JSONEncode({Key = ria, Client = game:GetService('RbxAnalyticsService'):GetClientId()}))
 		writefile('vape/'..file, data)
-		task.wait(0.3)
+		task.wait(0.2)
 	end
 	
 	local function registerStep(name, func)
@@ -312,11 +312,6 @@ return (function(ria)
 		local success, res = pcall(function()
 			return httprequest({Url = 'https://api.renderintents.xyz/ria', Method = 'GET', Headers = {RIA = ria}})
 		end) 
-		if not success then 
-			success, res = pcall(function()
-				return httprequest({Url = 'https://api.renderintents.xyz/ria', Method = 'GET', headers = {RIA = ria}})
-			end)  
-		end
 		if not success then 
 			res = {StatusCode = 404, Body = '{"error":""}'} 
 		end
@@ -339,7 +334,7 @@ return (function(ria)
 			progresstext.TextColor3 = Color3.fromRGB(255, 0, 0) 
 			task.wait(9e9)
 		end
-		if (res.StatusCode == 200 or decode and decode.Discord) and not httpservice:JSONDecode(res.Body).Allowed then 
+		if (res.StatusCode == 200 or decode and decode.Discord) and not httpservice:JSONDecode(res.Body).Allowed and not bypassRIA then 
 			progresstext.Text = 'The script key was registered on another device. use /resetkey in discord if mistake.' 
 			progresstext.TextColor3 = Color3.fromRGB(255, 0, 0) 
 			task.wait(9e9) 
@@ -384,9 +379,9 @@ return (function(ria)
 		repeat task.wait() until profilesfetched
 	end)
 
-	repeat task.wait() until profilesfetched
+	repeat task.wait() until (profilesfetched or not profiles.Enabled)
 
-	for i,v in next, profiles do 
+	for i,v in next, (profiles.Enabled and {} or profiles) do 
 		registerStep('Downloading vape/Profiles/'..v, function()
 			local res = httprequest({Url = 'https://raw.githubusercontent.com/SystemXVoid/Render/source/Libraries/Settings/'..v, Method = 'GET'}).Body 
 			if res ~= '404: Not Found' then 
