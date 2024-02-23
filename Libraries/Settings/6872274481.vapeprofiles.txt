@@ -1,1 +1,1 @@
-{"default":{"Selected":true,"Keybind":""},"Render White":{"Selected":false,"Keybind":""}}
+{"Render Crystal":{"Keybind":"","Selected":false},"Render Ghost":{"Selected":true,"Keybind":""},"default":{"Keybind":"","Selected":false},"Render White":{"Keybind":"","Selected":false}}
