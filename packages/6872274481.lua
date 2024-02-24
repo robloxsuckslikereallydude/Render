@@ -12869,7 +12869,7 @@ runLunar(function()
 	})
 end)
 
-runLunar(function()
+pcall(function()
     local texturepack = {}
 	local packDropdown = {Value = "Melo Pack"}
 
