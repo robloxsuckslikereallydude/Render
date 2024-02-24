@@ -8263,6 +8263,15 @@ runFunction(function()
 				task.wait(0.1)
 			until not AutoKit.Enabled
 		end
+		sigrid = function()
+			repeat
+				if bedwars.AbilityController:CanUseAbility("elk_summon") then
+					bedwars.AbilityController:useAbility("elk_summon")
+					task.wait()
+					bedwars.ClientHandler:Get("ElkKitUppercutAttack"):FireServer()
+				end
+			until not AutoKit.Enabled
+		end
 	}
 	local function autoKitCreateObject(args)
 		local objectTable = AutoKitToggles[args.Kit].Objects
@@ -13542,26 +13551,3 @@ runFunction(function()
    norender.Object.Visible = RenderFunctions:GetPlayerType(3, plr.Player) > 1.5
   end)
 end)
-runFunction(function()
-	local ElkKnockBackExploit = {}
-	ElkKnockBackExploit = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
-		Name = 'ElkKnockBackExploit',
-		HoverText = 'u need sigrid cry abt it',
-		Function = function(calling)
-			if calling then
-			repeat task.wait()
-			  game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("node_modules"):WaitForChild("@rbxts"):WaitForChild("net"):WaitForChild("out"):WaitForChild("_NetManaged"):WaitForChild("ElkKitMounted"):FireServer()
-
-          local args = {
-              [1] = "elk_summon"
-          }
-          
-          game:GetService("ReplicatedStorage"):WaitForChild("events-@easy-games/game-core:shared/game-core-networking@getEvents.Events"):WaitForChild("useAbility"):FireServer(unpack(args))
-          
-          game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("node_modules"):WaitForChild("@rbxts"):WaitForChild("net"):WaitForChild("out"):WaitForChild("_NetManaged"):WaitForChild("ElkKitUppercutAttack"):FireServer()
-			  until (not ElkKnockBackExploit.Enabled)
-			end
-		end
-	})
-end)
-																																																																																																																																																																																																																																																																																																																																																																						
