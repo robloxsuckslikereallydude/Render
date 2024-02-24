@@ -6514,7 +6514,7 @@ textChatService.OnIncomingMessage = function(message)
 	return properties
 end
 
-if replicatedStorageService:FindFirstChild('DefaultChatSystemChatEvents') then 
+pcall(function()
 	local chatTables = {}
 	local oldchatfunc
 	for i,v in next, getconnections(replicatedStorageService.DefaultChatSystemChatEvents.OnNewMessage.OnClientEvent) do 
@@ -6546,8 +6546,8 @@ if replicatedStorageService:FindFirstChild('DefaultChatSystemChatEvents') then
 				end
 			end
 		end
-	end
-end
+	end 
+end)
 
 task.spawn(function()
 	local notified = tick()
