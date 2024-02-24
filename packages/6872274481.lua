@@ -8263,6 +8263,7 @@ runFunction(function()
 				task.wait(0.1)
 			until not AutoKit.Enabled
 		end
+--[[
 		sigrid = function()
 			repeat
 				if bedwars.AbilityController:CanUseAbility("elk_summon") then
@@ -8271,7 +8272,7 @@ runFunction(function()
 					bedwars.ClientHandler:Get("ElkKitUppercutAttack"):FireServer()
 				end
 			until not AutoKit.Enabled
-		end
+		end--]]
 	}
 	local function autoKitCreateObject(args)
 		local objectTable = AutoKitToggles[args.Kit].Objects
