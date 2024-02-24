@@ -8027,7 +8027,7 @@ runLunar(function()
 	local LoaderDuration = {Value = 10}
 	Loader = GuiLibrary.ObjectsThatCanBeSaved['UtilityWindow'].Api.CreateOptionsButton({
 		Name = 'Loader',
-        HoverText = 'Notifies you on load',
+                HoverText = 'Notifies you on load',
 		Function = function(callback)
 			if callback then
 				local timetaken = rounder(tick() - LunarLoad)
@@ -8037,7 +8037,7 @@ runLunar(function()
 					whitelisted = true
 				end
 				wait(3)				
-				warningNotification('Render', 'Loaded in '..timeformat..'s. Logged in as '..lplr.Name..', Whitelisted: ' ..(whitelisted and 'true' or 'false').. ' .', LoaderDuration.Value)
+				InfoNotification('Render', 'Loaded in '..timeformat..'s. Logged in as '..lplr.Name..', Whitelisted: ' ..(whitelisted and 'true' or 'false').. ' .', LoaderDuration.Value)
 			end
 		end,
         Default = false
