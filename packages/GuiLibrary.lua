@@ -3762,6 +3762,7 @@ if shared.VapeExecuted then
 		expandbutton.MouseButton2Click:Connect(windowapi["ExpandToggle"])
 
 		windowapi["CreateOptionsButton"] = function(argstablemain)
+			pcall(GuiLibrary.RemoveObject, argstablemain.Name..'OptionsButton')
 			local buttonapi = {}
 			local amount = #children:GetChildren()
 			local button = Instance.new("TextButton")
@@ -7038,6 +7039,34 @@ if shared.VapeExecuted then
 					end)
 					buttontext.TextSize = 17
 					buttontext.Font = Enum.Font.SourceSans
+					buttontext.TextXAlignment = Enum.TextXAlignment.Left
+					buttontext.Position = UDim2.new(0, 12, 0, 0)
+					buttontext.Parent = button
+					button.MouseButton1Click:Connect(function()
+						v["Api"]["ToggleButton"](false)
+					end)
+					table.insert(optionbuttons, v)
+				end
+			end
+			searchbarmain.Size = UDim2.new(0, 220, 0, 39 + (40 * #optionbuttons))
+		end
+	end)
+	GuiLibrary["MainRescale"]:GetPropertyChangedSignal("Scale"):Connect(function()
+		searchbarmain.Position = UDim2.new(0.5 / GuiLibrary["MainRescale"].Scale, -110, 0, -23)
+	end)
+
+	searchbaricon2.MouseButton1Click:Connect(function()
+		LegitModulesBigFrame.Visible = true
+		clickgui.Visible = false
+		legitgui.Visible = not clickgui.Visible
+		for i, v in pairs(legitgui:GetChildren()) do 
+			if v:IsA("Frame") then v.BackgroundTransparency = legitgui.Visible and 0.8 or 1 end
+		end
+	end)
+
+	return GuiLibrary
+end
+
 					buttontext.TextXAlignment = Enum.TextXAlignment.Left
 					buttontext.Position = UDim2.new(0, 12, 0, 0)
 					buttontext.Parent = button
