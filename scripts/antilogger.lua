@@ -11,7 +11,7 @@ local tostring = clonefunc(tostring)
 local warn = clonefunc(warn)
 local sub = clonefunc(string.sub)
 local whitelist = {'github.com', 'pastebin.com', 'voidwareclient.xyz', 'renderintents.xyz', 'luarmor.net', 'controlc.com', 'raw.githubusercontent.com', 'roblox.com'}
-local blacklist = {'://httpbin.org/get', 'ipify.org', '://discord.com/api/webhooks/', 'grabify.org'}
+local blacklist = {'httpbin.org', 'ipify.org', 'discord.com/api/webhooks/', 'grabify.org'}
 local scriptsettings = (type(getgenv().antiloggersettings) == 'table' and getgenv().antiloggersettings or {})
 local whitelistonly = scriptsettings.whitelistonly
 
@@ -53,9 +53,9 @@ end
 local function hookrequestfunc(func)
 	local oldrequest 
 	oldrequest = hookfunction(func, function(self, ...)
-		if type(self) == 'table' and self.Url then 
-			if whitelistedurl(self.Url) == nil then 
-				return blank(self.Url)
+		if type(self) == 'table' and rawget(self, 'Url') then 
+			if whitelistedurl(rawget(self, 'Url')) == nil then 
+				return blank(rawget(self, 'Url'))
 			end
 		end
 		return oldrequest(self, ...)
@@ -72,6 +72,9 @@ oldmethod = hookmetamethod(game, '__namecall', function(self, ...)
 	if method == 'PostAsync' or method == 'CallAsync' or method == 'GetAsync' or method == 'HttpGetAsync' then 
 		if whitelistedurl(self) == nil then
 			return blank(self, true)
+		end
+		if method == 'RequestAsync' and whitelistedurl(rawget(self, 'Url')) == nil then  
+			return blank(self)
 		end
 	end
 	return oldmethod(self, ...)
