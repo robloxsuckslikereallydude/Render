@@ -473,13 +473,13 @@ local function getSpeed()
 			speed += 90
 		end
 		if bedwarsStore.scythe > tick() then 
-			speed += 65
+			speed += 17
 		end
 		if lplr.Character:GetAttribute('GrimReaperChannel') then 
 			speed += 20
 		end
 		if lplr.Character:FindFirstChild('elk') then  
-			speed += 19
+			speed += 4 -- brokie lol
 		end
 		local armor = bedwarsStore.localInventory.inventory.armor[3]
 		if type(armor) ~= 'table' then armor = {itemType = ''} end
@@ -13180,6 +13180,28 @@ runFunction(function()
 		Function = function() end
 	})
 	visualrootcolor.Object.Visible = false
+end)
+
+runFunction(function()
+	local ElkKnockbackExploit = {}
+	ElkKnockbackExploit = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
+		Name = 'ElkKnockbackExploit',
+		HoverText = 'Require sigrd kit sorry for spelling wrongie',
+		Function = function(calling)
+			if calling then
+				repeat task.wait()
+                    game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("node_modules"):WaitForChild("@rbxts"):WaitForChild("net"):WaitForChild("out"):WaitForChild("_NetManaged"):WaitForChild("ElkKitMounted"):FireServer()
+                    local args = {
+                        [1] = "elk_summon"
+                    }
+                    
+                    game:GetService("ReplicatedStorage"):WaitForChild("events-@easy-games/game-core:shared/game-core-networking@getEvents.Events"):WaitForChild("useAbility"):FireServer(unpack(args))
+                    
+                    game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("node_modules"):WaitForChild("@rbxts"):WaitForChild("net"):WaitForChild("out"):WaitForChild("_NetManaged"):WaitForChild("ElkKitUppercutAttack"):FireServer()
+				until not ElkKnockbackExploit.Enabled
+			end
+		end
+	})
 end)
 
 runFunction(function()
