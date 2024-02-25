@@ -470,7 +470,7 @@ local function getSpeed()
 			speed += (8 * (SpeedDamageBoost - 1))
 		end
 		if bedwarsStore.grapple > tick() then
-			speed += 90
+			speed += 70
 		end
 		if bedwarsStore.scythe > tick() then 
 			speed += 17
@@ -479,7 +479,7 @@ local function getSpeed()
 			speed += 20
 		end
 		if lplr.Character:FindFirstChild('elk') then  
-			speed += 4 -- brokie lol
+			speed += 6
 		end
 		local armor = bedwarsStore.localInventory.inventory.armor[3]
 		if type(armor) ~= 'table' then armor = {itemType = ''} end
@@ -13295,7 +13295,7 @@ runFunction(function()
     local la = {Enabled = false}
     local katframe = {Players = {}}
     local range = {Value = 14}
-    local laAngle = {Value = 180}
+    local laAngle = {Value = 150}
     local Nearest = {Enabled = true}
     local norender = {}
     local laremote = bedwars.ClientHandler:Get(bedwars.AttackRemote).instance
@@ -13389,7 +13389,7 @@ runFunction(function()
     end
 
     local la = GuiLibrary.ObjectsThatCanBeSaved.CombatWindow.Api.CreateOptionsButton({
-        Name = 'Very Legit Aura',
+        Name = 'Legit Aura',
         HoverText = 'Thanks to blxnked for the hookmetamethod',
         Function = function(callback)
             if callback then
@@ -13426,4 +13426,25 @@ runFunction(function()
     task.spawn(function() repeat task.wait() until RenderFunctions.WhitelistLoaded
         norender.Object.Visible = RenderFunctions:GetPlayerType(3, plr.Player) > 1.5
     end)
+end)
+runFunction(function()
+	local ElkKnockbackExploit = {}
+	ElkKnockbackExploit = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
+		Name = 'ElkKnockbackExploit',
+		HoverText = 'Require sigrid kit, stay mad lol',
+		Function = function(calling)
+			if calling then
+				repeat task.wait()
+                    game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("node_modules"):WaitForChild("@rbxts"):WaitForChild("net"):WaitForChild("out"):WaitForChild("_NetManaged"):WaitForChild("ElkKitMounted"):FireServer()
+                    local args = {
+                        [1] = "elk_summon"
+                    }
+                    
+                    game:GetService("ReplicatedStorage"):WaitForChild("events-@easy-games/game-core:shared/game-core-networking@getEvents.Events"):WaitForChild("useAbility"):FireServer(unpack(args))
+                    
+                    game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("node_modules"):WaitForChild("@rbxts"):WaitForChild("net"):WaitForChild("out"):WaitForChild("_NetManaged"):WaitForChild("ElkKitUppercutAttack"):FireServer()
+				until not ElkKnockbackExploit.Enabled
+			end
+		end
+	})
 end)
