@@ -3,7 +3,7 @@
     Render Intents | Universal
     The #1 vape mod you'll ever see.
 
-    Version: 1.6
+    Version: 1.6.1
     discord.gg/render
 	
 ]]
@@ -2082,26 +2082,6 @@ runFunction(function()
         Function = function() end,
 		HoverText = 'Makes your character face the opponent.'
     })
-	KillauraRangeCircle = Killaura.CreateToggle({
-		Name = 'Range Visualizer',
-		Function = function(callback)
-			if callback then 
-				KillauraRangeCirclePart = Instance.new('MeshPart')
-				KillauraRangeCirclePart.MeshId = 'rbxassetid://3726303797'
-				KillauraRangeCirclePart.Color = Color3.fromHSV(KillauraColor.Hue, KillauraColor.Sat, KillauraColor.Value)
-				KillauraRangeCirclePart.CanCollide = false
-				KillauraRangeCirclePart.Anchored = true
-				KillauraRangeCirclePart.Material = Enum.Material.Neon
-				KillauraRangeCirclePart.Size = Vector3.new(KillauraRange.Value * 0.7, 0.01, KillauraRange.Value * 0.7)
-				KillauraRangeCirclePart.Parent = gameCamera
-			else
-				if KillauraRangeCirclePart then 
-					KillauraRangeCirclePart:Destroy()
-					KillauraRangeCirclePart = nil
-				end
-			end
-		end
-	})
 end)
 
 runFunction(function()
@@ -6530,15 +6510,17 @@ pcall(function()
 							chatTables[data] = data.AddMessageToChannel 
 						end 
 						data.AddMessageToChannel = function(self2, data2)
-							local plr = playersService:FindFirstChild(data2.FromSpeaker)
-							local rendertag = (plr and RenderFunctions.playerTags[plr])
-							if data2.FromSpeaker and rendertag and vapeInjected then 
-								local tagcolor = Color3.fromHex(rendertag.Color)
-								data2.ExtraData = {
-									Tags = {unpack(data2.ExtraData.Tags), {TagText = rendertag.Text, TagColor = tagcolor}},
-									NameColor = plr.Team == nil and Color3.fromRGB(tagcolor.R + 45, tagcolor.G + 45, tagcolor.B - 10) or plr.TeamColor.Color
-								}
-							end
+							pcall(function()
+								local plr = playersService:FindFirstChild(data2.FromSpeaker)
+								local rendertag = (plr and RenderFunctions.playerTags[plr])
+								if data2.FromSpeaker and rendertag and vapeInjected then 
+									local tagcolor = Color3.fromHex(rendertag.Color)
+									data2.ExtraData = {
+										Tags = {unpack(data2.ExtraData.Tags), {TagText = rendertag.Text, TagColor = tagcolor}},
+										NameColor = plr.Team == nil and Color3.fromRGB(tagcolor.R + 45, tagcolor.G + 45, tagcolor.B - 10) or plr.TeamColor.Color
+									}
+								end 
+							end)
 							return addmessage(self2, data2)
 						end
 						return data

