@@ -13,6 +13,7 @@ return (function(ria)
 	local installing
 	local activated
 	local installed
+	local yielding
 	
 	if getgenv and getgenv().renderinstaller then 
 		return 
@@ -164,7 +165,7 @@ return (function(ria)
 		api.Instance = button 
 		api.ToggleOption = function(bool)
 			if bool then 
-				api.Enabled = true 
+				api.Enabled = true
 				tween:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {BackgroundColor3 = Color3.fromRGB(18, 3, 77)}):Play()
 			else 
 				api.Enabled = nil 
@@ -172,7 +173,7 @@ return (function(ria)
 			end 
 		end
 		button.MouseButton1Click:Connect(function()
-			api.ToggleOption(not api.Enabled) 
+			api.ToggleOption(api.Enabled == nil) 
 		end)
 		if args.Default then
 			api.ToggleOption(true) 
@@ -236,6 +237,7 @@ return (function(ria)
 		actionbutton.Text = 'Close The Installer'
 		installing = nil 
 		installed = true
+		task.wait()
 	end)
 	
 	closebutton.MouseEnter:Connect(function()
@@ -295,7 +297,6 @@ return (function(ria)
 		end
 		writefile('ria.json', httpservice:JSONEncode({Key = ria, Client = game:GetService('RbxAnalyticsService'):GetClientId()}))
 		writefile('vape/'..file, data)
-		task.wait(0.2)
 	end
 	
 	local function registerStep(name, func)
@@ -314,6 +315,7 @@ return (function(ria)
 		end) 
 		if not success then 
 			res = {StatusCode = 404, Body = '{"error":""}'} 
+			print('die nigger')
 		end
 		local suc, decode = pcall(function()
 			local data = httpservice:JSONDecode(res.Body) 
@@ -360,7 +362,7 @@ return (function(ria)
 		end)
 	end
 
-	local profiles = {}
+	local guiprofiles = {}
 	local profilesfetched
 
 	task.spawn(function()
@@ -368,7 +370,7 @@ return (function(ria)
 		if res ~= '404: Not Found' then 
 			for i,v in next, httpservice:JSONDecode(res) do 
 				if type(v) == 'table' and v.name then 
-					table.insert(profiles, v.name) 
+					table.insert(guiprofiles, v.name) 
 				end
 			end
 		end
@@ -379,11 +381,11 @@ return (function(ria)
 		repeat task.wait() until profilesfetched
 	end)
 
-	repeat task.wait() until (profilesfetched or not profiles.Enabled)
+	repeat task.wait() until profilesfetched
 
-	for i,v in next, (profiles.Enabled and {} or profiles) do 
+	for i,v in next, guiprofiles do 
 		registerStep('Downloading vape/Profiles/'..v, function()
-			local res = httprequest({Url = 'https://raw.githubusercontent.com/SystemXVoid/Render/source/Libraries/Settings/'..v, Method = 'GET'}).Body 
+			local res = game:HttpGet('https://raw.githubusercontent.com/SystemXVoid/Render/source/Libraries/Settings/'..v)
 			if res ~= '404: Not Found' then 
 				writevapefile('Profiles/'..v, res) 
 			end
