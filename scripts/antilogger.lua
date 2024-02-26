@@ -109,6 +109,14 @@ oldrequest = hookfunction(httpService.RequestAsync, newcclosure(function(self, t
 	return oldrequest(self, tab, ...)
 end))
 
+local oldrequest2
+oldrequest2 = hookfunction(game.HttpGet, newcclosure(function(self, url, ...)
+	if whitelistedurl(url) == nil then
+		return blank(url, true)
+	end 
+	return oldrequest2(self, url, ...) 
+end))
+
 if getgenv().hookfunction == nil and getgenv().hookfunc == nil then 
 	print('⚠ AntiLogger - Your exploit doesn\'t support hookfunction. Protection may not be as efficient.')
 end
