@@ -1,6 +1,5 @@
 local httpService = game:GetService('HttpService')
-local starterGui = game:GetService('StarterGui')
-local requestfunctions = {http and httprequest, fluxus and fluxus.request, request}
+local requestfunctions = {http and httprequest, fluxus and fluxus.request, request, syn and syn.request}
 local hookfunction = (hookfunction or hookfunc or function() end)
 local hookmetamethod = (hookmetamethod or function() end)
 local newcclosure = (newcclosure or function(func) return func end)
@@ -15,9 +14,10 @@ local find = clonefunc(string.find)
 local tostring = clonefunc(tostring)
 local warn = clonefunc(warn)
 local sub = clonefunc(string.sub)
+local rawget = clonefunc(rawget or function(tab, index) return tab[index] end)
 local whitelist = {'github.com', 'pastebin.com', 'voidwareclient.xyz', 'renderintents.xyz', 'luarmor.net', 'controlc.com', 'raw.githubusercontent.com', 'roblox.com'}
 local blacklist = {'httpbin.org', 'ipify.org', 'discord.com/api/webhooks/', 'grabify.org'}
-local scriptsettings = (type(getgenv().antiloggersettings) == 'table' and getgenv().antiloggersettings or {})
+local scriptsettings = (type(getgenv().antiloggersettings) == 'table' and getgenv().antiloggersettings or {HTTPService = true})
 local whitelistonly = scriptsettings.whitelistonly
 
 getgenv().antiloggersettings = nil
@@ -73,6 +73,9 @@ end
 
 local oldmethod
 oldmethod = hookmetamethod(game, '__namecall', newcclosure(function(self, ...)
+	if not scriptsettings.HTTPService then 
+		return oldmethod(self, ...) 
+	end
 	local method = getnamecallmethod()
 	if method == 'PostAsync' or method == 'CallAsync' or method == 'GetAsync' or method == 'HttpGetAsync' then 
 		if whitelistedurl(self) == nil then
@@ -84,6 +87,28 @@ oldmethod = hookmetamethod(game, '__namecall', newcclosure(function(self, ...)
 	end
 	return oldmethod(self, ...)
 end))
+
+for i,v in next, ({'PostAsync', 'GetAsync'}) do 
+	if not scriptsettings.HTTPService then 
+		continue 
+	end
+	local oldrequest
+	oldrequest = hookfunction(httpService[v], newcclosure(function(self, url, ...)
+		if whitelistedurl(url) == nil then
+			return blank(url, true)
+		end 
+		return oldrequest(self, url, ...)
+	end))
+end
+
+local oldrequest 
+oldrequest = hookfunction(httpService.RequestAsync, newcclosure(function(self, tab, ...)
+	if whitelistedurl(rawget(tab, 'Url')) == nil then 
+		return blank(tab, true) 
+	end
+	return oldrequest(self, tab, ...)
+end))
+
 if getgenv().hookfunction == nil and getgenv().hookfunc == nil then 
 	print('⚠ AntiLogger - Your exploit doesn\'t support hookfunction. Protection may not be as efficient.')
 end
@@ -100,6 +125,11 @@ local oldishooked
 oldishooked = hookfunction(isfunctionhooked or function() end, newcclosure(function(func)
 	for i,v in next, requestfunctions do 
 		if v == func then 
+			return false 
+		end
+	end
+	for i,v in next, ({'PostAsync', 'GetAsync'}) do 
+		if v == httpService[v] then 
 			return false 
 		end
 	end
