@@ -1,10 +1,16 @@
+
 local httpService = game:GetService('HttpService')
 local starterGui = game:GetService('StarterGui')
 local requestfunctions = {http and httprequest, fluxus and fluxus.request, request}
 local hookfunction = (hookfunction or hookfunc or function() end)
 local hookmetamethod = (hookmetamethod or function() end)
+local newcclosure = (newcclosure or function(func) return func end)
 local clonefunc = (clonefunction or clonefunc or function(func) return func end) 
+if (isfunctionhooked or function() end)(clonefunc) and restorefunction then 
+	restorefunction(clonefunc)
+end 
 local saferequest = clonefunc(#requestfunctions > 0 and requestfunctions[math.random(1, #requestfunctions)] or function() end)
+local tablefind = clonefunc(table.find)
 local type = clonefunc(type)
 local find = clonefunc(string.find)
 local tostring = clonefunc(tostring)
@@ -52,14 +58,14 @@ end
 
 local function hookrequestfunc(func)
 	local oldrequest 
-	oldrequest = hookfunction(func, function(self, ...)
+	oldrequest = hookfunction(func, newcclosure(function(self, ...)
 		if type(self) == 'table' and rawget(self, 'Url') then 
 			if whitelistedurl(rawget(self, 'Url')) == nil then 
 				return blank(rawget(self, 'Url'))
 			end
 		end
 		return oldrequest(self, ...)
-	end)
+	end))
 end
 
 for i,v in next, requestfunctions do
@@ -67,7 +73,7 @@ for i,v in next, requestfunctions do
 end
 
 local oldmethod
-oldmethod = hookmetamethod(game, '__namecall', function(self, ...)
+oldmethod = hookmetamethod(game, '__namecall', newcclosure(function(self, ...)
 	local method = getnamecallmethod()
 	if method == 'PostAsync' or method == 'CallAsync' or method == 'GetAsync' or method == 'HttpGetAsync' then 
 		if whitelistedurl(self) == nil then
@@ -78,8 +84,7 @@ oldmethod = hookmetamethod(game, '__namecall', function(self, ...)
 		end
 	end
 	return oldmethod(self, ...)
-end) 
-
+end))
 if getgenv().hookfunction == nil and getgenv().hookfunc == nil then 
 	print('⚠ AntiLogger - Your exploit doesn\'t support hookfunction. Protection may not be as efficient.')
 end
@@ -91,5 +96,17 @@ end
 if #({getgenv().hookfunction, getgenv().hookfunc, getgenv().hookmetamethod}) == 0 then 
 	error('❌ AntiLogger - Failed to execute. Your exploit doesn\'t support hookfunction or hookmetamethod.')
 end
+
+local oldishooked
+oldishooked = hookfunction(isfunctionhooked or function() end, newcclosure(function(func)
+	for i,v in next, requestfunctions do 
+		if v == func then 
+			return false 
+		end
+	end
+	return oldishooked(func)
+end))
+
+hookfunction(restorefunction or function() end, function() end)
 
 print('✅ AntiLogger - Successfully Executed.')
