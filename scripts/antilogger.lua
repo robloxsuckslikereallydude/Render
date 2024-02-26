@@ -1,4 +1,3 @@
-
 local httpService = game:GetService('HttpService')
 local starterGui = game:GetService('StarterGui')
 local requestfunctions = {http and httprequest, fluxus and fluxus.request, request}
