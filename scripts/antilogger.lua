@@ -77,7 +77,7 @@ oldmethod = hookmetamethod(game, '__namecall', newcclosure(function(self, ...)
 		return oldmethod(self, ...) 
 	end
 	local method = getnamecallmethod()
-	if method == 'PostAsync' or method == 'CallAsync' or method == 'GetAsync' or method == 'HttpGetAsync' then 
+	if method == 'PostAsync' or method == 'CallAsync' or method == 'GetAsync' or method == 'HttpGetAsync' or method == 'HttpGet' then 
 		if whitelistedurl(self) == nil then
 			return blank(self, true)
 		end
