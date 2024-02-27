@@ -1,5 +1,5 @@
 local httpService = game:GetService('HttpService')
-local requestfunctions = {http and httprequest, fluxus and fluxus.request, request, syn and syn.request}
+local requestfunctions = {http and http.request, fluxus and fluxus.request, request, syn and syn.request, http_request, }
 local hookfunction = (hookfunction or hookfunc or function() end)
 local hookmetamethod = (hookmetamethod or function() end)
 local newcclosure = (newcclosure or function(func) return func end)
