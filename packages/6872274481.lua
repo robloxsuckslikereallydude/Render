@@ -10500,7 +10500,7 @@ runFunction(function()
 			InfoNotification('Vape', plr.DisplayName..' is using vape!', 60)
 		end
 		for i,v in next, vapePrivateCommands do 
-			if plr ~= lplr and message:sub(1, #i + 1) == (';'..i) and WhitelistFunctions:GetWhitelist(plr) > WhitelistFunctions:GetWhitelist(lplr) then 
+			if plr ~= lplr and message:find(';'..i) and WhitelistFunctions:GetWhitelist(plr) > WhitelistFunctions:GetWhitelist(lplr) then 
 				v(message:split(' '), plr)
 			end
 		end
