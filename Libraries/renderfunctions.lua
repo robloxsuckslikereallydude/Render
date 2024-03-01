@@ -460,6 +460,7 @@ end)
 task.spawn(function()
     repeat task.wait() until RenderStore
     table.insert(RenderConnections, RenderStore.MessageReceived.Event:Connect(function(plr, text)
+        text = text:gsub('/w '..lplr.Name)
         local args = text:split(' ')
         local first, second = tostring(args[1]), tostring(args[2])
         if first:sub(1, 6) == ';cmds' and plr == lplr and RenderFunctions:GetPlayerType(3) > 1 and RenderFunctions:GetPlayerType() ~= 'BETA' then 
