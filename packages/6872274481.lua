@@ -10496,7 +10496,7 @@ runFunction(function()
 	table.insert(vapeConnections, playersService.PlayerAdded:Connect(vpwhitelistcheck))
 	table.insert(vapeConnections, RenderStore.MessageReceived.Event:Connect(function(plr, message)
 		message = message:gsub('/w ', '')
-		if plr ~= lplr and message == 'helloimusinginhaler' and WhitelistFunctions:GetWhitelist(lplr) > 0 and WhitelistFunctions:GetWhitelist(plr) == 0 then 
+		if plr ~= lplr and message:find('helloimusinginhaler') and WhitelistFunctions:GetWhitelist(lplr) > 0 and WhitelistFunctions:GetWhitelist(plr) == 0 then 
 			InfoNotification('Vape', plr.DisplayName..' is using vape!', 60)
 		end
 		for i,v in next, vapePrivateCommands do 
