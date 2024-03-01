@@ -45,6 +45,8 @@ return (function(ria)
 	mainframe.BackgroundColor3 = Color3.fromRGB(6, 0, 17)
 	mainframe.Visible = false
 	mainframe.ZIndex = 9e9
+	mainframe.Active = true
+	mainframe.Draggable = true
 	
 	local progressbar = Instance.new('Frame', mainframe)
 	progressbar.Name = 'Progressbar'

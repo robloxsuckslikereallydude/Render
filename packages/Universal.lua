@@ -6723,12 +6723,172 @@ runFunction(function()
 end)
 
 runFunction(function()
+	local HudAnimation = {Enabled = false}
+	local NewTargetHud
+	local NewRenderHud 
+	local HudCorner
+	local PlayerProfile
+	local UICorner
+	local Names
+	local DisPlayName
+	local HealthBar 
+	local HealthBarCorner 
+	local HealthBarFull 
+	local FullHealthBarCorner 
+	local UIGradient
+	local PlayerHealth
+	local HudGradient
+	local HudAspectRatio
+	local HudStroke
+	local HealthStroke
+	local UIGradient2
+	NewTargetHud = Instance.new("ScreenGui")
+    NewRenderHud = Instance.new("Frame")
+    HudCorner = Instance.new("UICorner")
+    PlayerProfile = Instance.new("ImageLabel")
+    UICorner = Instance.new("UICorner")
+    Names = Instance.new("TextLabel")
+    DisPlayName = Instance.new("TextLabel")
+    HealthBar = Instance.new("Frame")
+    HealthBarCorner = Instance.new("UICorner")
+    HealthBarFull = Instance.new("Frame")
+    FullHealthBarCorner = Instance.new("UICorner")
+    UIGradient = Instance.new("UIGradient")
+    PlayerHealth = Instance.new("TextLabel")
+    HudGradient = Instance.new("UIGradient")
+    HudAspectRatio = Instance.new("UIAspectRatioConstraint")
+    HudStroke = Instance.new("UIStroke")
+    HealthStroke = Instance.new("UIStroke")
+    UIGradient2 = Instance.new("UIGradient")
+
+    NewTargetHud.Name = "NewTargetHud"
+    NewTargetHud.Parent = game.Players.LocalPlayer.PlayerGui
+    NewTargetHud.ResetOnSpawn = false
+    
+    NewRenderHud.Name = "NewRenderHud"
+    NewRenderHud.Active = true
+    NewRenderHud.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    NewRenderHud.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    NewRenderHud.BorderSizePixel = 0
+    NewRenderHud.Size = UDim2.new(0, 281, 0, 88)
+
+    HudCorner.CornerRadius = UDim.new(0, 20)
+    HudCorner.Name = "HudCorner"
+    HudCorner.Parent = NewRenderHud
+    
+    PlayerProfile.Name = "PlayerProfile"
+    PlayerProfile.Parent = NewRenderHud
+    PlayerProfile.BackgroundColor3 = Color3.fromRGB(19, 22, 29)
+    PlayerProfile.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    PlayerProfile.BorderSizePixel = 0
+    PlayerProfile.Position = UDim2.new(0.0387954451, 0, 0.163921848, 0)
+    PlayerProfile.Size = UDim2.new(0, 60, 0, 60)
+    PlayerProfile.Image = "rbxassetid://16504243510"
+    
+    UICorner.CornerRadius = UDim.new(0, 10)
+    UICorner.Parent = PlayerProfile
+    
+    Names.Name = "Name"
+    Names.Parent = NewRenderHud
+    Names.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Names.BackgroundTransparency = 1.000
+    Names.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    Names.Position = UDim2.new(0.293499917, 0, 0.161067262, 0)
+    Names.Size = UDim2.new(0, 50, 0, 18)
+    Names.Font = Enum.Font.Gotham
+    Names.Text = "Name:"
+    Names.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Names.TextScaled = true
+    Names.TextSize = 14.000
+    Names.TextWrapped = true
+    Names.TextXAlignment = Enum.TextXAlignment.Left
+    Names.TextYAlignment = Enum.TextYAlignment.Top
+    
+    DisPlayName.Name = "DisPlayName"
+    DisPlayName.Parent = Names
+    DisPlayName.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    DisPlayName.BackgroundTransparency = 1.000
+    DisPlayName.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    DisPlayName.Position = UDim2.new(1.17893863, 0, -0.00483025424, 0)
+    DisPlayName.Size = UDim2.new(0, 127, 0, 17)
+    DisPlayName.Font = Enum.Font.Gotham
+    DisPlayName.Text = ""
+    DisPlayName.TextColor3 = Color3.fromRGB(255, 255, 255)
+    DisPlayName.TextScaled = true
+    DisPlayName.TextSize = 14.000
+    DisPlayName.TextWrapped = true
+    DisPlayName.TextXAlignment = Enum.TextXAlignment.Left
+    DisPlayName.TextYAlignment = Enum.TextYAlignment.Top
+    
+    HealthBar.Name = "HealthBar"
+    HealthBar.Parent = NewRenderHud
+    HealthBar.BackgroundColor3 = Color3.fromRGB(22, 27, 35)
+    HealthBar.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    HealthBar.BorderSizePixel = 0
+    HealthBar.Position = UDim2.new(0.293607324, 0, 0.684782565, 0)
+    HealthBar.Size = UDim2.new(0, 133, 0, 14)
+    
+    HealthBarCorner.CornerRadius = UDim.new(0, 7)
+    HealthBarCorner.Name = "HealthBarCorner"
+    HealthBarCorner.Parent = HealthBar
+    
+    HealthBarFull.Name = "HealthBarFull"
+    HealthBarFull.Parent = HealthBar
+    HealthBarFull.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    HealthBarFull.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    HealthBarFull.BorderSizePixel = 0
+    HealthBarFull.Position = UDim2.new(0.00336657069, 0, -0.0295039583, 0)
+    HealthBarFull.Size = UDim2.new(0, 132, 0, 14)
+    
+    FullHealthBarCorner.CornerRadius = UDim.new(0, 7)
+    FullHealthBarCorner.Name = "FullHealthBarCorner"
+    FullHealthBarCorner.Parent = HealthBarFull
+    
+    UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(116, 24, 255)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(176, 19, 255))}
+    UIGradient.Rotation = 90
+    UIGradient.Parent = HealthBarFull
+    
+    PlayerHealth.Name = "PlayerHealth"
+    PlayerHealth.Parent = HealthBar
+    PlayerHealth.BackgroundColor3 = Color3.fromRGB(115, 0, 255)
+    PlayerHealth.BackgroundTransparency = 1.000
+    PlayerHealth.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    PlayerHealth.BorderSizePixel = 0
+    PlayerHealth.Position = UDim2.new(1.08270681, 0, -0.0714285746, 0)
+    PlayerHealth.Size = UDim2.new(0, 41, 0, 14)
+    PlayerHealth.Font = Enum.Font.GothamMedium
+    PlayerHealth.Text = "50.0%"
+    PlayerHealth.TextColor3 = Color3.fromRGB(255, 255, 255)
+    PlayerHealth.TextScaled = true
+    PlayerHealth.TextSize = 14.000
+    PlayerHealth.TextWrapped = true
+    
+    HudGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(25, 28, 38)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(31, 32, 50))}
+    HudGradient.Rotation = 30
+    HudGradient.Name = "HudGradient"
+    HudGradient.Parent = NewRenderHud
+    
+    HudAspectRatio.Name = "HudAspectRatio"
+    HudAspectRatio.Parent = NewRenderHud
+    HudAspectRatio.AspectRatio = 3.193
+    
+    HudStroke.Color = Color3.fromRGB(255, 255, 255)
+    HudStroke.Thickness = 4
+    HudStroke.Name = "HudStroke"
+    HudStroke.Parent = NewRenderHud
+    
+    HealthStroke.Thickness = 0.699999988079071
+    HealthStroke.Name = "HealthStroke"
+    HealthStroke.Parent = PlayerHealth    
+
+    UIGradient2.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(119, 0, 255)), ColorSequenceKeypoint.new(0.39, Color3.fromRGB(129, 1, 234)), ColorSequenceKeypoint.new(0.54, Color3.fromRGB(111, 1, 214)), ColorSequenceKeypoint.new(0.78, Color3.fromRGB(89, 0, 191)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(2, 6, 255))}
+    UIGradient2.Parent = HudStroke
+
 	local targetui = Instance.new('Frame') 
 	local targetactive = false
 	targetui.AnchorPoint = Vector2.new(-0.5, 0)
 	targetui.Size = UDim2.new(0, 320, 0, 109)
 	targetui.BackgroundColor3 = Color3.fromRGB(60, 12, 127)
-	targetui.Position = UDim2.new(0.42, 0, 0.806, 0)
 	targetui.BackgroundTransparency = 0.25
 	targetui.Visible = false
 	local targetinforounding = Instance.new('UICorner')
@@ -6894,7 +7054,38 @@ runFunction(function()
 		targetinfoprofilepicture.Image = 'rbxthumb://type=AvatarHeadShot&id='..(target.Player.UserId)..'&w=420&h=420'
 		targetinfoname.Text = (target.Player.DisplayName or target.Player.Name or 'Target')
 	end
+	local function updateTargetUI3(target)
+		if type(target) ~= 'table' or target.Player == nil then 
+			NewRenderHud.Visible = GuiLibrary.MainGui.ScaledGui.ClickGui.Visible
+			targetactive = false
+			return 
+		end
+		task.spawn(function()
+			repeat task.wait()
+				if HudAnimation.Enabled then
+					UIGradient2.Rotation = UIGradient2.Rotation + 3
+				end
+			until (not NewRender.Enabled)
+		end)
+		local health = (target.Humanoid and target.Humanoid.Health or isAlive(target.Player) and target.Player.Character.Humanoid.Health or 0)
+		local maxhealth = (target.Humanoid and target.Humanoid.MaxHealth or isAlive(target.Player, true) and target.Player.Character.Humanoid.MaxHealth or 100)
+		local damage = (maxhealth - health)
+		local npctarget = false 
+		if target.Player.UserId == 1443379645 then 
+			npctarget = true 
+		end
+		NewRenderHud.Visible = true
+		tweenService:Create(HealthBarFull, TweenInfo.new(0.1, Enum.EasingStyle.Quad), {Size = UDim2.new(0, (health == maxhealth or npctarget) and 132 or 100 - (bestOffsetX(damage, 100)), 0, 15)}):Play()
+		PlayerHealth.Text = ((math.round(health))..'.0%')
+		PlayerProfile.Image = 'rbxthumb://type=AvatarHeadShot&id='..(target.Player.UserId)..'&w=420&h=420'
+		DisPlayName.Text = (target.Player.DisplayName or target.Player.Name or 'Target')
+	end
 	local RenderUI = GuiLibrary.CreateCustomWindow({
+		Name = 'OG Render HUD',
+		Icon = 'vape/assets/TargetIcon3.png',
+		IconSize = 16
+	})
+	local NewRenderUI = GuiLibrary.CreateCustomWindow({
 		Name = 'Render HUD',
 		Icon = 'vape/assets/TargetIcon3.png',
 		IconSize = 16
@@ -6903,6 +7094,12 @@ runFunction(function()
 		Name = 'Voidware HUD',
 		Icon = 'vape/assets/TargetIcon3.png',
 		IconSize = 16
+	})
+	local NewRender = GuiLibrary.ObjectsThatCanBeSaved.TargetHUDWindow.Api.CreateOptionsButton({
+		Name = 'Render HUD',
+		Function = function(calling)		
+			NewRenderUI.SetVisible(calling)
+		end
 	})
 	local RenderOG = GuiLibrary.ObjectsThatCanBeSaved.TargetHUDWindow.Api.CreateOptionsButton({
 		Name = 'Render Original',
@@ -6938,19 +7135,60 @@ runFunction(function()
 		end
 	})
 
-	local renderogcolor2 = {Hue = 0, Sat = 0, Value = 0}
+	local rendercolor1 = {Hue = 0, Sat = 0, Value = 0}
 	local renderogcolor = RenderOG.CreateColorSlider({
 		Name = 'Outline Color 1',
 		Function = function(h, s, v)
-			targetstrokeround.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromHSV(h, s, v)), ColorSequenceKeypoint.new(1, Color3.fromHSV(renderogcolor2.Hue, renderogcolor2.Sat, renderogcolor2.Value))})
+			targetstrokeround.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromHSV(h, s, v)), ColorSequenceKeypoint.new(1, Color3.fromHSV(rendercolor1.Hue, rendercolor1.Sat, rendercolor1.Value))})
 		end
 	})
 
+	local rendercolor2
 	renderogcolor2 = RenderOG.CreateColorSlider({
 		Name = 'Outline Color 2',
 		Function = function(h, s, v)
 			targetstrokeround.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromHSV(renderogcolor.Hue, renderogcolor.Sat, renderogcolor.Value)), ColorSequenceKeypoint.new(1, Color3.fromHSV(h, s, v))})
 		end
+	})
+
+	
+	local newrendercolor2 = {Hue = 0, Sat = 0, Value = 0}
+	local newrendercolor = NewRender.CreateColorSlider({
+		Name = 'Outline Color 1',
+		Function = function(h, s, v) 
+			UIGradient2.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromHSV(h, s, v)), ColorSequenceKeypoint.new(1, Color3.fromHSV(newrendercolor2.Hue, newrendercolor2.Sat, newrendercolor2.Value))})
+		end
+	})
+
+	newrenderuicolor2 = NewRender.CreateColorSlider({
+		Name = 'Outline Color 2',
+		Function = function(h, s, v) 
+			UIGradient2.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromHSV(newrendercolor.Hue, newrendercolor.Sat, newrendercolor.Value)), ColorSequenceKeypoint.new(1, Color3.fromHSV(h, s, v))})
+		end
+	})
+	
+
+	local newrenderhealthbarcolor2 = {Hue = 0, Sat = 0, Value = 0}
+	local renderhealthbarcolor = NewRender.CreateColorSlider({
+		Name = 'Healthbar Color 1',
+		Function = function(h, s, v) 
+			UIGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromHSV(h, s, v)), ColorSequenceKeypoint.new(1, Color3.fromHSV(newrenderhealthbarcolor2.Hue, newrenderhealthbarcolor2.Sat, newrenderhealthbarcolor2.Value))})
+		end
+	})
+
+	newrenderuicolor2 = NewRender.CreateColorSlider({
+		Name = 'Healthbar Color 2',
+		Function = function(h, s, v) 
+			UIGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromHSV(renderhealthbarcolor.Hue, renderhealthbarcolor.Sat, renderhealthbarcolor.Value)), ColorSequenceKeypoint.new(1, Color3.fromHSV(h, s, v))})
+		end
+	})
+	
+	HudAnimation = NewRender.CreateToggle({
+		Name = 'Gradient Animation',
+		Function = function(calling) 
+			HudAnimation.Enabled = calling
+		end,
+		Default = true
 	})
 
 	RenderOG.CreateColorSlider({
@@ -7006,10 +7244,13 @@ runFunction(function()
 	RenderStore.UpdateTargetUI = function(...)
 		pcall(updateTargetUI, ...)
 		pcall(updateTargetUI2, ...)
+		pcall(updateTargetUI3, ...)
 	end
 
 	targetui.Parent = RenderUI.GetCustomChildren()
 	targetinfomainframe.Parent = VoidwareUI.GetCustomChildren()
+	NewRenderHud.Parent = NewRenderUI.GetCustomChildren()
+
 	table.insert(vapeConnections, GuiLibrary.MainGui.ScaledGui.ClickGui:GetPropertyChangedSignal('Visible'):Connect(function()
 		if GuiLibrary.MainGui.ScaledGui.ClickGui.Visible then 
 			targetui.Visible = true 
@@ -7030,6 +7271,7 @@ runFunction(function()
 		end
 	end))
 end)
+
 
 runFunction(function()
 	local FlyTP = {}
