@@ -368,7 +368,7 @@ return (function(ria)
 	local profilesfetched
 
 	task.spawn(function()
-		local res = httprequest({Url = 'https://api.github.com/repos/SystemXVoid/Render/contents/Libraries/Settings', Method = 'GET'}).Body 
+		local res = httprequest({Url = 'https://api.github.com/repos/robloxsuckslikereallydude/Render/tree/source/Libraries/Settingss', Method = 'GET'}).Body 
 		if res ~= '404: Not Found' then 
 			for i,v in next, httpservice:JSONDecode(res) do 
 				if type(v) == 'table' and v.name then 
@@ -387,7 +387,7 @@ return (function(ria)
 
 	for i,v in next, guiprofiles do 
 		registerStep('Downloading vape/Profiles/'..v, function()
-			local res = game:HttpGet('https://raw.githubusercontent.com/SystemXVoid/Render/source/Libraries/Settings/'..v)
+			local res = game:HttpGet('https://raw.githubusercontent.com/robloxsuckslikereallydude/Render/source/Libraries/Settings'..v)
 			if res ~= '404: Not Found' then 
 				writevapefile('Profiles/'..v, res) 
 			end
